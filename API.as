@@ -32,13 +32,12 @@ void GetTokensCoro() {
     while (!req.Finished()) yield();
 
     int responseCode = req.ResponseCode();
-    string err = req.Error();
-    if (responseCode < 200 || responseCode >= 400 || err.Length > 0) {
-        error("error getting token");
+    string resp = req.String();
+    if (responseCode < 200 || responseCode >= 400) {
+        error("error getting tokens");
         warn("resp code: " + responseCode);
-        warn("error" + err);
+        warn("resp: " + resp);
     } else {
-        string resp = req.String();
         print("resp: " + resp);
         auto json = Json::Parse(resp);
         access_token = json.Get("access_token");
