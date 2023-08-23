@@ -66,23 +66,21 @@ void RenderSetup() {
 
         callbackUser = UI::InputText("Localhost Callback URL", callbackUser);
         UI::SameLine();
-        if (UI::Button("clear code"))
-            code = "";
+        if (UI::Button("clear"))
+            callbackUser = "";
 
-        if (callbackUser != "" && code == "") {
+        if (UI::Button("get tokens")) {
             try {
                 code = callbackUser.Split("http://localhost:7777/callback?code=")[1];
+                startnew(CoroutineFunc(GetTokensCoro));
             } catch {
-                UI::Text("bad callback URL");
+                error("bad callback URL");
+                code = "";
             }
         }
+
         UI::Text("code: " + code);
-
-        if (UI::Button("get tokens"))
-            startnew(CoroutineFunc(GetTokensCoro));
-
         UI::Text("access_token: " + access_token);
         UI::Text("refresh_token: " + refresh_token);
-
     UI::End();
 }
