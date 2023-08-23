@@ -13,8 +13,5 @@ void RenderMenu() {
 void Render() {
     if (!S_Enabled) return;
 
-    if (token == "") {
-        RenderSetup();
-        return;
-    }
+    RenderSetup();
 }

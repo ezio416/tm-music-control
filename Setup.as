@@ -27,14 +27,15 @@ void RenderSetup() {
         );
 
         if (UI::Button(Icons::Retweet + " Redirect URI"))
-            IO::SetClipboard(callbackUri);
+            IO::SetClipboard(redirectUri);
         HoverTooltip("copy to clipboard " + Icons::Clipboard);
 
         UI::Text(
             "    7. Agree to the \\$F0FTerms of Service and Design Guidelines\\$G" +
             "\n    8. Click \\$F0FSave\\$G" +
             "\n    9. In your new app's page, click \\$F0FSettings\\$G in the top-right" +
-            "\n    10. Copy the \\$F0FClient ID\\$G and \\$F0FClient secret\\$G and paste them here"
+            "\n    10. Copy the \\$F0FClient ID\\$G and \\$F0FClient secret\\$G and paste them here" +
+            "\n        10a. You can share the ID, but don't share the secret with anyone!"
         );
 
         clientId = UI::InputText("Client ID", clientId);
@@ -64,6 +65,9 @@ void RenderSetup() {
         );
 
         callbackUser = UI::InputText("Localhost Callback URL", callbackUser);
+        UI::SameLine();
+        if (UI::Button("clear code"))
+            code = "";
 
         if (callbackUser != "" && code == "") {
             try {
@@ -72,8 +76,37 @@ void RenderSetup() {
                 UI::Text("bad callback URL");
             }
         }
-        if (code != "")
-            UI::Text("code: " + code, 80);
+        UI::Text("code: " + code);
+
+        if (UI::Button("get tokens"))
+            startnew(CoroutineFunc(GetTokensCoro));
+
+        UI::Text("access_token: " + access_token);
+        UI::Text("refresh_token: " + refresh_token);
 
     UI::End();
+}
+
+void GetTokensCoro() {
+    auto req = Net::HttpRequest();
+    req.Url = "https://accounts.spotify.com/api/token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
+    req.Headers["Authorization"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
+    req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
+    req.Method = Net::HttpMethod::Post;
+    req.Start();
+    while (!req.Finished()) yield();
+
+    int responseCode = req.ResponseCode();
+    string err = req.Error();
+    if (responseCode < 200 || responseCode >= 400 || err.Length > 0) {
+        error("error getting token");
+        warn("resp code: " + responseCode);
+        warn("error" + err);
+    } else {
+        string resp = req.String();
+        print("resp: " + resp);
+        auto json = Json::Parse(resp);
+        access_token = json.Get("access_token");
+        refresh_token = json.Get("refresh_token");
+    }
 }
