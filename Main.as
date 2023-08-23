@@ -13,7 +13,7 @@ void RenderMenu() {
 void Render() {
     if (!S_Enabled) return;
 
-    if (!auth) {
+    if (token == "") {
         RenderSetup();
         return;
     }

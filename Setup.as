@@ -13,17 +13,13 @@ void RenderSetup() {
             "\n    1. Click this button to open the Developer Dashboard in your browser"
         );
 
-        if (UI::Button(Icons::Spotify + " Dashboard"))
+        if (UI::Button(Icons::Spotify + " Developer Dashboard"))
             OpenBrowserURL("https://developer.spotify.com/dashboard");
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-                UI::Text("open in browser " + Icons::ExternalLinkSquare);
-            UI::EndTooltip();
-        }
+        HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
         UI::Text(
             "    2. \\$F0FLogin\\$G with your Spotify account (a free account is fine)" +
-            "\n        2b. If you weren't already logged in, click your name in the top-right and then \\$F0FDashboard\\$G" +
+            "\n        2a. If you weren't already logged in, click your name in the top-right then \\$F0FDashboard\\$G" +
             "\n    3. Accept the \\$F0FTerms of Service\\$G" +
             "\n    4. Click \\$F0FCreate app\\$G" +
             "\n    5. Fill in the \\$F0FApp name\\$G and \\$F0FApp description\\$G fields (can be whatever you like)" +
@@ -31,47 +27,53 @@ void RenderSetup() {
         );
 
         if (UI::Button(Icons::Retweet + " Redirect URI"))
-            IO::SetClipboard("http://localhost:7777/callback");
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-                UI::Text("copy to clipboard " + Icons::Clipboard);
-            UI::EndTooltip();
-        }
+            IO::SetClipboard(callbackUri);
+        HoverTooltip("copy to clipboard " + Icons::Clipboard);
 
         UI::Text(
             "    7. Agree to the \\$F0FTerms of Service and Design Guidelines\\$G" +
             "\n    8. Click \\$F0FSave\\$G" +
-            "\n    9. In the new app page, click \\$F0FSettings\\$G in the top-right" +
-            "\n    10. Copy the \\$F0FClient ID\\$G and paste it here"
+            "\n    9. In your new app's page, click \\$F0FSettings\\$G in the top-right" +
+            "\n    10. Copy the \\$F0FClient ID\\$G and \\$F0FClient secret\\$G and paste them here"
         );
 
         clientId = UI::InputText("Client ID", clientId);
+        clientSecret = UI::InputText("Client secret", clientSecret);
 
         UI::Text(
             "    11. Click this button to open the authorization page" +
-            "\n        11b. After authorizing, the page will be blank. Don't close it!"
+            "\n        11a. Make sure you understand these permissions (you can easily revoke)"
         );
 
-        if (UI::Button(Icons::Lock + " Authorization"))
+        UI::BeginDisabled(clientId == "");
+        if (UI::Button(Icons::Spotify + " Authorization"))
             AuthPage();
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-                UI::Text("open in browser " + Icons::ExternalLinkSquare);
-            UI::EndTooltip();
+        HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
+        UI::EndDisabled();
+
+        UI::SameLine();
+        if (UI::Button(Icons::Spotify + " Manage Apps"))
+            OpenBrowserURL("https://www.spotify.com/us/account/apps/");
+        HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
+
+        UI::Text(
+            "    12. After authorizing:" +
+            "\n        12a. If the page doesn't load at all, that's good! Don't close it yet!" +
+            "\n        12b. If the page says, \"\\$F0FInvalid client\\$G\", you somehow copied the client ID wrong" +
+            "\n    13. Copy the full URL from the failed browser page and paste it here"
+        );
+
+        callbackUser = UI::InputText("Localhost Callback URL", callbackUser);
+
+        if (callbackUser != "" && code == "") {
+            try {
+                code = callbackUser.Split("http://localhost:7777/callback?code=")[1];
+            } catch {
+                UI::Text("bad callback URL");
+            }
         }
-
-        UI::Text(
-            "    12. Copy the full URL from the failed browser page and paste it here"
-        );
-
-        callbackUser = UI::InputText("Callback URL", callbackUser);
-
-        UI::Text(
-            "    13. Click this button to proceed to MusicControl!"
-        );
-
-        if (UI::Button(Icons::Check + " Done"))
-            auth = true;
+        if (code != "")
+            UI::Text("code: " + code, 80);
 
     UI::End();
 }
