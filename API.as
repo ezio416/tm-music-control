@@ -23,6 +23,8 @@ void AuthPage(const string &in scope = "user-read-playback-state") {
 }
 
 void GetTokensCoro() {
+    // auth code seems to become invalid after one use
+
     auto req = Net::HttpRequest();
     req.Url = "https://accounts.spotify.com/api/token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
     req.Headers["Authorization"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
@@ -33,13 +35,13 @@ void GetTokensCoro() {
 
     int responseCode = req.ResponseCode();
     string resp = req.String();
+    Json::Value json = Json::Parse(resp);
     if (responseCode < 200 || responseCode >= 400) {
         error("error getting tokens");
         warn("resp code: " + responseCode);
         warn("resp: " + resp);
     } else {
-        print("resp: " + resp);
-        auto json = Json::Parse(resp);
+        // print("resp: " + resp);
         access_token = json.Get("access_token");
         refresh_token = json.Get("refresh_token");
     }
