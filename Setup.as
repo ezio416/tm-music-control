@@ -4,7 +4,7 @@ m 2023-08-22
 */
 
 void RenderSetup() {
-    UI::Begin(title + " Setup", UI::WindowFlags::None);
+    UI::Begin(title + " Setup", S_Enabled, UI::WindowFlags::None);
         UI::Text(
             "Welcome to MusicControl!\nSome setup is required to authorize this plugin with your Spotify account." +
             "\n\nRead all of these instructions BEFORE starting (good practice with any instructions)."
