@@ -4,7 +4,7 @@ m 2023-08-22
 */
 
 void RenderSetup() {
-    UI::Begin(title + " Setup", UI::WindowFlags::AlwaysAutoResize);
+    UI::Begin(title + " Setup", UI::WindowFlags::None);
         UI::Text(
             "Welcome to MusicControl!\nSome setup is required to authorize this plugin with your Spotify account." +
             "\n\nRead all of these instructions BEFORE starting (good practice with any instructions)."
@@ -79,8 +79,11 @@ void RenderSetup() {
             }
         }
 
-        UI::Text("code: " + code);
-        UI::Text("access_token: " + access_token);
-        UI::Text("refresh_token: " + refresh_token);
+        UI::TextWrapped("code: " + code);
+        UI::TextWrapped("access_token: " + access_token);
+        UI::TextWrapped("refresh_token: " + refresh_token);
+
+        if (UI::Button("refresh tokens"))
+            startnew(CoroutineFunc(RefreshTokensCoro));
     UI::End();
 }
