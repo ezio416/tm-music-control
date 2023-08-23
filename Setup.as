@@ -86,27 +86,3 @@ void RenderSetup() {
 
     UI::End();
 }
-
-void GetTokensCoro() {
-    auto req = Net::HttpRequest();
-    req.Url = "https://accounts.spotify.com/api/token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
-    req.Headers["Authorization"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
-    req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
-    req.Method = Net::HttpMethod::Post;
-    req.Start();
-    while (!req.Finished()) yield();
-
-    int responseCode = req.ResponseCode();
-    string err = req.Error();
-    if (responseCode < 200 || responseCode >= 400 || err.Length > 0) {
-        error("error getting token");
-        warn("resp code: " + responseCode);
-        warn("error" + err);
-    } else {
-        string resp = req.String();
-        print("resp: " + resp);
-        auto json = Json::Parse(resp);
-        access_token = json.Get("access_token");
-        refresh_token = json.Get("refresh_token");
-    }
-}
