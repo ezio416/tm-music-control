@@ -4,13 +4,14 @@ m 2023-08-23
 */
 
 Json::Value auth;
-string      authFile     = IO::FromStorageFolder("auth.json");
-string      authUrl      = "https://accounts.spotify.com/api";
-string      callbackUrl  = "";
-string      clientId     = "";
-string      clientSecret = "";
-string      code         = "";
-string      redirectUri  = "http://localhost:7777/callback";
+string      authFile         = IO::FromStorageFolder("auth.json");
+string      authUrl          = "https://accounts.spotify.com/api";
+string      callbackUrl      = "";
+string      clientId         = "";
+string      clientSecret     = "";
+string      code             = "";
+string      redirectUri      = "http://localhost:7777/callback";
+int64       refreshTimestamp = 0;
 
 bool Authorized() {
     return string(auth["access"]).Length > 0;
@@ -93,6 +94,10 @@ void OpenAuthPage() {
 void RefreshCoro() {
     print("refreshing access token...");
 
+    if (refreshTimestamp > 0) {  // wait 5 seconds between refreshes just in case
+        while (Time::Stamp - refreshTimestamp < 5) yield();
+    }
+
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
     req.Url = authUrl + "/token?grant_type=refresh_token&refresh_token=" + string(auth["refresh"]);
@@ -112,6 +117,14 @@ void RefreshCoro() {
 
     auth["access"] = Json::Parse(resp)["access_token"];
     SaveAuth();
+
+    refreshTimestamp = Time::Stamp;
+
+    switch(lastReq) {
+        case Endpoint::GetDevices:       startnew(CoroutineFunc(GetDevicesCoro));       break;
+        case Endpoint::GetPlaybackState: startnew(CoroutineFunc(GetPlaybackStateCoro)); break;
+        default: break;
+    }
 }
 
 void SaveAuth() {
