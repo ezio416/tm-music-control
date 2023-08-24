@@ -7,6 +7,10 @@ string       albumArtFolder    = IO::FromStorageFolder("albumArt");
 string       loadedAlbumArtUrl = "";
 UI::Texture@ tex               = UI::LoadTexture("Assets/1x1.png");
 
+string FormatSeconds(int seconds) {
+    return Zpad2(seconds / 60) + ":" + Zpad2(seconds % 60);
+}
+
 void LoadAlbumArtCoro() {
     print("loading album art for \"" + state.album + "\"");
 
@@ -57,4 +61,9 @@ void HoverTooltip(const string &in text) {
 
 void NotifyWarn(const string &in text) {
     UI::ShowNotification("MusicControl", text, UI::HSV(0.02, 0.8, 0.9));
+}
+
+string Zpad2(int num) {
+    if (num > 9) return "" + num;
+    return "0" + num;
 }
