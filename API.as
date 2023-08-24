@@ -144,6 +144,11 @@ void PausePlaybackCoro() {
 
     lastReq = Endpoint::None;
 
+    if (respCode == 403) {
+        startnew(CoroutineFunc(ResumePlaybackCoro));
+        return;
+    }
+
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
         NotifyWarn("API error - please check Openplanet log");
@@ -168,6 +173,11 @@ void ResumePlaybackCoro() {
     }
 
     lastReq = Endpoint::None;
+
+    if (respCode == 403) {
+        startnew(CoroutineFunc(PausePlaybackCoro));
+        return;
+    }
 
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
