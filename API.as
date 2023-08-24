@@ -12,7 +12,9 @@ enum Endpoint {
     GetPlaybackState,
     GetRecentTracks,
     PausePlayback,
-    ResumePlayback
+    ResumePlayback,
+    SkipNext,
+    SkipPrevious
 }
 
 void GetDevicesCoro() {
@@ -183,6 +185,56 @@ void ResumePlaybackCoro() {
     if (respCode < 200 || respCode >= 400) {
         NotifyWarn("API error - please check Openplanet log");
         error("error resuming playback");
+        warn("response: " + respCode + " " + resp.Replace("\n", ""));
+    }
+}
+
+void SkipNextCoro() {
+    auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Post;
+    req.Url = apiUrl + "/me/player/next";
+    req.Headers["Authorization"] = string(auth["access"]);
+    req.Start();
+    while (!req.Finished()) yield();
+
+    int respCode = req.ResponseCode();
+    if (respCode == 401) {
+        lastReq = Endpoint::SkipNext;
+        startnew(CoroutineFunc(RefreshCoro));
+        return;
+    }
+
+    lastReq = Endpoint::None;
+
+    string resp = req.String();
+    if (respCode < 200 || respCode >= 400) {
+        NotifyWarn("API error - please check Openplanet log");
+        error("error skipping to next track");
+        warn("response: " + respCode + " " + resp.Replace("\n", ""));
+    }
+}
+
+void SkipPreviousCoro() {
+    auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Post;
+    req.Url = apiUrl + "/me/player/previous";
+    req.Headers["Authorization"] = string(auth["access"]);
+    req.Start();
+    while (!req.Finished()) yield();
+
+    int respCode = req.ResponseCode();
+    if (respCode == 401) {
+        lastReq = Endpoint::SkipPrevious;
+        startnew(CoroutineFunc(RefreshCoro));
+        return;
+    }
+
+    lastReq = Endpoint::None;
+
+    string resp = req.String();
+    if (respCode < 200 || respCode >= 400) {
+        NotifyWarn("API error - please check Openplanet log");
+        error("error skipping to previous track");
         warn("response: " + respCode + " " + resp.Replace("\n", ""));
     }
 }

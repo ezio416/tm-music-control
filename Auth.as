@@ -126,6 +126,8 @@ void RefreshCoro() {
         case Endpoint::GetRecentTracks:  startnew(CoroutineFunc(GetRecentTracksCoro));  break;
         case Endpoint::PausePlayback:    startnew(CoroutineFunc(PausePlaybackCoro));    break;
         case Endpoint::ResumePlayback:   startnew(CoroutineFunc(ResumePlaybackCoro));   break;
+        case Endpoint::SkipNext:         startnew(CoroutineFunc(SkipNextCoro));         break;
+        case Endpoint::SkipPrevious:     startnew(CoroutineFunc(SkipPreviousCoro));     break;
         default: break;
     }
 }

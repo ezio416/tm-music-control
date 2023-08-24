@@ -19,5 +19,11 @@ void RenderPlayer() {
 
         if (UI::Button("resume playback"))
             startnew(CoroutineFunc(ResumePlaybackCoro));
+
+        if (UI::Button("skip next"))
+            startnew(CoroutineFunc(SkipNextCoro));
+
+        if (UI::Button("skip previous"))
+            startnew(CoroutineFunc(SkipPreviousCoro));
     UI::End();
 }
