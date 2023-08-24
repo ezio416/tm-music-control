@@ -55,11 +55,17 @@ void RenderPlayer() {
                 if (UI::Button(repeatIcon))
                     startnew(CoroutineFunc(CycleRepeatCoro));
 
-                // if (UI::Button("get recent tracks"))
-                //     startnew(CoroutineFunc(GetRecentTracksCoro));
+                UI::SliderInt(
+                    FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
+                    state.songProgressPercent,
+                    0,
+                    100,
+                    "%d%%"
+                );
 
                 UI::EndTabItem();
             }
+
             if (UI::BeginTabItem("devices")) {
                 UI::BeginTabBar("all-devices");
                     if (UI::BeginTabItem("active")) {
@@ -98,6 +104,7 @@ void RenderPlayer() {
                 UI::EndTabBar();
                 UI::EndTabItem();
             }
+
             if (UI::BeginTabItem("state")) {
                 UI::Text("device ID: " + state.deviceId);
                 UI::Text("context: " + state.context);
@@ -105,7 +112,7 @@ void RenderPlayer() {
                 UI::Text("artists: " + state.artists);
                 UI::Text("album: " + state.album);
                 UI::Text("album release: " + state.albumRelease);
-                UI::Text("abum art URL: " + state.albumArtUrl64);
+                UI::Text("album art URL: " + state.albumArtUrl64);
                 UI::Text("playing: " + state.playing);
                 UI::Text("progress: " + state.songProgress);
                 UI::Text("duration: " + state.songDuration);
