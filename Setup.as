@@ -1,14 +1,19 @@
 /*
 c 2023-08-22
-m 2023-08-22
+m 2023-08-23
 */
 
 void RenderSetup() {
-    UI::Begin(title + " Setup", S_Enabled, UI::WindowFlags::None);
+    if (
+        !UI::IsOverlayShown() ||
+        !S_Setup
+    ) return;
+
+    UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize);
         UI::Text(
             "Welcome to MusicControl!\nSome setup is required to authorize this plugin with your Spotify account." +
             "\n\nRead all of these instructions BEFORE starting (good practice with any instructions)."
-            "\n\\$F0FPurple text\\$G indicates buttons/fields in the Spotify webpage, not here." +
+            "\n\\$F0FPurple text\\$G indicates things on the Spotify website, not here." +
             "\n\nYou will need to create an app in the Spotify Developer Dashboard, like so:" +
             "\n    1. Click this button to open the Developer Dashboard in your browser"
         );
@@ -46,9 +51,9 @@ void RenderSetup() {
             "\n        11a. Make sure you understand these permissions (you can easily revoke)"
         );
 
-        UI::BeginDisabled(clientId == "");
-        if (UI::Button(Icons::Spotify + " Authorization"))
-            AuthPage();
+        UI::BeginDisabled(clientId.Length != 32);
+        if (UI::Button(Icons::Spotify + " Authorization Page"))
+            OpenAuthPage();
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
         UI::EndDisabled();
 
@@ -58,32 +63,44 @@ void RenderSetup() {
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
         UI::Text(
-            "    12. After authorizing:" +
+            "    12. After clicking \\$F0FAgree\\$G:" +
             "\n        12a. If the page doesn't load at all, that's good! Don't close it yet!" +
             "\n        12b. If the page says, \"\\$F0FInvalid client\\$G\", you somehow copied the client ID wrong" +
             "\n    13. Copy the full URL from the failed browser page and paste it here"
         );
 
-        callbackUser = UI::InputText("Localhost Callback URL", callbackUser);
-        UI::SameLine();
-        if (UI::Button("clear"))
-            callbackUser = "";
+        callbackUrl = UI::InputText("Localhost callback URL", callbackUrl);
 
-        if (UI::Button("get tokens")) {
+        UI::BeginDisabled(clientId.Length != 32 && clientSecret.Length != 32);
+        if (UI::Button(Icons::Unlock + " Finish Authorization")) {
+            auth["basic"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
             try {
-                code = callbackUser.Split("http://localhost:7777/callback?code=")[1];
-                startnew(CoroutineFunc(GetTokensCoro));
+                code = callbackUrl.Split("http://localhost:7777/callback?code=")[1];
+                startnew(CoroutineFunc(GetAuthCoro));
             } catch {
-                error("bad callback URL");
+                NotifyWarn("Error with callback URL - make sure you copy the entire thing!");
+                error("bad callback URL: " + callbackUrl);
                 code = "";
             }
         }
+        UI::EndDisabled();
 
-        UI::TextWrapped("code: " + code);
-        UI::TextWrapped("access_token: " + access_token);
-        UI::TextWrapped("refresh_token: " + refresh_token);
+        UI::SameLine();
+        UI::BeginDisabled(clientId.Length == 0 && clientSecret.Length == 0 && callbackUrl.Length == 0);
+        if (UI::Button(Icons::Times + " Clear Fields")) {
+            clientId = "";
+            clientSecret = "";
+            callbackUrl = "";
+        }
+        UI::EndDisabled();
 
-        if (UI::Button("refresh tokens"))
-            startnew(CoroutineFunc(RefreshTokensCoro));
+        UI::SameLine();
+        UI::BeginDisabled(!Authorized());
+        if (UI::Button(Icons::ChainBroken + " Unauthorize"))
+            ClearAuth();
+        HoverTooltip("You'll need to repeat steps 9-13!");
+        UI::EndDisabled();
+
+        UI::Text("Authorized: " + (Authorized() ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
     UI::End();
 }

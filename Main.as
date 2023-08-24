@@ -1,9 +1,14 @@
 /*
 c 2023-08-21
-m 2023-08-22
+m 2023-08-23
 */
 
 string title = "\\$2D6" + Icons::Music + "\\$G MusicControl";
+
+void Main() {
+    LoadAuth();
+    S_Setup = !Authorized();
+}
 
 void RenderMenu() {
     if (UI::MenuItem(title, "", S_Enabled))
