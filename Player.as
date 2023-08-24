@@ -9,17 +9,27 @@ void RenderPlayer() {
     UI::Begin("MusicControl", S_Player, UI::WindowFlags::AlwaysAutoResize);
         UI::BeginTabBar("tabs", UI::TabBarFlags::None);
             if (UI::BeginTabItem("buttons")) {
-                if (selectedDevice !is null) {
-                    UI::Text("device: " + selectedDevice.name);
-                } else {
-                    UI::Text("no device selected");
-                }
+                // if (selectedDevice !is null) {
+                //     UI::Text(selectedDevice.name);
+                // } else {
+                //     UI::Text("no device selected");
+                // }
+
+                UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+
+                UI::SameLine();
+                UI::BeginGroup();
+                    UI::Text(state.song);
+                    UI::Text(state.artists);
+                    UI::Text(state.album);
+                    UI::Text(state.albumRelease);
+                UI::EndGroup();
 
                 if (UI::Button((state.shuffle? "\\$0F0" : "") + Icons::Random))
                     startnew(CoroutineFunc(ToggleShuffleCoro));
 
                 UI::SameLine();
-                if (UI::Button(Icons::Backward))
+                if (UI::Button(Icons::StepBackward))
                     startnew(CoroutineFunc(SkipPreviousCoro));
 
                 UI::SameLine();
@@ -32,7 +42,7 @@ void RenderPlayer() {
                 }
 
                 UI::SameLine();
-                if (UI::Button(Icons::Forward))
+                if (UI::Button(Icons::StepForward))
                     startnew(CoroutineFunc(SkipNextCoro));
 
                 UI::SameLine();
@@ -45,8 +55,8 @@ void RenderPlayer() {
                 if (UI::Button(repeatIcon))
                     startnew(CoroutineFunc(CycleRepeatCoro));
 
-                if (UI::Button("get recent tracks"))
-                    startnew(CoroutineFunc(GetRecentTracksCoro));
+                // if (UI::Button("get recent tracks"))
+                //     startnew(CoroutineFunc(GetRecentTracksCoro));
 
                 UI::EndTabItem();
             }
@@ -92,11 +102,14 @@ void RenderPlayer() {
                 UI::Text("device ID: " + state.deviceId);
                 UI::Text("context: " + state.context);
                 UI::Text("song: " + state.song);
+                UI::Text("artists: " + state.artists);
                 UI::Text("album: " + state.album);
                 UI::Text("album release: " + state.albumRelease);
+                UI::Text("abum art URL: " + state.albumArtUrl64);
                 UI::Text("playing: " + state.playing);
                 UI::Text("progress: " + state.songProgress);
                 UI::Text("duration: " + state.songDuration);
+                UI::Text("progress%: " + state.songProgressPercent);
                 UI::Text("repeat: " + tostring(state.repeat));
                 UI::Text("shuffle: " + state.shuffle);
                 UI::EndTabItem();
