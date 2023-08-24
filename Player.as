@@ -13,5 +13,11 @@ void RenderPlayer() {
 
         if (UI::Button("get recent tracks"))
             startnew(CoroutineFunc(GetRecentTracksCoro));
+
+        if (UI::Button("pause playback"))
+            startnew(CoroutineFunc(PausePlaybackCoro));
+
+        if (UI::Button("resume playback"))
+            startnew(CoroutineFunc(ResumePlaybackCoro));
     UI::End();
 }
