@@ -18,5 +18,6 @@ void RenderMenu() {
 void Render() {
     if (!S_Enabled) return;
 
+    RenderPlayer();
     RenderSetup();
 }
