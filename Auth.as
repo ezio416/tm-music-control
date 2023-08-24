@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-08-23
+m 2023-08-24
 */
 
 Json::Value auth;
@@ -41,7 +41,7 @@ void GetAuthCoro() {
     }
 
     Json::Value json = Json::Parse(resp);
-    auth["access"] = json["access_token"];
+    auth["access"] = "Bearer " + string(json["access_token"]);
     auth["refresh"] = json["refresh_token"];
     SaveAuth();
 }
@@ -87,7 +87,7 @@ void OpenAuthPage() {
         "client_id=" + clientId +
         "&response_type=code" +
         "&redirect_uri=" + redirectUri +
-        "&scope=user-modify-playback-state user-read-playback-state"
+        "&scope=user-modify-playback-state user-read-playback-state user-read-recently-played"
     );
 }
 
@@ -115,7 +115,7 @@ void RefreshCoro() {
         return;
     }
 
-    auth["access"] = Json::Parse(resp)["access_token"];
+    auth["access"] = "Bearer " + string(Json::Parse(resp)["access_token"]);
     SaveAuth();
 
     refreshTimestamp = Time::Stamp;
@@ -123,6 +123,7 @@ void RefreshCoro() {
     switch(lastReq) {
         case Endpoint::GetDevices:       startnew(CoroutineFunc(GetDevicesCoro));       break;
         case Endpoint::GetPlaybackState: startnew(CoroutineFunc(GetPlaybackStateCoro)); break;
+        case Endpoint::GetRecentTracks:  startnew(CoroutineFunc(GetRecentTracksCoro));  break;
         default: break;
     }
 }

@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-08-23
+m 2023-08-24
 */
 
 string   apiUrl  = "https://api.spotify.com/v1";
@@ -9,14 +9,15 @@ Endpoint lastReq = Endpoint::None;
 enum Endpoint {
     None,
     GetDevices,
-    GetPlaybackState
+    GetPlaybackState,
+    GetRecentTracks
 }
 
 void GetDevicesCoro() {
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Get;
     req.Url = apiUrl + "/me/player/devices";
-    req.Headers["Authorization"] = "Bearer " + string(auth["access"]);
+    req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
     while (!req.Finished()) yield();
 
@@ -45,7 +46,7 @@ void GetPlaybackStateCoro() {
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Get;
     req.Url = apiUrl + "/me/player";
-    req.Headers["Authorization"] = "Bearer " + string(auth["access"]);
+    req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
     while (!req.Finished()) yield();
 
@@ -93,4 +94,33 @@ void GetPlaybackStateCoro() {
     } catch {
         print("no active device");
     }
+}
+
+void GetRecentTracksCoro() {
+    auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Get;
+    req.Url = apiUrl + "/me/player/recently-played";
+    req.Headers["Authorization"] = string(auth["access"]);
+    req.Start();
+    while (!req.Finished()) yield();
+
+    int respCode = req.ResponseCode();
+    if (respCode == 401) {
+        lastReq = Endpoint::GetRecentTracks;
+        startnew(CoroutineFunc(RefreshCoro));
+        return;
+    }
+
+    lastReq = Endpoint::None;
+
+    string resp = req.String();
+    if (respCode < 200 || respCode >= 400) {
+        NotifyWarn("API error - please check Openplanet log");
+        error("error getting recently played tracks");
+        warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        return;
+    }
+
+    Json::Value json = Json::Parse(resp);
+    Json::ToFile(IO::FromStorageFolder("test.json"), json);
 }
