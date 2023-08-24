@@ -8,7 +8,8 @@ string apiUrl  = "https://api.spotify.com/v1";
 enum ResponseCode {
     ExpiredAccess    = 401,
     InvalidOperation = 403,
-    TooManyRequests  = 429
+    TooManyRequests  = 429,
+    Unavailable      = 503
 }
 
 void GetDevicesCoro() {
@@ -29,7 +30,7 @@ void GetDevicesCoro() {
     if (respCode < 200 || respCode >= 400) {
         NotifyWarn("API error - please check Openplanet log");
         error("error getting devices");
-        warn("response: " + respCode + " " + resp);
+        warn("response: " + respCode + " " + resp.Replace("\n", ""));
         return;
     }
 
@@ -58,6 +59,8 @@ void GetPlaybackStateCoro() {
 
     Json::Value json = Json::Parse(resp);
     state = @activeDevice != null ? State(json) : State();
+    if (state.albumArtUrl64 != loadedAlbumArtUrl)
+        startnew(CoroutineFunc(LoadAlbumArtCoro));
     Json::ToFile(IO::FromStorageFolder("test.json"), json);
 }
 

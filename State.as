@@ -20,8 +20,9 @@ enum Repeat {
 
 class State {
     string      album;
+    string      albumArtUrl64;
     string      albumRelease;
-    string[]    artists;
+    string      artists;
     string      context;
     string      deviceId;
     bool        playing;
@@ -30,6 +31,7 @@ class State {
     string      song;
     int         songDuration;
     int         songProgress;
+    int         songProgressPercent;
     PlayingType type;
 
     State() { }
@@ -43,6 +45,14 @@ class State {
             Json::Value _album = _item.Get("album");
                 album = string(_album["name"]);
                 albumRelease = string(_album["release_date"]);
+                Json::Value _albumImages = _album.Get("images");
+                albumArtUrl64 = string(_albumImages[2]["url"]);
+            Json::Value _artists = _item.Get("artists");
+                for (uint i = 0; i < _artists.Length; i++) {
+                    if (i > 0)
+                        artists += ", ";
+                    artists += string(_artists[i]["name"]);
+                }
 
         playing = bool(json["is_playing"]);
 
@@ -53,6 +63,7 @@ class State {
 
         shuffle = bool(json["shuffle_state"]);
         songProgress = int(json["progress_ms"]);
+        songProgressPercent = int(float(songProgress) / float(songDuration) * 100);
 
         string _type = string(json["currently_playing_type"]);
             if      (_type == "track")   type = PlayingType::track;
