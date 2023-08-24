@@ -54,7 +54,7 @@ void InitAuth() {
 }
 
 void LoadAuth() {
-    print("loading auth.json...");
+    trace("loading auth.json...");
 
     if (!IO::FileExists(authFile)) {
         warn("auth.json not found!");
@@ -92,7 +92,7 @@ void OpenAuthPage() {
 }
 
 void RefreshCoro() {
-    print("refreshing access token...");
+    trace("refreshing access token...");
 
     if (refreshTimestamp > 0) {  // wait 5 seconds between refreshes just in case
         while (Time::Stamp - refreshTimestamp < 5) yield();
@@ -122,7 +122,7 @@ void RefreshCoro() {
 }
 
 void SaveAuth() {
-    print("saving auth.json...");
+    trace("saving auth.json...");
 
     try {
         Json::ToFile(authFile, auth);

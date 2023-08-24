@@ -12,7 +12,7 @@ string FormatSeconds(int seconds) {
 }
 
 void LoadAlbumArtCoro() {
-    print("loading album art for \"" + state.album + "\"");
+    trace("loading album art for \"" + state.album + "\"");
 
     IO::CreateFolder(albumArtFolder);
     string filepath = albumArtFolder + "/" + state.albumArtUrl64.Replace(":", "_").Replace("/", "_") + ".jpg";

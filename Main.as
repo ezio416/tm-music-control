@@ -28,4 +28,5 @@ void Render() {
 
     RenderPlayer();
     RenderSetup();
+    RenderDebug();
 }
