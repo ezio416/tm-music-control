@@ -42,8 +42,7 @@ void GetDevicesCoro() {
         return;
     }
 
-    Json::Value json = Json::Parse(resp);
-    Json::ToFile(IO::FromStorageFolder("test.json"), json);
+    SetDevices(Json::Parse(resp).Get("devices"));
 }
 
 void GetPlaybackStateCoro() {
@@ -130,9 +129,13 @@ void GetRecentTracksCoro() {
 }
 
 void PausePlaybackCoro() {
+    string url = apiUrl + "/me/player/pause";
+    if (selectedDeviceId.Length > 0)
+        url += "?device_id=" + selectedDeviceId;
+
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
-    req.Url = apiUrl + "/me/player/pause";
+    req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
     while (!req.Finished()) yield();
@@ -160,9 +163,13 @@ void PausePlaybackCoro() {
 }
 
 void ResumePlaybackCoro() {
+    string url = apiUrl + "/me/player/play";
+    if (selectedDeviceId.Length > 0)
+        url += "?device_id=" + selectedDeviceId;
+
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
-    req.Url = apiUrl + "/me/player/play";
+    req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
     while (!req.Finished()) yield();
