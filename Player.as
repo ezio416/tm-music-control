@@ -54,6 +54,7 @@ void RenderPlayer() {
                 }
                 if (UI::Button(repeatIcon))
                     startnew(CoroutineFunc(CycleRepeatCoro));
+                HoverTooltip("repeat: " + tostring(state.repeat));
 
                 UI::SliderInt(
                     FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
