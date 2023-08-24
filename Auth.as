@@ -23,10 +23,10 @@ void ClearAuth() {
 
 void GetAuthCoro() {
     auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Post;
     req.Url = authUrl + "token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
     req.Headers["Authorization"] = string(auth["basic"]);
     req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
-    req.Method = Net::HttpMethod::Post;
     req.Start();
     while (!req.Finished()) yield();
 
@@ -94,10 +94,10 @@ void RefreshCoro() {
     print("refreshing access token...");
 
     auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Post;
     req.Url = authUrl + "token?grant_type=refresh_token&refresh_token=" + string(auth["refresh"]);
     req.Headers["Authorization"] = string(auth["basic"]);
     req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
-    req.Method = Net::HttpMethod::Post;
     req.Start();
     while (!req.Finished()) yield();
 
