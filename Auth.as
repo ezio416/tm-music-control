@@ -5,7 +5,7 @@ m 2023-08-23
 
 Json::Value auth;
 string      authFile     = IO::FromStorageFolder("auth.json");
-string      authUrl      = "https://accounts.spotify.com/api/";
+string      authUrl      = "https://accounts.spotify.com/api";
 string      callbackUrl  = "";
 string      clientId     = "";
 string      clientSecret = "";
@@ -24,7 +24,7 @@ void ClearAuth() {
 void GetAuthCoro() {
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
-    req.Url = authUrl + "token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
+    req.Url = authUrl + "/token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
     req.Headers["Authorization"] = string(auth["basic"]);
     req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
     req.Start();
@@ -95,7 +95,7 @@ void RefreshCoro() {
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
-    req.Url = authUrl + "token?grant_type=refresh_token&refresh_token=" + string(auth["refresh"]);
+    req.Url = authUrl + "/token?grant_type=refresh_token&refresh_token=" + string(auth["refresh"]);
     req.Headers["Authorization"] = string(auth["basic"]);
     req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
     req.Start();
