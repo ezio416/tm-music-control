@@ -12,6 +12,7 @@ void Main() {
     while (true) {
         if (Authorized()) {
             startnew(CoroutineFunc(GetDevicesCoro));
+            startnew(CoroutineFunc(GetPlaybackStateCoro));
         }
         sleep(1000);
     }

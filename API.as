@@ -3,18 +3,12 @@ c 2023-08-23
 m 2023-08-24
 */
 
-string   apiUrl  = "https://api.spotify.com/v1";
-Endpoint lastReq = Endpoint::None;
+string apiUrl  = "https://api.spotify.com/v1";
 
-enum Endpoint {
-    None,
-    GetDevices,
-    GetPlaybackState,
-    GetRecentTracks,
-    PausePlayback,
-    ResumePlayback,
-    SkipNext,
-    SkipPrevious
+enum ResponseCode {
+    ExpiredAccess    = 401,
+    InvalidOperation = 403,
+    TooManyRequests  = 429
 }
 
 void GetDevicesCoro() {
@@ -26,13 +20,10 @@ void GetDevicesCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::GetDevices;
+    if (respCode == ResponseCode::ExpiredAccess) {
         startnew(CoroutineFunc(RefreshCoro));
         return;
     }
-
-    lastReq = Endpoint::None;
 
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
@@ -54,13 +45,8 @@ void GetPlaybackStateCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::GetPlaybackState;
-        startnew(CoroutineFunc(RefreshCoro));
+    if (respCode == ResponseCode::ExpiredAccess)
         return;
-    }
-
-    lastReq = Endpoint::None;
 
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
@@ -71,32 +57,8 @@ void GetPlaybackStateCoro() {
     }
 
     Json::Value json = Json::Parse(resp);
+    state = @activeDevice != null ? State(json) : State();
     Json::ToFile(IO::FromStorageFolder("test.json"), json);
-    try {
-        Json::Value device = json.Get("device");
-        string deviceName = string(device["name"]);
-        uint volume = uint(device["volume_percent"]);
-
-        bool shuffle = bool(json["shuffle_state"]);
-        string repeat = string(json["repeat_state"]);
-        uint64 timestamp = uint64(double(json["timestamp"]));
-        uint64 progress = uint64(json["progress_ms"]);
-
-        Json::Value track = json.Get("item");
-        uint64 duration = uint64(track["duration_ms"]);
-
-        print(
-            "device:\\$0FA " + deviceName +
-            "\\$G volume:\\$0FA " + volume +
-            "\\$G shuffle:\\$0FA " + shuffle +
-            "\\$G repeat:\\$0FA " + repeat +
-            "\\$G timestamp:\\$0FA " + timestamp +
-            "\\$G progress:\\$0FA " + progress +
-            "\\$G duration:\\$0FA " + duration
-        );
-    } catch {
-        print("no active device");
-    }
 }
 
 void GetRecentTracksCoro() {
@@ -108,14 +70,6 @@ void GetRecentTracksCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::GetRecentTracks;
-        startnew(CoroutineFunc(RefreshCoro));
-        return;
-    }
-
-    lastReq = Endpoint::None;
-
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
         NotifyWarn("API error - please check Openplanet log");
@@ -128,7 +82,7 @@ void GetRecentTracksCoro() {
     Json::ToFile(IO::FromStorageFolder("test.json"), json);
 }
 
-void PausePlaybackCoro() {
+void PauseCoro() {
     string url = apiUrl + "/me/player/pause";
     if (selectedDeviceId.Length > 0)
         url += "?device_id=" + selectedDeviceId;
@@ -141,16 +95,8 @@ void PausePlaybackCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::PausePlayback;
-        startnew(CoroutineFunc(RefreshCoro));
-        return;
-    }
-
-    lastReq = Endpoint::None;
-
-    if (respCode == 403) {
-        startnew(CoroutineFunc(ResumePlaybackCoro));
+    if (respCode == ResponseCode::InvalidOperation) {
+        startnew(CoroutineFunc(PlayCoro));
         return;
     }
 
@@ -162,7 +108,7 @@ void PausePlaybackCoro() {
     }
 }
 
-void ResumePlaybackCoro() {
+void PlayCoro() {
     string url = apiUrl + "/me/player/play";
     if (selectedDeviceId.Length > 0)
         url += "?device_id=" + selectedDeviceId;
@@ -175,16 +121,8 @@ void ResumePlaybackCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::ResumePlayback;
-        startnew(CoroutineFunc(RefreshCoro));
-        return;
-    }
-
-    lastReq = Endpoint::None;
-
-    if (respCode == 403) {
-        startnew(CoroutineFunc(PausePlaybackCoro));
+    if (respCode == ResponseCode::InvalidOperation) {
+        startnew(CoroutineFunc(PauseCoro));
         return;
     }
 
@@ -205,14 +143,6 @@ void SkipNextCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::SkipNext;
-        startnew(CoroutineFunc(RefreshCoro));
-        return;
-    }
-
-    lastReq = Endpoint::None;
-
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
         NotifyWarn("API error - please check Openplanet log");
@@ -230,18 +160,57 @@ void SkipPreviousCoro() {
     while (!req.Finished()) yield();
 
     int respCode = req.ResponseCode();
-    if (respCode == 401) {
-        lastReq = Endpoint::SkipPrevious;
-        startnew(CoroutineFunc(RefreshCoro));
-        return;
-    }
-
-    lastReq = Endpoint::None;
-
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
         NotifyWarn("API error - please check Openplanet log");
         error("error skipping to previous track");
+        warn("response: " + respCode + " " + resp.Replace("\n", ""));
+    }
+}
+
+void ToggleShuffleCoro() {
+    string url = apiUrl + "/me/player/shuffle?state=" + !state.shuffle;
+    if (selectedDeviceId.Length > 0)
+        url += "&device_id=" + selectedDeviceId;
+
+    auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Put;
+    req.Url = url;
+    req.Headers["Authorization"] = string(auth["access"]);
+    req.Start();
+    while (!req.Finished()) yield();
+
+    int respCode = req.ResponseCode();
+    string resp = req.String();
+    if (respCode < 200 || respCode >= 400) {
+        NotifyWarn("API error - please check Openplanet log");
+        error("error toggling shuffle");
+        warn("response: " + respCode + " " + resp.Replace("\n", ""));
+    }
+}
+
+void CycleRepeatCoro() {
+    string url = apiUrl + "/me/player/repeat?state=";
+    switch (state.repeat) {
+        case Repeat::off:     url += "context"; break;
+        case Repeat::context: url += "track";   break;
+        default:              url += "off";
+    }
+    if (selectedDeviceId.Length > 0)
+        url += "&device_id=" + selectedDeviceId;
+
+    auto req = Net::HttpRequest();
+    req.Method = Net::HttpMethod::Put;
+    req.Url = url;
+    req.Headers["Authorization"] = string(auth["access"]);
+    req.Start();
+    while (!req.Finished()) yield();
+
+    int respCode = req.ResponseCode();
+    string resp = req.String();
+    if (respCode < 200 || respCode >= 400) {
+        NotifyWarn("API error - please check Openplanet log");
+        error("error cycling repeat type");
         warn("response: " + respCode + " " + resp.Replace("\n", ""));
     }
 }
