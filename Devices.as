@@ -6,6 +6,7 @@ m 2023-08-24
 Device@  activeDevice;
 Device[] devices;
 Device@  selectedDevice;
+
 [Setting hidden]
 string   selectedDeviceId;
 

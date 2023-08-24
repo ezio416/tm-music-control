@@ -4,29 +4,49 @@ m 2023-08-24
 */
 
 void RenderPlayer() {
-    UI::Begin("MusicControl", UI::WindowFlags::AlwaysAutoResize);
+    if (!S_Player) return;
+
+    UI::Begin("MusicControl", S_Player, UI::WindowFlags::AlwaysAutoResize);
         UI::BeginTabBar("tabs", UI::TabBarFlags::None);
             if (UI::BeginTabItem("buttons")) {
-                if (UI::Button("get devices"))
-                    startnew(CoroutineFunc(GetDevicesCoro));
+                if (selectedDevice !is null) {
+                    UI::Text("device: " + selectedDevice.name);
+                } else {
+                    UI::Text("no device selected");
+                }
 
-                if (UI::Button("get playback state"))
-                    startnew(CoroutineFunc(GetPlaybackStateCoro));
+                if (UI::Button((state.shuffle? "\\$0F0" : "") + Icons::Random))
+                    startnew(CoroutineFunc(ToggleShuffleCoro));
+
+                UI::SameLine();
+                if (UI::Button(Icons::Backward))
+                    startnew(CoroutineFunc(SkipPreviousCoro));
+
+                UI::SameLine();
+                if (state.playing) {
+                    if (UI::Button(Icons::Pause))
+                        startnew(CoroutineFunc(PauseCoro));
+                } else {
+                    if (UI::Button(Icons::Play))
+                        startnew(CoroutineFunc(PlayCoro));
+                }
+
+                UI::SameLine();
+                if (UI::Button(Icons::Forward))
+                    startnew(CoroutineFunc(SkipNextCoro));
+
+                UI::SameLine();
+                string repeatIcon;
+                switch (state.repeat) {
+                    case Repeat::context: repeatIcon = Icons::Refresh; break;
+                    case Repeat::track:   repeatIcon = Icons::Repeat;  break;
+                    default:              repeatIcon = Icons::ArrowRight;
+                }
+                if (UI::Button(repeatIcon))
+                    startnew(CoroutineFunc(CycleRepeatCoro));
 
                 if (UI::Button("get recent tracks"))
                     startnew(CoroutineFunc(GetRecentTracksCoro));
-
-                if (UI::Button("pause playback"))
-                    startnew(CoroutineFunc(PausePlaybackCoro));
-
-                if (UI::Button("resume playback"))
-                    startnew(CoroutineFunc(ResumePlaybackCoro));
-
-                if (UI::Button("skip next"))
-                    startnew(CoroutineFunc(SkipNextCoro));
-
-                if (UI::Button("skip previous"))
-                    startnew(CoroutineFunc(SkipPreviousCoro));
 
                 UI::EndTabItem();
             }
@@ -66,6 +86,19 @@ void RenderPlayer() {
                         }
                     }
                 UI::EndTabBar();
+                UI::EndTabItem();
+            }
+            if (UI::BeginTabItem("state")) {
+                UI::Text("device ID: " + state.deviceId);
+                UI::Text("context: " + state.context);
+                UI::Text("song: " + state.song);
+                UI::Text("album: " + state.album);
+                UI::Text("album release: " + state.albumRelease);
+                UI::Text("playing: " + state.playing);
+                UI::Text("progress: " + state.songProgress);
+                UI::Text("duration: " + state.songDuration);
+                UI::Text("repeat: " + tostring(state.repeat));
+                UI::Text("shuffle: " + state.shuffle);
                 UI::EndTabItem();
             }
         UI::EndTabBar();
