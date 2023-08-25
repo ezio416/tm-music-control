@@ -40,7 +40,7 @@ class State {
         deviceId = string(json.Get("device")["id"]);
 
         Json::Value _item = json.Get("item");
-            song = string(_item["name"]);
+            try { song = string(_item["name"]); } catch { return; }
             songDuration = int(_item["duration_ms"]);
             Json::Value _album = _item.Get("album");
                 album = string(_album["name"]);
