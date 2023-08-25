@@ -20,21 +20,22 @@ void RenderDebug() {
                         }
                         UI::EndTabItem();
                     }
-                    if (UI::BeginTabItem("selected")) {
-                        if (selectedDevice !is null) {
-                            UI::Text(selectedDevice.name);
-                        }
-                        UI::EndTabItem();
-                    }
+                    // if (UI::BeginTabItem("selected")) {
+                    //     if (selectedDevice !is null) {
+                    //         UI::Text(selectedDevice.name);
+                    //     }
+                    //     UI::EndTabItem();
+                    // }
                     for (uint i = 0; i < devices.Length; i++) {
                         auto dev = @devices[i];
                         if (UI::BeginTabItem(i + " " + dev.name)) {
-                            UI::BeginDisabled(selectedDeviceId == dev.id);
-                            if (UI::Button("select")) {
-                                selectedDeviceId = dev.id;
-                                SetSelectedDevice();
-                            }
-                            UI::EndDisabled();
+                            // UI::BeginDisabled(selectedDeviceId == dev.id);
+                            // if (UI::Button("select")) {
+                            //     selectedDeviceId = dev.id;
+                                // startnew(CoroutineFunc(TransferPlaybackCoro));
+                                // SetSelectedDevice();
+                            // }
+                            // UI::EndDisabled();
 
                             UI::Text("id: " + dev.id);
                             UI::Text("type: " + dev.type);

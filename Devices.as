@@ -5,10 +5,10 @@ m 2023-08-24
 
 Device@  activeDevice;
 Device[] devices;
-Device@  selectedDevice;
+// Device@  selectedDevice;
 
-[Setting hidden]
-string   selectedDeviceId;
+// [Setting hidden]
+// string   selectedDeviceId;
 
 class Device {
     string id;
@@ -44,15 +44,15 @@ void SetDevices(Json::Value json) {
             @activeDevice = devices[devices.Length - 1];
     }
 
-    SetSelectedDevice();
+    // SetSelectedDevice();
 }
 
-void SetSelectedDevice() {
-    @selectedDevice = null;
-    for (uint i = 0; i < devices.Length; i++) {
-        if (devices[i].id == selectedDeviceId) {
-            @selectedDevice = devices[i];
-            return;
-        }
-    }
-}
+// void SetSelectedDevice() {
+//     @selectedDevice = null;
+//     for (uint i = 0; i < devices.Length; i++) {
+//         if (devices[i].id == selectedDeviceId) {
+//             @selectedDevice = devices[i];
+//             return;
+//         }
+//     }
+// }

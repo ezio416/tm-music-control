@@ -3,7 +3,8 @@ c 2023-08-23
 m 2023-08-24
 */
 
-string apiUrl  = "https://api.spotify.com/v1";
+string apiUrl = "https://api.spotify.com/v1";
+// uint64 lastTransfer;
 
 enum ResponseCode {
     ExpiredAccess    = 401,
@@ -61,7 +62,7 @@ void GetPlaybackStateCoro() {
     state = @activeDevice != null ? State(json) : State();
     if (state.albumArtUrl64 != loadedAlbumArtUrl)
         startnew(CoroutineFunc(LoadAlbumArtCoro));
-    Json::ToFile(IO::FromStorageFolder("test.json"), json);
+    // Json::ToFile(IO::FromStorageFolder("test.json"), json);
 }
 
 void GetRecentTracksCoro() {
@@ -87,8 +88,8 @@ void GetRecentTracksCoro() {
 
 void PauseCoro() {
     string url = apiUrl + "/me/player/pause";
-    if (selectedDeviceId.Length > 0)
-        url += "?device_id=" + selectedDeviceId;
+    // if (selectedDeviceId.Length > 0)
+    //     url += "?device_id=" + selectedDeviceId;
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
@@ -113,8 +114,8 @@ void PauseCoro() {
 
 void PlayCoro() {
     string url = apiUrl + "/me/player/play";
-    if (selectedDeviceId.Length > 0)
-        url += "?device_id=" + selectedDeviceId;
+    // if (selectedDeviceId.Length > 0)
+    //     url += "?device_id=" + selectedDeviceId;
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
@@ -173,8 +174,8 @@ void SkipPreviousCoro() {
 
 void ToggleShuffleCoro() {
     string url = apiUrl + "/me/player/shuffle?state=" + !state.shuffle;
-    if (selectedDeviceId.Length > 0)
-        url += "&device_id=" + selectedDeviceId;
+    // if (selectedDeviceId.Length > 0)
+    //     url += "&device_id=" + selectedDeviceId;
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
@@ -199,8 +200,8 @@ void CycleRepeatCoro() {
         case Repeat::context: url += "track";   break;
         default:              url += "off";
     }
-    if (selectedDeviceId.Length > 0)
-        url += "&device_id=" + selectedDeviceId;
+    // if (selectedDeviceId.Length > 0)
+    //     url += "&device_id=" + selectedDeviceId;
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
@@ -217,3 +218,31 @@ void CycleRepeatCoro() {
         warn("response: " + respCode + " " + resp.Replace("\n", ""));
     }
 }
+
+// void TransferPlaybackCoro() {
+//     if (
+//         activeDevice is null ||
+//         activeDevice.id == selectedDeviceId
+//     ) return;
+//     while (Time::Stamp - lastTransfer < 10) yield();  // wait between transfers
+//     print("transferring...");
+
+//     auto req = Net::HttpRequest();
+//     req.Method = Net::HttpMethod::Put;
+//     req.Url = apiUrl + "/me/player?play=true";
+//     req.Headers["Authorization"] = string(auth["access"]);
+//     req.Headers["Content-Type"] = "application/json";
+//     req.Body = "{\"device_ids\":[\"" + selectedDeviceId + "\"]}";
+//     req.Start();
+//     while (!req.Finished()) yield();
+
+//     int respCode = req.ResponseCode();
+//     string resp = req.String();
+//     if (respCode < 200 || respCode >= 400) {
+//         NotifyWarn("API error - please check Openplanet log");
+//         error("error transferring playback");
+//         warn("response: " + respCode + " " + resp.Replace("\n", ""));
+//     }
+
+//     lastTransfer = Time::Stamp;
+// }
