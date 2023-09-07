@@ -12,20 +12,24 @@ void RenderPlayer() {
         flags |= UI::WindowFlags::NoMove;
 
     UI::Begin("MusicControl", S_Player, flags);
-        // if (selectedDevice !is null) {
-        //     UI::Text(selectedDevice.name);
-        // } else {
-        //     UI::Text("no device selected");
-        // }
+        vec2 pre = UI::GetCursorPos();
+        uint maxWidth = 0;
 
         UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
 
         UI::SameLine();
         UI::BeginGroup();
             UI::Text(state.song);
+            maxWidth = GetMaxWidth(maxWidth);
+
             UI::Text(state.artists);
+            maxWidth = GetMaxWidth(maxWidth);
+
             UI::Text(state.album);
+            maxWidth = GetMaxWidth(maxWidth);
+
             UI::Text(state.albumRelease);
+            maxWidth = GetMaxWidth(maxWidth);
         UI::EndGroup();
 
         if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random))
@@ -59,13 +63,22 @@ void RenderPlayer() {
         if (UI::Button(repeatIcon))
             startnew(CoroutineFunc(CycleRepeatCoro));
         HoverTooltip("repeat: " + tostring(state.repeat));
+        maxWidth = GetMaxWidth(maxWidth);
 
+        UI::SetNextItemWidth((maxWidth - pre.x) / UI::GetScale());
         UI::SliderInt(
-            FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
+            "##songProgress",
             state.songProgressPercent,
             0,
             100,
-            "%d%%"
+            FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000)
         );
     UI::End();
+}
+
+uint GetMaxWidth(uint input) {
+    UI::SameLine();
+    uint result = uint(Math::Max(input, UI::GetCursorPos().x));
+    UI::NewLine();
+    return result;
 }
