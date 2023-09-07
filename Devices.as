@@ -1,14 +1,14 @@
 /*
 c 2023-08-24
-m 2023-08-24
+m 2023-09-07
 */
 
 Device@  activeDevice;
 Device[] devices;
-// Device@  selectedDevice;
+Device@  lastDevice;
 
-// [Setting hidden]
-// string   selectedDeviceId;
+[Setting hidden]
+string lastDeviceId;
 
 class Device {
     string id;
@@ -44,15 +44,12 @@ void SetDevices(Json::Value json) {
             @activeDevice = devices[devices.Length - 1];
     }
 
-    // SetSelectedDevice();
-}
+    if (activeDevice !is null) {
+        @lastDevice = @activeDevice;
 
-// void SetSelectedDevice() {
-//     @selectedDevice = null;
-//     for (uint i = 0; i < devices.Length; i++) {
-//         if (devices[i].id == selectedDeviceId) {
-//             @selectedDevice = devices[i];
-//             return;
-//         }
-//     }
-// }
+        if (lastDeviceId != lastDevice.id) {
+            lastDeviceId = lastDevice.id;
+            Meta::SaveSettings();
+        }
+    }
+}
