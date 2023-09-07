@@ -1,14 +1,16 @@
 /*
 c 2023-08-23
-m 2023-08-24
+m 2023-09-07
 */
 
-string apiUrl = "https://api.spotify.com/v1";
-// uint64 lastTransfer;
+string apiUrl           = "https://api.spotify.com/v1";
+bool   forceDevice      = false;
+bool   forceDeviceTried = false;
 
 enum ResponseCode {
     ExpiredAccess    = 401,
     InvalidOperation = 403,
+    NoActiveDevice   = 404,
     TooManyRequests  = 429,
     Unavailable      = 503
 }
@@ -49,6 +51,10 @@ void GetPlaybackStateCoro() {
     int respCode = req.ResponseCode();
     if (respCode == ResponseCode::ExpiredAccess)
         return;
+    if (respCode == ResponseCode::NoActiveDevice) {
+        NotifyWarn("No currently active device", true);
+        return;
+    }
 
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
@@ -88,8 +94,6 @@ void GetRecentTracksCoro() {
 
 void PauseCoro() {
     string url = apiUrl + "/me/player/pause";
-    // if (selectedDeviceId.Length > 0)
-    //     url += "?device_id=" + selectedDeviceId;
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
@@ -114,8 +118,10 @@ void PauseCoro() {
 
 void PlayCoro() {
     string url = apiUrl + "/me/player/play";
-    // if (selectedDeviceId.Length > 0)
-    //     url += "?device_id=" + selectedDeviceId;
+    if (forceDevice) {
+        url += "?device_id=" + lastDeviceId;
+        forceDevice = false;
+    }
 
     auto req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
@@ -129,6 +135,22 @@ void PlayCoro() {
         startnew(CoroutineFunc(PauseCoro));
         return;
     }
+    if (respCode == ResponseCode::NoActiveDevice) {
+        if (forceDeviceTried) {
+            NotifyWarn("couldn't find a device", true);
+            forceDevice = false;
+            forceDeviceTried = false;
+            return;
+        }
+        warn("no active device, trying again...");
+        forceDevice = true;
+        forceDeviceTried = true;
+        sleep(1000);
+        startnew(CoroutineFunc(PlayCoro));
+        return;
+    }
+
+    forceDevice = false;
 
     string resp = req.String();
     if (respCode < 200 || respCode >= 400) {
