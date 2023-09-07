@@ -12,7 +12,11 @@ string FormatSeconds(int seconds) {
 }
 
 void LoadAlbumArtCoro() {
-    trace("loading album art for \"" + state.album + "\"");
+    trace(
+        state.album != "" ?
+        "loading album art for \"" + state.album + "\"" :
+        "clearing album art"
+    );
 
     IO::CreateFolder(albumArtFolder);
     string filepath = albumArtFolder + "/" + state.albumArtUrl64.Replace(":", "_").Replace("/", "_") + ".jpg";
@@ -59,8 +63,10 @@ void HoverTooltip(const string &in text) {
     }
 }
 
-void NotifyWarn(const string &in text) {
+void NotifyWarn(const string &in text, bool logWarn = false) {
     UI::ShowNotification("MusicControl", text, UI::HSV(0.02, 0.8, 0.9));
+    if (logWarn)
+        warn(text);
 }
 
 string Zpad(uint num, uint digits = 2) {
