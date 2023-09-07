@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-08-24
+m 2023-09-07
 */
 
 void RenderPlayer() {
@@ -28,8 +28,9 @@ void RenderPlayer() {
             UI::Text(state.albumRelease);
         UI::EndGroup();
 
-        if (UI::Button((state.shuffle? "\\$0F0" : "") + Icons::Random))
+        if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random))
             startnew(CoroutineFunc(ToggleShuffleCoro));
+        HoverTooltip("shuffle: " + (state.shuffle ? "on" : "off"));
 
         UI::SameLine();
         if (UI::Button(Icons::StepBackward))
@@ -51,9 +52,9 @@ void RenderPlayer() {
         UI::SameLine();
         string repeatIcon;
         switch (state.repeat) {
-            case Repeat::context: repeatIcon = Icons::Refresh; break;
-            case Repeat::track:   repeatIcon = Icons::Repeat;  break;
-            default:              repeatIcon = Icons::ArrowRight;
+            case Repeat::context: repeatIcon = "\\$0F0" + Icons::Refresh; break;
+            case Repeat::track:   repeatIcon = "\\$00F" + Icons::Refresh; break;
+            default:              repeatIcon = Icons::Refresh;
         }
         if (UI::Button(repeatIcon))
             startnew(CoroutineFunc(CycleRepeatCoro));
