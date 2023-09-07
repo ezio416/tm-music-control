@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-08-24
+m 2023-09-07
 */
 
 string       albumArtFolder    = IO::FromStorageFolder("albumArt");
@@ -8,7 +8,7 @@ string       loadedAlbumArtUrl = "";
 UI::Texture@ tex               = UI::LoadTexture("Assets/1x1.png");
 
 string FormatSeconds(int seconds) {
-    return Zpad2(seconds / 60) + ":" + Zpad2(seconds % 60);
+    return Zpad(seconds / 60) + ":" + Zpad(seconds % 60);
 }
 
 void LoadAlbumArtCoro() {
@@ -63,7 +63,12 @@ void NotifyWarn(const string &in text) {
     UI::ShowNotification("MusicControl", text, UI::HSV(0.02, 0.8, 0.9));
 }
 
-string Zpad2(int num) {
-    if (num > 9) return "" + num;
-    return "0" + num;
+string Zpad(uint num, uint digits = 2) {
+    string zeroes = "";
+    string result = tostring(num);
+
+    for (uint i = 0; i < digits - uint(result.Length); i++)
+        zeroes += "0";
+
+    return zeroes + result;
 }
