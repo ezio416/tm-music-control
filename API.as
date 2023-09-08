@@ -16,7 +16,7 @@ enum ResponseCode {
 }
 
 void GetDevicesCoro() {
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Get;
     req.Url = apiUrl + "/me/player/devices";
     req.Headers["Authorization"] = string(auth["access"]);
@@ -41,7 +41,7 @@ void GetDevicesCoro() {
 }
 
 void GetPlaybackStateCoro() {
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Get;
     req.Url = apiUrl + "/me/player";
     req.Headers["Authorization"] = string(auth["access"]);
@@ -72,7 +72,7 @@ void GetPlaybackStateCoro() {
 }
 
 void GetRecentTracksCoro() {
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Get;
     req.Url = apiUrl + "/me/player/recently-played";
     req.Headers["Authorization"] = string(auth["access"]);
@@ -95,7 +95,7 @@ void GetRecentTracksCoro() {
 void PauseCoro() {
     string url = apiUrl + "/me/player/pause";
 
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
@@ -123,7 +123,7 @@ void PlayCoro() {
         forceDevice = false;
     }
 
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
@@ -161,7 +161,7 @@ void PlayCoro() {
 }
 
 void SkipNextCoro() {
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
     req.Url = apiUrl + "/me/player/next";
     req.Headers["Authorization"] = string(auth["access"]);
@@ -178,7 +178,7 @@ void SkipNextCoro() {
 }
 
 void SkipPreviousCoro() {
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
     req.Url = apiUrl + "/me/player/previous";
     req.Headers["Authorization"] = string(auth["access"]);
@@ -196,10 +196,8 @@ void SkipPreviousCoro() {
 
 void ToggleShuffleCoro() {
     string url = apiUrl + "/me/player/shuffle?state=" + !state.shuffle;
-    // if (selectedDeviceId.Length > 0)
-    //     url += "&device_id=" + selectedDeviceId;
 
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
@@ -222,10 +220,8 @@ void CycleRepeatCoro() {
         case Repeat::context: url += "track";   break;
         default:              url += "off";
     }
-    // if (selectedDeviceId.Length > 0)
-    //     url += "&device_id=" + selectedDeviceId;
 
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Put;
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);

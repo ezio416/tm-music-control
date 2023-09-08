@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-08-24
+m 2023-09-07
 */
 
 Json::Value auth;
@@ -23,7 +23,7 @@ void ClearAuth() {
 }
 
 void GetAuthCoro() {
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
     req.Url = authUrl + "/token?grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
     req.Headers["Authorization"] = string(auth["basic"]);
@@ -98,7 +98,7 @@ void RefreshCoro() {
         while (Time::Stamp - refreshTimestamp < 5) yield();
     }
 
-    auto req = Net::HttpRequest();
+    Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
     req.Url = authUrl + "/token?grant_type=refresh_token&refresh_token=" + string(auth["refresh"]);
     req.Headers["Authorization"] = string(auth["basic"]);
