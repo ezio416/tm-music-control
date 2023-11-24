@@ -4,10 +4,7 @@ m 2023-11-23
 */
 
 void RenderSetup() {
-    if (
-        !UI::IsOverlayShown() ||
-        !S_Setup
-    )
+    if (!S_Setup || !disclaimerAccepted)
         return;
 
     UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize);
@@ -45,7 +42,7 @@ void RenderSetup() {
         );
 
         clientId = UI::InputText("Client ID", clientId);
-        clientSecret = UI::InputText("Client secret", clientSecret);
+        clientSecret = UI::InputText("Client secret", clientSecret, UI::InputTextFlags::Password);
 
         UI::Text(
             "    11. Click this button to open the authorization page" +
@@ -103,5 +100,10 @@ void RenderSetup() {
         UI::EndDisabled();
 
         UI::Text("Authorized: " + (Authorized() ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
+
+        if (Authorized()) {
+            if (UI::Button(Icons::Times + " Close setup window"))
+                S_Setup = false;
+        }
     UI::End();
 }

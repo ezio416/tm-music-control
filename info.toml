@@ -1,5 +1,6 @@
 [meta]
 name = "Music Control"
 author = "Ezio"
-category = "Utilities"
+category = "Music"
 version = "0.1.0"
+siteid = 461
