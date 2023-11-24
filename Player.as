@@ -4,7 +4,7 @@ m 2023-11-23
 */
 
 void RenderPlayer() {
-    if (!S_Player)
+    if (!disclaimerAccepted)
         return;
 
     int flags = UI::WindowFlags::AlwaysAutoResize |
@@ -13,7 +13,7 @@ void RenderPlayer() {
     if (!UI::IsOverlayShown())
         flags |= UI::WindowFlags::NoMove;
 
-    UI::Begin("MusicControl", S_Player, flags);
+    UI::Begin("MusicControl", S_Enabled, flags);
         vec2 pre = UI::GetCursorPos();
         uint maxWidth = 0;
 
@@ -53,7 +53,6 @@ void RenderPlayer() {
             if (UI::Button(Icons::Play))
                 startnew(CoroutineFunc(PlayCoro));
 
-
         UI::SameLine();
         if (UI::Button(Icons::StepForward))
             startnew(CoroutineFunc(SkipNextCoro));
@@ -78,6 +77,9 @@ void RenderPlayer() {
             100,
             FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000)
         );
+
+        if (!Authorized())
+            UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
     UI::End();
 }
 
