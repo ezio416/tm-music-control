@@ -1,11 +1,11 @@
 /*
 c 2023-08-22
-m 2023-09-07
+m 2023-11-23
 */
 
 string       albumArtFolder    = IO::FromStorageFolder("albumArt");
 string       loadedAlbumArtUrl = "";
-UI::Texture@ tex               = UI::LoadTexture("Assets/1x1.png");
+UI::Texture@ tex;
 
 string FormatSeconds(int seconds) {
     return Zpad(seconds / 60) + ":" + Zpad(seconds % 60);
@@ -29,7 +29,7 @@ void LoadAlbumArtCoro() {
             uint64 nowTimeout = Time::Now;
             bool timedOut = false;
 
-            auto req = Net::HttpGet(state.albumArtUrl64);
+            Net::HttpRequest@ req = Net::HttpGet(state.albumArtUrl64);
             while (!req.Finished()) {
                 if (Time::Now - nowTimeout > max_timeout) {
                     timedOut = true;
@@ -41,7 +41,8 @@ void LoadAlbumArtCoro() {
             if (timedOut) {
                 trace("timed out, waiting " + max_wait + " ms");
                 uint64 nowWait = Time::Now;
-                while (Time::Now - nowWait < max_wait) yield();
+                while (Time::Now - nowWait < max_wait)
+                    yield();
                 continue;
             }
 

@@ -1,6 +1,6 @@
 /*
 c 2023-08-24
-m 2023-09-07
+m 2023-11-23
 */
 
 State state;
@@ -36,7 +36,12 @@ class State {
 
     State() { }
     State(Json::Value json) {
-        try { context = string(json.Get("context")["uri"]); } catch { return; }
+        try {
+            context = string(json.Get("context")["uri"]);
+        } catch {
+            return;
+        }
+
         deviceId = string(json.Get("device")["id"]);
 
         Json::Value _item = json.Get("item");

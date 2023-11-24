@@ -1,6 +1,6 @@
 /*
 c 2023-08-24
-m 2023-09-07
+m 2023-11-23
 */
 
 Device@  activeDevice;
@@ -25,11 +25,11 @@ class Device {
         id             = string(json["id"]);
         name           = string(json["name"]);
         type           = string(json["type"]);
-        active         = bool(json["is_active"]);
-        privateSession = bool(json["is_private_session"]);
-        restricted     = bool(json["is_restricted"]);
-        supportsVolume = bool(json["supports_volume"]);
-        volume         = int(json["volume_percent"]);
+        active         = bool  (json["is_active"]);
+        privateSession = bool  (json["is_private_session"]);
+        restricted     = bool  (json["is_restricted"]);
+        supportsVolume = bool  (json["supports_volume"]);
+        volume         = int   (json["volume_percent"]);
     }
 }
 

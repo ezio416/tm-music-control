@@ -1,13 +1,15 @@
 /*
 c 2023-08-23
-m 2023-09-07
+m 2023-11-23
 */
 
 void RenderPlayer() {
-    if (!S_Player) return;
+    if (!S_Player)
+        return;
 
     int flags = UI::WindowFlags::AlwaysAutoResize |
                 UI::WindowFlags::NoTitleBar;
+
     if (!UI::IsOverlayShown())
         flags |= UI::WindowFlags::NoMove;
 
@@ -44,10 +46,10 @@ void RenderPlayer() {
         if (state.playing) {
             if (UI::Button(Icons::Pause))
                 startnew(CoroutineFunc(PauseCoro));
-        } else {
+        } else
             if (UI::Button(Icons::Play))
                 startnew(CoroutineFunc(PlayCoro));
-        }
+
 
         UI::SameLine();
         if (UI::Button(Icons::StepForward))

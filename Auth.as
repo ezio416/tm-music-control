@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-09-07
+m 2023-11-23
 */
 
 Json::Value auth;
@@ -29,7 +29,8 @@ void GetAuthCoro() {
     req.Headers["Authorization"] = string(auth["basic"]);
     req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();
@@ -94,9 +95,9 @@ void OpenAuthPage() {
 void RefreshCoro() {
     trace("refreshing access token...");
 
-    if (refreshTimestamp > 0) {  // wait 5 seconds between refreshes just in case
-        while (Time::Stamp - refreshTimestamp < 5) yield();
-    }
+    if (refreshTimestamp > 0)  // wait 5 seconds between refreshes just in case
+        while (Time::Stamp - refreshTimestamp < 5)
+            yield();
 
     Net::HttpRequest@ req = Net::HttpRequest();
     req.Method = Net::HttpMethod::Post;
@@ -104,7 +105,8 @@ void RefreshCoro() {
     req.Headers["Authorization"] = string(auth["basic"]);
     req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();
