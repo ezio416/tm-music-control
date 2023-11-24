@@ -31,9 +31,12 @@ Should I be worried about this "client ID/secret"?
 How hard is it to set up?
     - Not very hard, but there are some steps you have to do with your account in a browser. Don't worry - the setup window will hold your hand through it.
 
+Why do I have to do this setup at all?
+    - Due to Spotify's terms of service, they won't accept an app that allows for an easy one-click authorization. Someone in the community has already tried and been rejected, so this solution will have to do.
+
 What can I not do with this plugin?
     - Modify your library
-    - Seek within a song (yet)
+    - Scrub playback (yet)
     - Change playback device (yet)
 
 If you still want to proceed into the setup, click the button below. Otherwise, you may want to uninstall this plugin. (Button will be active after 15 seconds)
