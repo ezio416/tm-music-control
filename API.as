@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-09-07
+m 2023-11-23
 */
 
 string apiUrl           = "https://api.spotify.com/v1";
@@ -21,7 +21,8 @@ void GetDevicesCoro() {
     req.Url = apiUrl + "/me/player/devices";
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     if (respCode == ResponseCode::ExpiredAccess) {
@@ -46,7 +47,8 @@ void GetPlaybackStateCoro() {
     req.Url = apiUrl + "/me/player";
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     if (respCode == ResponseCode::ExpiredAccess)
@@ -65,7 +67,7 @@ void GetPlaybackStateCoro() {
     }
 
     Json::Value json = Json::Parse(resp);
-    state = @activeDevice != null ? State(json) : State();
+    state = activeDevice !is null ? State(json) : State();
     if (state.albumArtUrl64 != loadedAlbumArtUrl)
         startnew(CoroutineFunc(LoadAlbumArtCoro));
     // Json::ToFile(IO::FromStorageFolder("test.json"), json);
@@ -77,7 +79,8 @@ void GetRecentTracksCoro() {
     req.Url = apiUrl + "/me/player/recently-played";
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();
@@ -100,7 +103,8 @@ void PauseCoro() {
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     if (respCode == ResponseCode::InvalidOperation) {
@@ -128,7 +132,8 @@ void PlayCoro() {
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     if (respCode == ResponseCode::InvalidOperation) {
@@ -166,7 +171,8 @@ void SkipNextCoro() {
     req.Url = apiUrl + "/me/player/next";
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();
@@ -183,7 +189,8 @@ void SkipPreviousCoro() {
     req.Url = apiUrl + "/me/player/previous";
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();
@@ -202,7 +209,8 @@ void ToggleShuffleCoro() {
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();
@@ -226,7 +234,8 @@ void CycleRepeatCoro() {
     req.Url = url;
     req.Headers["Authorization"] = string(auth["access"]);
     req.Start();
-    while (!req.Finished()) yield();
+    while (!req.Finished())
+        yield();
 
     int respCode = req.ResponseCode();
     string resp = req.String();

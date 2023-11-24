@@ -1,10 +1,11 @@
 /*
 c 2023-08-24
-m 2023-09-07
+m 2023-11-23
 */
 
 void RenderDebug() {
-    if (!S_Debug) return;
+    if (!S_Debug)
+        return;
 
     int flags = UI::WindowFlags::AlwaysAutoResize;
     if (!UI::IsOverlayShown())
@@ -15,16 +16,14 @@ void RenderDebug() {
             if (UI::BeginTabItem("devices")) {
                 UI::BeginTabBar("all-devices");
                     if (UI::BeginTabItem("active")) {
-                        if (activeDevice !is null) {
+                        if (activeDevice !is null)
                             UI::Text(activeDevice.name);
-                        }
                         UI::EndTabItem();
                     }
 
                     if (UI::BeginTabItem("last")) {
-                        if (lastDevice !is null) {
+                        if (lastDevice !is null)
                             UI::Text(lastDevice.name);
-                        }
                         UI::EndTabItem();
                     }
 

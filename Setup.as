@@ -1,13 +1,14 @@
 /*
 c 2023-08-22
-m 2023-08-23
+m 2023-11-23
 */
 
 void RenderSetup() {
     if (
         !UI::IsOverlayShown() ||
         !S_Setup
-    ) return;
+    )
+        return;
 
     UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize);
         UI::Text(
