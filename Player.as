@@ -17,7 +17,10 @@ void RenderPlayer() {
         vec2 pre = UI::GetCursorPos();
         uint maxWidth = 0;
 
-        UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+        if (@tex !is null)
+            UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+        else
+            UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
 
         UI::SameLine();
         UI::BeginGroup();
