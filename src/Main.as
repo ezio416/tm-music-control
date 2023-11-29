@@ -1,6 +1,6 @@
 /*
 c 2023-08-21
-m 2023-11-23
+m 2023-11-28
 */
 
 string title = "\\$2D6" + Icons::Music + "\\$G Music Control";
@@ -11,13 +11,13 @@ void RenderMenu() {
 }
 
 void Main() {
-    LoadAuth();
-    S_Setup = !Authorized();
+    Auth::Load();
+    S_Setup = !Auth::Authorized();
 
     while (true) {
-        if (Authorized() && disclaimerAccepted) {
-            startnew(CoroutineFunc(GetDevicesCoro));
-            startnew(CoroutineFunc(GetPlaybackStateCoro));
+        if (Auth::Authorized() && disclaimerAccepted) {
+            startnew(API::GetDevices);
+            startnew(API::GetPlaybackState);
         }
         sleep(1000);
     }

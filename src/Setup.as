@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-23
+m 2023-11-28
 */
 
 void RenderSetup() {
@@ -21,7 +21,7 @@ void RenderSetup() {
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
         UI::Text(
-            "    2. \\$F0FLogin\\$G with your Spotify account (a free account is fine)" +
+            "    2. \\$F0FLogin\\$G with your Spotify account (a Premium account is mostly required)" +
             "\n        2a. If you weren't already logged in, click your name in the top-right then \\$F0FDashboard\\$G" +
             "\n    3. Accept the \\$F0FTerms of Service\\$G" +
             "\n    4. Click \\$F0FCreate app\\$G" +
@@ -51,7 +51,7 @@ void RenderSetup() {
 
         UI::BeginDisabled(clientId.Length != 32);
         if (UI::Button(Icons::Spotify + " Authorization Page"))
-            OpenAuthPage();
+            Auth::OpenPage();
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
         UI::EndDisabled();
 
@@ -74,7 +74,7 @@ void RenderSetup() {
             auth["basic"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
             try {
                 code = callbackUrl.Split("http://localhost:7777/callback?code=")[1];
-                startnew(CoroutineFunc(GetAuthCoro));
+                startnew(Auth::Get);
             } catch {
                 NotifyWarn("Error with callback URL - make sure you copy the entire thing!");
                 error("bad callback URL: " + callbackUrl);
@@ -93,15 +93,15 @@ void RenderSetup() {
         UI::EndDisabled();
 
         UI::SameLine();
-        UI::BeginDisabled(!Authorized());
+        UI::BeginDisabled(!Auth::Authorized());
         if (UI::Button(Icons::ChainBroken + " Unauthorize"))
-            ClearAuth();
+            Auth::Clear();
         HoverTooltip("You'll need to repeat steps 9-13!");
         UI::EndDisabled();
 
-        UI::Text("Authorized: " + (Authorized() ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
+        UI::Text("Authorized: " + (Auth::Authorized() ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
 
-        if (Authorized()) {
+        if (Auth::Authorized()) {
             if (UI::Button(Icons::Times + " Close setup window"))
                 S_Setup = false;
         }

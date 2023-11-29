@@ -1,6 +1,6 @@
 /*
 c 2023-11-23
-m 2023-11-23
+m 2023-11-28
 */
 
 [Setting hidden]
@@ -21,6 +21,9 @@ void RenderDisclaimer() {
         UI::Text("\\$F50DISCLAIMER:\n");
         UI::NewLine();
         UI::TextWrapped("""
+Can I use a free account?
+    - Technically yes, but you won't be able to control playback at all. You can only view the current state.
+
 Can my Spotify \$FA0username and password\$G be stolen?
     - No, we don't need those, so they are safe. However, we do store an app's client ID/secret in a simple text file, so those could be stolen.
 
@@ -35,8 +38,8 @@ Why do I have to do this setup at all?
     - Due to Spotify's terms of service, they won't accept an app that allows for an easy one-click authorization. Someone in the community has already tried and been rejected, so this solution will have to do.
 
 What can I not do with this plugin?
+    - Play music within the game
     - Modify your library
-    - Scrub playback (yet)
     - Change playback device (yet)
 
 If you still want to proceed into the setup, click the button below. Otherwise, you may want to uninstall this plugin. (Button will be active after 15 seconds)
