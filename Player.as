@@ -3,6 +3,8 @@ c 2023-08-23
 m 2023-11-28
 */
 
+bool seeking = false;
+
 void RenderPlayer() {
     if (!disclaimerAccepted)
         return;
@@ -75,13 +77,23 @@ void RenderPlayer() {
         maxWidth = GetMaxWidth(maxWidth);
 
         UI::SetNextItemWidth((maxWidth - pre.x) / UI::GetScale());
-        UI::SliderInt(
+        int seekPositionPercent = UI::SliderInt(
             "##songProgress",
             state.songProgressPercent,
             0,
             100,
-            FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000)
+            FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000)
         );
+
+        if (seekPositionPercent != state.songProgressPercent) {
+            seeking = true;
+            seekPosition = int(state.songDuration * (float(seekPositionPercent) / 100));
+        }
+
+        if (seeking && !UI::IsMouseDown()) {
+            startnew(API::Seek);
+            seeking = false;
+        }
 
         if (!Auth::Authorized())
             UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
