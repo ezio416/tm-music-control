@@ -46,7 +46,7 @@ void RenderDebug() {
             }
 
             if (UI::BeginTabItem("state")) {
-                UI::Text("click any row to copy to clipboard");
+                UI::Text("click any row to copy value to clipboard");
                 UI::Separator();
 
                 if (UI::Selectable("device ID: " + state.deviceId, false))
