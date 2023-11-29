@@ -135,7 +135,7 @@ namespace API {
     }
 
     void Pause() {
-        trace("pausing song");
+        trace("pausing");
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
@@ -166,7 +166,7 @@ namespace API {
     }
 
     void Play() {
-        trace("playing song");
+        trace("playing");
 
         string url = apiUrl + "/me/player/play";
         if (forceDevice) {
@@ -221,7 +221,7 @@ namespace API {
     }
 
     void Seek() {
-        trace(seekPosition == 0 ? "restarting song" : "seeking to " + FormatSeconds(seekPosition / 1000));
+        trace(seekPosition == 0 ? "restarting" : "seeking to " + FormatSeconds(seekPosition / 1000));
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
@@ -247,7 +247,7 @@ namespace API {
     }
 
     void SkipNext() {
-        trace("next song");
+        trace("next");
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Post;
@@ -273,7 +273,7 @@ namespace API {
     }
 
     void SkipPrevious() {
-        trace("previous song");
+        trace("previous");
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Post;
