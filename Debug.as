@@ -46,19 +46,35 @@ void RenderDebug() {
             }
 
             if (UI::BeginTabItem("state")) {
-                UI::Text("device ID: " + state.deviceId);
-                UI::Text("context: " + state.context);
-                UI::Text("song: " + state.song);
-                UI::Text("artists: " + state.artists);
-                UI::Text("album: " + state.album);
-                UI::Text("album release: " + state.albumRelease);
-                UI::Text("album art URL: " + state.albumArtUrl64);
-                UI::Text("playing: " + state.playing);
-                UI::Text("progress: " + state.songProgress);
-                UI::Text("duration: " + state.songDuration);
-                UI::Text("progress%: " + state.songProgressPercent);
-                UI::Text("repeat: " + tostring(state.repeat));
-                UI::Text("shuffle: " + state.shuffle);
+                UI::Text("click any row to copy to clipboard");
+                UI::Separator();
+
+                if (UI::Selectable("device ID: " + state.deviceId, false))
+                    IO::SetClipboard(state.deviceId);
+                if (UI::Selectable("context: " + state.context, false))
+                    IO::SetClipboard(state.context);
+                if (UI::Selectable("song: " + state.song, false))
+                    IO::SetClipboard(state.song);
+                if (UI::Selectable("artists: " + state.artists, false))
+                    IO::SetClipboard(state.artists);
+                if (UI::Selectable("album: " + state.album, false))
+                    IO::SetClipboard(state.album);
+                if (UI::Selectable("album release: " + state.albumRelease, false))
+                    IO::SetClipboard(state.albumRelease);
+                if (UI::Selectable("album art URL: " + state.albumArtUrl64, false))
+                    IO::SetClipboard(state.albumArtUrl64);
+                if (UI::Selectable("playing: " + state.playing, false))
+                    IO::SetClipboard(tostring(state.playing));
+                if (UI::Selectable("progress: " + state.songProgress, false))
+                    IO::SetClipboard(tostring(state.songProgress));
+                if (UI::Selectable("duration: " + state.songDuration, false))
+                    IO::SetClipboard(tostring(state.songDuration));
+                if (UI::Selectable("progress%: " + state.songProgressPercent, false))
+                    IO::SetClipboard(tostring(state.songProgressPercent));
+                if (UI::Selectable("repeat: " + tostring(state.repeat), false))
+                    IO::SetClipboard(tostring(state.repeat));
+                if (UI::Selectable("shuffle: " + state.shuffle, false))
+                    IO::SetClipboard(tostring(state.shuffle));
                 UI::EndTabItem();
             }
         UI::EndTabBar();
