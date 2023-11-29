@@ -35,6 +35,7 @@ Why do I have to do this setup at all?
     - Due to Spotify's terms of service, they won't accept an app that allows for an easy one-click authorization. Someone in the community has already tried and been rejected, so this solution will have to do.
 
 What can I not do with this plugin?
+    - Play music within the game
     - Modify your library
     - Change playback device (yet)
 
