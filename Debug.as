@@ -1,6 +1,6 @@
 /*
 c 2023-08-24
-m 2023-11-23
+m 2023-11-28
 */
 
 void RenderDebug() {
@@ -28,7 +28,7 @@ void RenderDebug() {
                     }
 
                     for (uint i = 0; i < devices.Length; i++) {
-                        auto dev = @devices[i];
+                        Device@ dev = @devices[i];
                         if (UI::BeginTabItem(i + " " + dev.name)) {
                             UI::Text("id: " + dev.id);
                             UI::Text("type: " + dev.type);

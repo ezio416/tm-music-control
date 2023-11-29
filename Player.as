@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-11-23
+m 2023-11-28
 */
 
 void RenderPlayer() {
@@ -38,24 +38,29 @@ void RenderPlayer() {
         UI::EndGroup();
 
         if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random))
-            startnew(CoroutineFunc(ToggleShuffleCoro));
+            startnew(API::ToggleShuffle);
         HoverTooltip("shuffle: " + (state.shuffle ? "on" : "off"));
 
         UI::SameLine();
-        if (UI::Button(Icons::StepBackward))
-            startnew(CoroutineFunc(SkipPreviousCoro));
+        if (UI::Button(Icons::StepBackward)) {
+            if (state.songProgress > 3000) {
+                seekPosition = 0;
+                startnew(API::Seek);
+            } else
+                startnew(API::SkipPrevious);
+        }
 
         UI::SameLine();
         if (state.playing) {
             if (UI::Button(Icons::Pause))
-                startnew(CoroutineFunc(PauseCoro));
+                startnew(API::Pause);
         } else
             if (UI::Button(Icons::Play))
-                startnew(CoroutineFunc(PlayCoro));
+                startnew(API::Play);
 
         UI::SameLine();
         if (UI::Button(Icons::StepForward))
-            startnew(CoroutineFunc(SkipNextCoro));
+            startnew(API::SkipNext);
 
         UI::SameLine();
         string repeatIcon;
@@ -65,7 +70,7 @@ void RenderPlayer() {
             default:              repeatIcon = Icons::Refresh;
         }
         if (UI::Button(repeatIcon))
-            startnew(CoroutineFunc(CycleRepeatCoro));
+            startnew(API::CycleRepeat);
         HoverTooltip("repeat: " + tostring(state.repeat));
         maxWidth = GetMaxWidth(maxWidth);
 
@@ -78,7 +83,7 @@ void RenderPlayer() {
             FormatSeconds(state.songProgress / 1000) + " / " + FormatSeconds(state.songDuration / 1000)
         );
 
-        if (!Authorized())
+        if (!Auth::Authorized())
             UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
     UI::End();
 }
