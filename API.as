@@ -35,8 +35,14 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
         string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
+            NotifyWarn("Sorry, you need a Premium account");
+            return;
+        }
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error cycling repeat type");
@@ -53,13 +59,14 @@ namespace API {
         while (!req.Finished())
             yield();
 
+        string resp = req.String();
         int respCode = req.ResponseCode();
+
         if (respCode == ResponseCode::ExpiredAccess) {
             startnew(Auth::Refresh);
             return;
         }
 
-        string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error getting devices");
@@ -79,15 +86,17 @@ namespace API {
         while (!req.Finished())
             yield();
 
+        string resp = req.String();
         int respCode = req.ResponseCode();
+
         if (respCode == ResponseCode::ExpiredAccess)
             return;
+
         if (respCode == ResponseCode::NoActiveDevice) {
             NotifyWarn("No currently active device", true);
             return;
         }
 
-        string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error getting playback state");
@@ -111,8 +120,9 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
         string resp = req.String();
+        int respCode = req.ResponseCode();
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error getting recently played tracks");
@@ -135,13 +145,19 @@ namespace API {
         while (!req.Finished())
             yield();
 
+        string resp = req.String();
         int respCode = req.ResponseCode();
+
         if (respCode == ResponseCode::InvalidOperation) {
+            if (resp.Contains("Premium required")) {
+                NotifyWarn("Sorry, you need a Premium account");
+                return;
+            }
+
             startnew(Play);
             return;
         }
 
-        string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error pausing playback");
@@ -166,11 +182,19 @@ namespace API {
         while (!req.Finished())
             yield();
 
+        string resp = req.String();
         int respCode = req.ResponseCode();
+
         if (respCode == ResponseCode::InvalidOperation) {
-            startnew(Pause);
+            if (resp.Contains("Premium required")) {
+                NotifyWarn("Sorry, you need a Premium account");
+                return;
+            }
+
+            startnew(Play);
             return;
         }
+
         if (respCode == ResponseCode::NoActiveDevice) {
             if (forceDeviceTried) {
                 NotifyWarn("couldn't find a device", true);
@@ -178,6 +202,7 @@ namespace API {
                 forceDeviceTried = false;
                 return;
             }
+
             warn("no active device, trying again...");
             forceDevice = true;
             forceDeviceTried = true;
@@ -188,7 +213,6 @@ namespace API {
 
         forceDevice = false;
 
-        string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error resuming playback");
@@ -207,8 +231,14 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
         string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
+            NotifyWarn("Sorry, you need a Premium account");
+            return;
+        }
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error seeking");
@@ -227,8 +257,14 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
         string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
+            NotifyWarn("Sorry, you need a Premium account");
+            return;
+        }
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error skipping to next track");
@@ -247,8 +283,14 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
         string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
+            NotifyWarn("Sorry, you need a Premium account");
+            return;
+        }
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error skipping to previous track");
@@ -267,8 +309,14 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
         string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
+            NotifyWarn("Sorry, you need a Premium account");
+            return;
+        }
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("API error - please check Openplanet log");
             error("error toggling shuffle");
