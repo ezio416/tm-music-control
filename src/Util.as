@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-23
+m 2023-11-28
 */
 
 string       albumArtFolder    = IO::FromStorageFolder("albumArt");
@@ -11,7 +11,7 @@ string FormatSeconds(int seconds) {
     return Zpad(seconds / 60) + ":" + Zpad(seconds % 60);
 }
 
-void LoadAlbumArtCoro() {
+void LoadAlbumArt() {
     trace(
         state.album != "" ?
         "loading album art for \"" + state.album + "\"" :
