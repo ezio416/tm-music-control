@@ -1,6 +1,6 @@
 /*
 c 2023-11-23
-m 2023-11-23
+m 2023-11-28
 */
 
 [Setting hidden]
@@ -36,7 +36,6 @@ Why do I have to do this setup at all?
 
 What can I not do with this plugin?
     - Modify your library
-    - Scrub playback (yet)
     - Change playback device (yet)
 
 If you still want to proceed into the setup, click the button below. Otherwise, you may want to uninstall this plugin. (Button will be active after 15 seconds)
