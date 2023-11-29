@@ -197,10 +197,7 @@ namespace API {
     }
 
     void Seek() {
-        if (seekPosition == 0)
-            trace("restarting song");
-        else
-            trace("seeking to " + FormatSeconds(seekPosition / 1000));
+        trace(seekPosition == 0 ? "restarting song" : "seeking to " + FormatSeconds(seekPosition / 1000));
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
