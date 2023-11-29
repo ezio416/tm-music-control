@@ -1,6 +1,6 @@
 /*
 c 2023-08-24
-m 2023-11-23
+m 2023-11-28
 */
 
 State state;
@@ -45,10 +45,10 @@ class State {
         deviceId = string(json.Get("device")["id"]);
 
         Json::Value _item = json.Get("item");
-            try { song = string(_item["name"]); } catch { return; }
+            try { song = string(_item["name"]).Replace("’", "'"); } catch { return; }
             songDuration = int(_item["duration_ms"]);
             Json::Value _album = _item.Get("album");
-                album = string(_album["name"]);
+                album = string(_album["name"]).Replace("’", "'");
                 albumRelease = string(_album["release_date"]);
                 Json::Value _albumImages = _album.Get("images");
                 albumArtUrl64 = string(_albumImages[2]["url"]);
@@ -56,7 +56,7 @@ class State {
                 for (uint i = 0; i < _artists.Length; i++) {
                     if (i > 0)
                         artists += ", ";
-                    artists += string(_artists[i]["name"]);
+                    artists += string(_artists[i]["name"]).Replace("’", "'");
                 }
 
         playing = bool(json["is_playing"]);
