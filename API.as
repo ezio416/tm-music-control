@@ -200,7 +200,7 @@ namespace API {
         if (seekPosition == 0)
             trace("restarting song");
         else
-            trace("seeking to " + seekPosition + "ms");
+            trace("seeking to " + FormatSeconds(seekPosition / 1000));
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
