@@ -21,7 +21,7 @@ void RenderSetup() {
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
         UI::Text(
-            "    2. \\$F0FLogin\\$G with your Spotify account (a free account is fine)" +
+            "    2. \\$F0FLogin\\$G with your Spotify account (a Premium account is required)" +
             "\n        2a. If you weren't already logged in, click your name in the top-right then \\$F0FDashboard\\$G" +
             "\n    3. Accept the \\$F0FTerms of Service\\$G" +
             "\n    4. Click \\$F0FCreate app\\$G" +
