@@ -1,6 +1,6 @@
 /*
 c 2023-08-21
-m 2023-11-28
+m 2023-11-29
 */
 
 string title = "\\$2D6" + Icons::Music + "\\$G Music Control";
@@ -18,10 +18,16 @@ void Main() {
     S_Setup = !Auth::Authorized();
 
     while (true) {
-        if (Auth::Authorized() && disclaimerAccepted) {
-            startnew(API::GetDevices);
-            startnew(API::GetPlaybackState);
+        if (S_Enabled) {
+            if (Auth::Authorized() && disclaimerAccepted) {
+                startnew(API::GetDevices);
+                startnew(API::GetPlaybackState);
+            }
+        } else {
+            state = State();
+            @tex = null;
         }
+
         sleep(1000);
     }
 }

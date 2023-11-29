@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-11-28
+m 2023-11-29
 */
 
 string apiUrl           = "https://api.spotify.com/v1";
@@ -106,7 +106,7 @@ namespace API {
 
         Json::Value json = Json::Parse(resp);
         state = activeDevice !is null ? State(json) : State();
-        if (state.albumArtUrl64 != loadedAlbumArtUrl)
+        if (state.albumArtUrl64 != loadedAlbumArtUrl || tex is null)
             startnew(LoadAlbumArt);
         // Json::ToFile(IO::FromStorageFolder("test.json"), json);
     }
