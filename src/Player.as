@@ -3,7 +3,10 @@ c 2023-08-23
 m 2023-11-28
 */
 
+uint maxWidth = 0;
+float scale = UI::GetScale();
 bool seeking = false;
+float windowWidth = 0.0f;
 
 void RenderPlayer() {
     if (!disclaimerAccepted)
@@ -17,36 +20,21 @@ void RenderPlayer() {
 
     UI::Begin("MusicControl", S_Enabled, flags);
         vec2 pre = UI::GetCursorPos();
-        uint maxWidth = 0;
 
         if (S_Album) {
-            if (@tex !is null)
+            if (tex !is null)
                 UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
             else
                 UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+
+            UI::SameLine();
         }
 
-        UI::SameLine();
         UI::BeginGroup();
-            if (S_Song) {
-                UI::Text(state.song);
-                maxWidth = GetMaxWidth(maxWidth);
-            }
-
-            if (S_Artists) {
-                UI::Text(state.artists);
-                maxWidth = GetMaxWidth(maxWidth);
-            }
-
-            if (S_AlbumName) {
-                UI::Text(state.album);
-                maxWidth = GetMaxWidth(maxWidth);
-            }
-
-            if (S_AlbumRelease) {
-                UI::Text(state.albumRelease);
-                maxWidth = GetMaxWidth(maxWidth);
-            }
+            DisplaySongName();
+            DisplayArtists();
+            DisplayAlbumName();
+            DisplayReleaseDate();
         UI::EndGroup();
 
         if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random))
@@ -84,9 +72,14 @@ void RenderPlayer() {
         if (UI::Button(repeatIcon))
             startnew(API::CycleRepeat);
         HoverTooltip("repeat: " + tostring(state.repeat));
-        maxWidth = GetMaxWidth(maxWidth);
 
-        UI::SetNextItemWidth((maxWidth - pre.x) / UI::GetScale());
+        if (S_ScrollText) {
+            if (windowWidth == 0)
+                windowWidth = UI::GetWindowSize().x;
+        } else
+            SetMaxWidth();
+
+        UI::SetNextItemWidth((S_ScrollText ? 286 : maxWidth - pre.x) / scale);
         int seekPositionPercent = UI::SliderInt(
             "##songProgress",
             state.songProgressPercent,
@@ -110,9 +103,184 @@ void RenderPlayer() {
     UI::End();
 }
 
-uint GetMaxWidth(uint input) {
+// scrolling text from Ultimate Medals plugin - https://github.com/Phlarx/tm-ultimate-medals
+uint64 songWidthTime = 0;
+uint64 songWidthTimeEnd = 0;
+void DisplaySongName() {
+    if (!S_Song)
+        return;
+
+    if (S_ScrollText) {
+        if (windowWidth == 0)
+            return;
+
+        vec2 size = Draw::MeasureString(state.song);
+        float songNameWidth = windowWidth - (S_Album ? S_AlbumArtWidth : 0) - ((S_Album ? 60 : 45) / scale);
+
+        if (size.x > songNameWidth) {
+            vec2 cursorPos = UI::GetWindowPos() + UI::GetCursorPos();
+            UI::DrawList@ dl = UI::GetWindowDrawList();
+            uint64 now = Time::Now;
+
+            UI::Dummy(vec2(songNameWidth, size.y));
+
+            if (UI::IsItemHovered()) {
+                songWidthTime = now;
+                songWidthTimeEnd = 0;
+            }
+
+            vec2 textPos = vec2(0, 0);
+            uint64 timeOffset = now - songWidthTime;
+
+            if (timeOffset > 1000)
+                textPos.x = -((timeOffset - 1000) / (101 - S_ScrollSpeed));
+
+            if (textPos.x < songNameWidth - size.x) {
+                textPos.x = songNameWidth - size.x;
+
+                if (songWidthTimeEnd == 0)
+                    songWidthTimeEnd = now;
+            }
+
+            if (songWidthTimeEnd > 0 && now - songWidthTimeEnd > 2000) {
+                songWidthTime = now;
+                songWidthTimeEnd = 0;
+            }
+
+            dl.PushClipRect(vec4(cursorPos.x, cursorPos.y, songNameWidth, size.y), true);
+            dl.AddText(cursorPos + textPos, vec4(1, 1, 1, 1), state.song);
+            dl.PopClipRect();
+        } else {
+            UI::Text(state.song);
+        }
+    } else {
+        UI::Text(state.song);
+        SetMaxWidth();
+    }
+}
+
+// scrolling text from Ultimate Medals plugin - https://github.com/Phlarx/tm-ultimate-medals
+uint64 artistsWidthTime = 0;
+uint64 artistsWidthTimeEnd = 0;
+void DisplayArtists() {
+    if (!S_Artists)
+        return;
+
+    if (S_ScrollText) {
+        if (windowWidth == 0)
+            return;
+
+        vec2 size = Draw::MeasureString(state.artists);
+        float artistsWidth = windowWidth - (S_Album ? S_AlbumArtWidth : 0) - ((S_Album ? 60 : 45) / scale);
+
+        if (size.x > artistsWidth) {
+            vec2 cursorPos = UI::GetWindowPos() + UI::GetCursorPos();
+            UI::DrawList@ dl = UI::GetWindowDrawList();
+            uint64 now = Time::Now;
+
+            UI::Dummy(vec2(artistsWidth, size.y));
+
+            if (UI::IsItemHovered()) {
+                artistsWidthTime = now;
+                artistsWidthTimeEnd = 0;
+            }
+
+            vec2 textPos = vec2(0, 0);
+            uint64 timeOffset = now - artistsWidthTime;
+
+            if (timeOffset > 1000)
+                textPos.x = -((timeOffset - 1000) / (101 - S_ScrollSpeed));
+
+            if (textPos.x < artistsWidth - size.x) {
+                textPos.x = artistsWidth - size.x;
+
+                if (artistsWidthTimeEnd == 0)
+                    artistsWidthTimeEnd = now;
+            }
+
+            if (artistsWidthTimeEnd > 0 && now - artistsWidthTimeEnd > 2000) {
+                artistsWidthTime = now;
+                artistsWidthTimeEnd = 0;
+            }
+
+            dl.PushClipRect(vec4(cursorPos.x, cursorPos.y, artistsWidth, size.y), true);
+            dl.AddText(cursorPos + textPos, vec4(1, 1, 1, 1), state.artists);
+            dl.PopClipRect();
+        } else {
+            UI::Text(state.artists);
+        }
+    } else {
+        UI::Text(state.artists);
+        SetMaxWidth();
+    }
+}
+
+// scrolling text from Ultimate Medals plugin - https://github.com/Phlarx/tm-ultimate-medals
+uint64 albumWidthTime = 0;
+uint64 albumWidthTimeEnd = 0;
+void DisplayAlbumName() {
+    if (!S_AlbumName)
+        return;
+
+    if (S_ScrollText) {
+        if (windowWidth == 0)
+            return;
+
+        vec2 size = Draw::MeasureString(state.album);
+        float albumWidth = windowWidth - (S_Album ? S_AlbumArtWidth : 0) - ((S_Album ? 60 : 45) / scale);
+
+        if (size.x > albumWidth) {
+            vec2 cursorPos = UI::GetWindowPos() + UI::GetCursorPos();
+            UI::DrawList@ dl = UI::GetWindowDrawList();
+            uint64 now = Time::Now;
+
+            UI::Dummy(vec2(albumWidth, size.y));
+
+            if (UI::IsItemHovered()) {
+                albumWidthTime = now;
+                albumWidthTimeEnd = 0;
+            }
+
+            vec2 textPos = vec2(0, 0);
+            uint64 timeOffset = now - albumWidthTime;
+
+            if (timeOffset > 1000)
+                textPos.x = -((timeOffset - 1000) / (101 - S_ScrollSpeed));
+
+            if (textPos.x < albumWidth - size.x) {
+                textPos.x = albumWidth - size.x;
+
+                if (albumWidthTimeEnd == 0)
+                    albumWidthTimeEnd = now;
+            }
+
+            if (albumWidthTimeEnd > 0 && now - albumWidthTimeEnd > 2000) {
+                albumWidthTime = now;
+                albumWidthTimeEnd = 0;
+            }
+
+            dl.PushClipRect(vec4(cursorPos.x, cursorPos.y, albumWidth, size.y), true);
+            dl.AddText(cursorPos + textPos, vec4(1, 1, 1, 1), state.album);
+            dl.PopClipRect();
+        } else {
+            UI::Text(state.album);
+        }
+    } else {
+        UI::Text(state.album);
+        SetMaxWidth();
+    }
+}
+
+void DisplayReleaseDate() {
+    if (!S_AlbumRelease)
+        return;
+
+    UI::Text(state.albumRelease);
+    SetMaxWidth();
+}
+
+void SetMaxWidth() {
     UI::SameLine();
-    uint result = uint(Math::Max(input, UI::GetCursorPos().x));
+    maxWidth = uint(Math::Max(maxWidth, UI::GetCursorPos().x));
     UI::NewLine();
-    return result;
 }

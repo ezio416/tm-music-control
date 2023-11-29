@@ -11,6 +11,9 @@ void RenderMenu() {
 }
 
 void Main() {
+    if (!_S_ScrollTextSet)
+        OnSettingsChanged();
+
     Auth::Load();
     S_Setup = !Auth::Authorized();
 
@@ -23,6 +26,18 @@ void Main() {
     }
 }
 
+void OnSettingsChanged() {
+    if (_S_ScrollText != S_ScrollText) {
+        windowWidth = 0;
+        _S_ScrollText = S_ScrollText;
+    }
+
+    if (S_ScrollSpeed < 1)
+        S_ScrollSpeed = 1;
+    else if (S_ScrollSpeed > 100)
+        S_ScrollSpeed = 100;
+}
+
 void Render() {
     if (
         !S_Enabled ||
@@ -31,8 +46,8 @@ void Render() {
     )
         return;
 
-    RenderPlayer();
     RenderDisclaimer();
     RenderSetup();
+    RenderPlayer();
     RenderDebug();
 }

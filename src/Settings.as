@@ -21,11 +21,19 @@ bool S_Setup = false;
 [Setting category="General" name="Show debug window"]
 bool S_Debug = false;
 
-[Setting category="General" name="Album cover width" min=10 max=128]
-int S_AlbumArtWidth = 128;
+[Setting category="General" name="Scroll text when too long"]
+bool S_ScrollText = true;
+bool _S_ScrollText;
+bool _S_ScrollTextSet = false;
+
+[Setting category="General" name="Text scrolling speed" min=1 max=100]
+int S_ScrollSpeed = 75;
 
 [Setting category="General" name="Show album cover"]
 bool S_Album = true;
+
+[Setting category="General" name="Album cover width" min=10 max=128]
+int S_AlbumArtWidth = 128;
 
 [Setting category="General" name="Show song name"]
 bool S_Song = true;
