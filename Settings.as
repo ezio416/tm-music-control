@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-23
+m 2023-11-28
 */
 
 [Setting category="General" name="Enabled"]
@@ -21,5 +21,20 @@ bool S_Setup = false;
 [Setting category="General" name="Show debug window"]
 bool S_Debug = false;
 
-[Setting category="General" name="Album art width" min=10 max=128]
+[Setting category="General" name="Album cover width" min=10 max=128]
 int S_AlbumArtWidth = 128;
+
+[Setting category="General" name="Show album cover"]
+bool S_Album = true;
+
+[Setting category="General" name="Show song name"]
+bool S_Song = true;
+
+[Setting category="General" name="Show artist(s)"]
+bool S_Artists = true;
+
+[Setting category="General" name="Show album name"]
+bool S_AlbumName = true;
+
+[Setting category="General" name="Show release date"]
+bool S_AlbumRelease = true;

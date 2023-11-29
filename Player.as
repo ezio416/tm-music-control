@@ -19,24 +19,34 @@ void RenderPlayer() {
         vec2 pre = UI::GetCursorPos();
         uint maxWidth = 0;
 
-        if (@tex !is null)
-            UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
-        else
-            UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+        if (S_Album) {
+            if (@tex !is null)
+                UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+            else
+                UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+        }
 
         UI::SameLine();
         UI::BeginGroup();
-            UI::Text(state.song);
-            maxWidth = GetMaxWidth(maxWidth);
+            if (S_Song) {
+                UI::Text(state.song);
+                maxWidth = GetMaxWidth(maxWidth);
+            }
 
-            UI::Text(state.artists);
-            maxWidth = GetMaxWidth(maxWidth);
+            if (S_Artists) {
+                UI::Text(state.artists);
+                maxWidth = GetMaxWidth(maxWidth);
+            }
 
-            UI::Text(state.album);
-            maxWidth = GetMaxWidth(maxWidth);
+            if (S_AlbumName) {
+                UI::Text(state.album);
+                maxWidth = GetMaxWidth(maxWidth);
+            }
 
-            UI::Text(state.albumRelease);
-            maxWidth = GetMaxWidth(maxWidth);
+            if (S_AlbumRelease) {
+                UI::Text(state.albumRelease);
+                maxWidth = GetMaxWidth(maxWidth);
+            }
         UI::EndGroup();
 
         if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random))
