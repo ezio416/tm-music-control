@@ -33,7 +33,7 @@ int S_ScrollSpeed = 75;
 bool S_Album = true;
 
 [Setting category="General" name="Album cover width" min=10 max=128]
-int S_AlbumArtWidth = 128;
+int S_AlbumArtWidth = 64;
 
 [Setting category="General" name="Show song name"]
 bool S_Song = true;
