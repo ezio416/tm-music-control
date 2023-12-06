@@ -24,9 +24,10 @@ void RenderPlayer() {
                 UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
             else
                 UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+
+            UI::SameLine();
         }
 
-        UI::SameLine();
         UI::BeginGroup();
             if (S_Song) {
                 UI::Text(state.song);
