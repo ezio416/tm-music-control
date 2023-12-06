@@ -1,6 +1,6 @@
 /*
 c 2023-08-24
-m 2023-11-28
+m 2023-11-30
 */
 
 void RenderDebug() {
@@ -29,7 +29,7 @@ void RenderDebug() {
 
                     for (uint i = 0; i < devices.Length; i++) {
                         Device@ dev = @devices[i];
-                        if (UI::BeginTabItem(i + " " + dev.name)) {
+                        if (UI::BeginTabItem(i + " " + dev.name + "###" + dev.name)) {
                             UI::Text("id: " + dev.id);
                             UI::Text("type: " + dev.type);
                             UI::Text("active: " + dev.active);
@@ -75,6 +75,18 @@ void RenderDebug() {
                     IO::SetClipboard(tostring(state.repeat));
                 if (UI::Selectable("shuffle: " + state.shuffle, false))
                     IO::SetClipboard(tostring(state.shuffle));
+
+                UI::EndTabItem();
+            }
+
+            if (UI::BeginTabItem("other")) {
+                UI::Text("scale: " + scale + "x");
+                UI::Text("windowWidth: " + windowWidth);
+                UI::Text("maxWidth: " + maxWidth);
+                UI::Text("sliderWidth: " + sliderWidth);
+                UI::Text("songNameWidth: " + songNameWidth);
+                UI::Text("S_AlbumArtWidth: " + S_AlbumArtWidth);
+
                 UI::EndTabItem();
             }
         UI::EndTabBar();

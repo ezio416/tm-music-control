@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-28
+m 2023-11-30
 */
 
 [Setting category="General" name="Enabled"]
@@ -23,8 +23,9 @@ bool S_Debug = false;
 
 [Setting category="General" name="Scroll text when too long"]
 bool S_ScrollText = true;
+
+[Setting hidden]
 bool _S_ScrollText;
-bool _S_ScrollTextSet = false;
 
 [Setting category="General" name="Text scrolling speed" min=1 max=100]
 int S_ScrollSpeed = 75;

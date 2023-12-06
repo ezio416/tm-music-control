@@ -1,12 +1,15 @@
 /*
 c 2023-08-23
-m 2023-11-28
+m 2023-12-02
 */
 
 uint maxWidth = 0;
 float scale = UI::GetScale();
 bool seeking = false;
 float windowWidth = 0.0f;
+
+float sliderWidth = 0.0f;
+float songNameWidth = 0.0f;
 
 void RenderPlayer() {
     if (!disclaimerAccepted)
@@ -74,12 +77,14 @@ void RenderPlayer() {
         HoverTooltip("repeat: " + tostring(state.repeat));
 
         if (S_ScrollText) {
-            if (windowWidth == 0)
-                windowWidth = UI::GetWindowSize().x;
+            windowWidth = UI::GetWindowSize().x;
         } else
             SetMaxWidth();
 
-        UI::SetNextItemWidth((S_ScrollText ? 286 : maxWidth - pre.x) / scale);
+        // sliderWidth = (S_ScrollText ? 286 : maxWidth - pre.x) / scale;
+        sliderWidth = S_ScrollText ? 191 : maxWidth - pre.x;
+        UI::SetNextItemWidth(sliderWidth);
+        // UI::SetNextItemWidth((S_ScrollText ? 191 : maxWidth - pre.x));
         int seekPositionPercent = UI::SliderInt(
             "##songProgress",
             state.songProgressPercent,
@@ -115,7 +120,8 @@ void DisplaySongName() {
             return;
 
         vec2 size = Draw::MeasureString(state.song);
-        float songNameWidth = windowWidth - (S_Album ? S_AlbumArtWidth : 0) - ((S_Album ? 60 : 45) / scale);
+        songNameWidth = windowWidth - (S_Album ? S_AlbumArtWidth : 0) - ((S_Album ? 60 : 45) / scale);
+        // float songNameWidth = windowWidth - (S_Album ? S_AlbumArtWidth : 0) - (S_Album ? 30 : 20);
 
         if (size.x > songNameWidth) {
             vec2 cursorPos = UI::GetWindowPos() + UI::GetCursorPos();

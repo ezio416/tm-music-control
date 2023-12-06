@@ -1,6 +1,6 @@
 /*
 c 2023-08-21
-m 2023-11-29
+m 2023-11-30
 */
 
 string title = "\\$2D6" + Icons::Music + "\\$G Music Control";
@@ -11,8 +11,7 @@ void RenderMenu() {
 }
 
 void Main() {
-    if (!_S_ScrollTextSet)
-        OnSettingsChanged();
+    // OnSettingsChanged();
 
     Auth::Load();
     S_Setup = !Auth::Authorized();
@@ -34,6 +33,7 @@ void Main() {
 
 void OnSettingsChanged() {
     if (_S_ScrollText != S_ScrollText) {
+        maxWidth = 0;
         windowWidth = 0;
         _S_ScrollText = S_ScrollText;
     }

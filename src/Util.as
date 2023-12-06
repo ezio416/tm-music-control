@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-28
+m 2023-12-01
 */
 
 string       albumArtFolder    = IO::FromStorageFolder("albumArt");
@@ -19,16 +19,19 @@ void LoadAlbumArt() {
     );
 
     IO::CreateFolder(albumArtFolder);
+    // state.albumArtUrl64 += "hello";
     string filepath = albumArtFolder + "/" + state.albumArtUrl64.Replace(":", "_").Replace("/", "_") + ".jpg";
 
     if (!IO::FileExists(filepath)) {
         uint max_timeout = 3000;
         uint max_wait = 2000;
 
+        // https://github.com/ezio416/tm-music-control/issues/10
         while (true) {
             uint64 nowTimeout = Time::Now;
             bool timedOut = false;
 
+            print("url: " + state.albumArtUrl64);
             Net::HttpRequest@ req = Net::HttpGet(state.albumArtUrl64);
             while (!req.Finished()) {
                 if (Time::Now - nowTimeout > max_timeout) {
