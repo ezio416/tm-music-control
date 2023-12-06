@@ -19,7 +19,7 @@ void RenderPlayer() {
         vec2 pre = UI::GetCursorPos();
         uint maxWidth = 0;
 
-        if (S_Album) {
+        if (S_AlbumArt) {
             if (@tex !is null)
                 UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
             else
