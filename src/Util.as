@@ -4,6 +4,7 @@ m 2023-12-06
 */
 
 string       albumArtFolder    = IO::FromStorageFolder("albumArt");
+bool         albumArtLoading   = false;
 string       loadedAlbumArtUrl = "";
 UI::Texture@ tex;
 
@@ -12,6 +13,17 @@ string FormatSeconds(int seconds) {
 }
 
 void LoadAlbumArt() {
+    if (!S_AlbumArt) {
+        loadedAlbumArtUrl = "";
+        @tex = null;
+        return;
+    }
+
+    if (albumArtLoading)
+        return;
+
+    albumArtLoading = true;
+
     trace(
         state.album != "" ?
         "loading album art for \"" + state.album + "\"" :
@@ -20,6 +32,12 @@ void LoadAlbumArt() {
 
     IO::CreateFolder(albumArtFolder);
     string filepath = albumArtFolder + "/" + state.albumArtUrl64.Replace(":", "_").Replace("/", "_") + ".jpg";
+
+    if (filepath == ".jpg") {
+        albumArtLoading = false;
+        warn("blank album art");
+        return;
+    }
 
     if (!IO::FileExists(filepath)) {
         uint max_timeout = 3000;
@@ -54,6 +72,8 @@ void LoadAlbumArt() {
     IO::File file(filepath, IO::FileMode::Read);
     @tex = UI::LoadTexture(file.Read(file.Size()));
     loadedAlbumArtUrl = state.albumArtUrl64;
+
+    albumArtLoading = false;
 }
 
 void HoverTooltip(const string &in text) {

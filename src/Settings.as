@@ -16,7 +16,7 @@ bool S_HideWithOP = false;
 bool S_Errors = true;
 
 [Setting category="Player" name="Show album cover"]
-bool S_Album = true;
+bool S_AlbumArt = true;
 
 [Setting category="Player" name="Album cover width" min=10 max=128]
 int S_AlbumArtWidth = 128;
