@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-28
+m 2023-12-06
 */
 
 string       albumArtFolder    = IO::FromStorageFolder("albumArt");
@@ -65,7 +65,9 @@ void HoverTooltip(const string &in text) {
 }
 
 void NotifyWarn(const string &in text, bool logWarn = false) {
-    UI::ShowNotification("MusicControl", text, UI::HSV(0.02, 0.8, 0.9));
+    if (S_Errors)
+        UI::ShowNotification("MusicControl", text, UI::HSV(0.02, 0.8, 0.9));
+
     if (logWarn)
         warn(text);
 }
