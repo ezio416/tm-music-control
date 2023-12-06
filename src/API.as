@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-11-28
+m 2023-12-06
 */
 
 string apiUrl           = "https://api.spotify.com/v1";
@@ -40,6 +40,7 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
             NotifyWarn("Sorry, you need a Premium account");
+            S_Premium = false;
             return;
         }
 
@@ -151,6 +152,7 @@ namespace API {
         if (respCode == ResponseCode::InvalidOperation) {
             if (resp.Contains("Premium required")) {
                 NotifyWarn("Sorry, you need a Premium account");
+                S_Premium = false;
                 return;
             }
 
@@ -188,6 +190,7 @@ namespace API {
         if (respCode == ResponseCode::InvalidOperation) {
             if (resp.Contains("Premium required")) {
                 NotifyWarn("Sorry, you need a Premium account");
+                S_Premium = false;
                 return;
             }
 
@@ -221,6 +224,9 @@ namespace API {
     }
 
     void Seek() {
+        if (!S_Premium)
+            return;
+
         trace(seekPosition == 0 ? "restarting song" : "seeking to " + FormatSeconds(seekPosition / 1000));
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -236,6 +242,7 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
             NotifyWarn("Sorry, you need a Premium account");
+            S_Premium = false;
             return;
         }
 
@@ -262,6 +269,7 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
             NotifyWarn("Sorry, you need a Premium account");
+            S_Premium = false;
             return;
         }
 
@@ -288,6 +296,7 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
             NotifyWarn("Sorry, you need a Premium account");
+            S_Premium = false;
             return;
         }
 
@@ -314,6 +323,7 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
             NotifyWarn("Sorry, you need a Premium account");
+            S_Premium = false;
             return;
         }
 

@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-28
+m 2023-12-06
 */
 
 Json::Value auth;
@@ -21,6 +21,7 @@ namespace Auth {
     void Clear() {
         Init();
         Save();
+        S_Premium = true;
     }
 
     void Get() {
