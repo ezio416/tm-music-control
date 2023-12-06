@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-11-28
+m 2023-12-06
 */
 
 bool seeking = false;
@@ -19,14 +19,15 @@ void RenderPlayer() {
         vec2 pre = UI::GetCursorPos();
         uint maxWidth = 0;
 
-        if (S_Album) {
+        if (S_AlbumArt) {
             if (@tex !is null)
                 UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
             else
                 UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+
+            UI::SameLine();
         }
 
-        UI::SameLine();
         UI::BeginGroup();
             if (S_Song) {
                 UI::Text(state.song);
@@ -49,17 +50,21 @@ void RenderPlayer() {
             }
         UI::EndGroup();
 
+        UI::BeginDisabled(!S_Premium);
+
         if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random))
             startnew(API::ToggleShuffle);
         HoverTooltip("shuffle: " + (state.shuffle ? "on" : "off"));
 
         UI::SameLine();
-        if (UI::Button(Icons::StepBackward)) {
-            if (state.songProgress > 3000) {
+        bool skipPrevious = state.songProgress < 3000;
+        if (UI::Button(skipPrevious ? Icons::FastBackward : Icons::StepBackward)) {
+            if (skipPrevious)
+                startnew(API::SkipPrevious);
+            else {
                 seekPosition = 0;
                 startnew(API::Seek);
-            } else
-                startnew(API::SkipPrevious);
+            }
         }
 
         UI::SameLine();
@@ -85,6 +90,8 @@ void RenderPlayer() {
             startnew(API::CycleRepeat);
         HoverTooltip("repeat: " + tostring(state.repeat));
         maxWidth = GetMaxWidth(maxWidth);
+
+        UI::EndDisabled();
 
         UI::SetNextItemWidth((maxWidth - pre.x) / UI::GetScale());
         int seekPositionPercent = UI::SliderInt(

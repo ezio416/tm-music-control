@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-28
+m 2023-12-06
 */
 
 Json::Value auth;
@@ -21,6 +21,7 @@ namespace Auth {
     void Clear() {
         Init();
         Save();
+        S_Premium = true;
     }
 
     void Get() {
@@ -36,8 +37,8 @@ namespace Auth {
         int respCode = req.ResponseCode();
         string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("Authorization error - please check Openplanet log");
-            error("error getting tokens");
+            NotifyWarn("authorization error - please check Openplanet log");
+            error("error getting authorization tokens");
             warn("response: " + respCode + " " + resp);
             return;
         }
@@ -112,8 +113,8 @@ namespace Auth {
         int respCode = req.ResponseCode();
         string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("Authorization error - please check Openplanet log");
-            error("error refreshing token");
+            NotifyWarn("authorization error - please check Openplanet log");
+            error("error refreshing authorization token");
             warn("response: " + respCode + " " + resp);
             return;
         }
