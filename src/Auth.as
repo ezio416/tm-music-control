@@ -37,8 +37,8 @@ namespace Auth {
         int respCode = req.ResponseCode();
         string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("Authorization error - please check Openplanet log");
-            error("error getting tokens");
+            NotifyWarn("authorization error - please check Openplanet log");
+            error("error getting authorization tokens");
             warn("response: " + respCode + " " + resp);
             return;
         }
@@ -113,8 +113,8 @@ namespace Auth {
         int respCode = req.ResponseCode();
         string resp = req.String();
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("Authorization error - please check Openplanet log");
-            error("error refreshing token");
+            NotifyWarn("authorization error - please check Openplanet log");
+            error("error refreshing authorization token");
             warn("response: " + respCode + " " + resp);
             return;
         }

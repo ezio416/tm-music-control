@@ -12,14 +12,8 @@ bool S_HideWithGame = true;
 [Setting category="General" name="Show/hide with Openplanet UI"]
 bool S_HideWithOP = false;
 
-[Setting category="General" name="Show disclaimer window"]
-bool S_Disclaimer = true;
-
-[Setting category="General" name="Show setup window"]
-bool S_Setup = false;
-
-[Setting category="General" name="Show debug window"]
-bool S_Debug = false;
+[Setting category="General" name="Show on-screen error messages" description="if disabled, you can still check the Openplanet log"]
+bool S_Errors = true;
 
 [Setting category="Player" name="Show album cover"]
 bool S_Album = true;
@@ -38,6 +32,15 @@ bool S_AlbumName = true;
 
 [Setting category="Player" name="Show release date"]
 bool S_AlbumRelease = true;
+
+[Setting category="Windows" name="Show disclaimer window"]
+bool S_Disclaimer = true;
+
+[Setting category="Windows" name="Show setup window"]
+bool S_Setup = false;
+
+[Setting category="Windows" name="Show debug window"]
+bool S_Debug = false;
 
 [Setting category="Premium" name="I know I have Premium" description="Only change if the plugin made a mistake!"]
 bool S_Premium = true;

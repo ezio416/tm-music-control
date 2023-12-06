@@ -1,6 +1,6 @@
 /*
 c 2023-08-22
-m 2023-11-28
+m 2023-12-06
 */
 
 void RenderSetup() {
@@ -76,8 +76,8 @@ void RenderSetup() {
                 code = callbackUrl.Split("http://localhost:7777/callback?code=")[1];
                 startnew(Auth::Get);
             } catch {
-                NotifyWarn("Error with callback URL - make sure you copy the entire thing!");
-                error("bad callback URL: " + callbackUrl);
+                NotifyWarn("error with callback URL - make sure you copy the entire thing!");
+                warn("bad callback URL: " + callbackUrl);
                 code = "";
             }
         }
