@@ -1,11 +1,12 @@
 /*
 c 2023-08-23
-m 2023-11-28
+m 2023-12-06
 */
 
 string apiUrl           = "https://api.spotify.com/v1";
 bool   forceDevice      = false;
 bool   forceDeviceTried = false;
+bool   loopRunning      = false;
 int    seekPosition;
 
 namespace API {
@@ -39,18 +40,19 @@ namespace API {
         int respCode = req.ResponseCode();
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("Sorry, you need a Premium account");
+            NotifyWarn("sorry, you need a Premium account");
+            warn("free account detected, disabling controls...");
+            S_Premium = false;
             return;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error cycling repeat type");
+            NotifyWarn("couldn't cycle repeat type", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
-    void GetDevices() {
+    bool GetDevices() {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
         req.Url = apiUrl + "/me/player/devices";
@@ -64,20 +66,21 @@ namespace API {
 
         if (respCode == ResponseCode::ExpiredAccess) {
             startnew(Auth::Refresh);
-            return;
+            return true;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error getting devices");
+            NotifyWarn("couldn't get device list", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
-            return;
+            return false;
         }
 
         SetDevices(Json::Parse(resp).Get("devices"));
+
+        return true;
     }
 
-    void GetPlaybackState() {
+    bool GetPlaybackState() {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
         req.Url = apiUrl + "/me/player";
@@ -90,48 +93,79 @@ namespace API {
         int respCode = req.ResponseCode();
 
         if (respCode == ResponseCode::ExpiredAccess)
-            return;
+            return true;
 
         if (respCode == ResponseCode::NoActiveDevice) {
-            NotifyWarn("No currently active device", true);
-            return;
+            NotifyWarn("no active device", true);
+            return true;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error getting playback state");
+            NotifyWarn("couldn't get playback state", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
-            return;
+            return false;
         }
 
         Json::Value json = Json::Parse(resp);
         state = activeDevice !is null ? State(json) : State();
         if (state.albumArtUrl64 != loadedAlbumArtUrl)
             startnew(LoadAlbumArt);
-        // Json::ToFile(IO::FromStorageFolder("test.json"), json);
+
+        return true;
     }
 
-    void GetRecentTracks() {
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Get;
-        req.Url = apiUrl + "/me/player/recently-played";
-        req.Headers["Authorization"] = string(auth["access"]);
-        req.Start();
-        while (!req.Finished())
-            yield();
+    // void GetRecentTracks() {
+    //     Net::HttpRequest@ req = Net::HttpRequest();
+    //     req.Method = Net::HttpMethod::Get;
+    //     req.Url = apiUrl + "/me/player/recently-played";
+    //     req.Headers["Authorization"] = string(auth["access"]);
+    //     req.Start();
+    //     while (!req.Finished())
+    //         yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+    //     string resp = req.String();
+    //     int respCode = req.ResponseCode();
 
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error getting recently played tracks");
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+    //     if (respCode < 200 || respCode >= 400) {
+    //         NotifyWarn("API error - please check Openplanet log");
+    //         error("error getting recently played tracks");
+    //         warn("response: " + respCode + " " + resp.Replace("\n", ""));
+    //         return;
+    //     }
+
+    //     Json::Value json = Json::Parse(resp);
+    //     Json::ToFile(IO::FromStorageFolder("test.json"), json);
+    // }
+
+    void Loop() {
+        if (loopRunning)
             return;
+
+        loopRunning = true;
+
+        uint64 waitTime = 1000;
+
+        while (true) {
+            if (!Auth::Authorized() || !disclaimerAccepted)
+                break;
+
+            if (waitTime > 1000)
+                warn("waiting " + (waitTime / 1000) + "s to try contacting API again");
+            sleep(waitTime);
+
+            if (!GetDevices()) {
+                waitTime *= 2;
+                continue;
+            } else
+                waitTime = 1000;
+
+            if (!GetPlaybackState())
+                waitTime *= 2;
+            else
+                waitTime = 1000;
         }
 
-        Json::Value json = Json::Parse(resp);
-        Json::ToFile(IO::FromStorageFolder("test.json"), json);
+        loopRunning = false;
     }
 
     void Pause() {
@@ -150,7 +184,9 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation) {
             if (resp.Contains("Premium required")) {
-                NotifyWarn("Sorry, you need a Premium account");
+                NotifyWarn("sorry, you need a Premium account");
+                warn("free account detected, disabling controls...");
+                S_Premium = false;
                 return;
             }
 
@@ -159,8 +195,7 @@ namespace API {
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error pausing playback");
+            NotifyWarn("couldn't pause playback", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -187,7 +222,9 @@ namespace API {
 
         if (respCode == ResponseCode::InvalidOperation) {
             if (resp.Contains("Premium required")) {
-                NotifyWarn("Sorry, you need a Premium account");
+                NotifyWarn("sorry, you need a Premium account");
+                warn("free account detected, disabling controls...");
+                S_Premium = false;
                 return;
             }
 
@@ -214,13 +251,15 @@ namespace API {
         forceDevice = false;
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error resuming playback");
+            NotifyWarn("couldn't resume playback", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
     void Seek() {
+        if (!S_Premium)
+            return;
+
         trace(seekPosition == 0 ? "restarting song" : "seeking to " + FormatSeconds(seekPosition / 1000));
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -235,13 +274,14 @@ namespace API {
         int respCode = req.ResponseCode();
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("Sorry, you need a Premium account");
+            NotifyWarn("sorry, you need a Premium account");
+            warn("free account detected, disabling controls...");
+            S_Premium = false;
             return;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error seeking");
+            NotifyWarn("couldn't seek in song", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -261,13 +301,14 @@ namespace API {
         int respCode = req.ResponseCode();
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("Sorry, you need a Premium account");
+            NotifyWarn("sorry, you need a Premium account");
+            warn("free account detected, disabling controls...");
+            S_Premium = false;
             return;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error skipping to next track");
+            NotifyWarn("couldn't skip to next song", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -287,13 +328,14 @@ namespace API {
         int respCode = req.ResponseCode();
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("Sorry, you need a Premium account");
+            NotifyWarn("sorry, you need a Premium account");
+            warn("free account detected, disabling controls...");
+            S_Premium = false;
             return;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error skipping to previous track");
+            NotifyWarn("couldn't skip to previous song", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -313,13 +355,14 @@ namespace API {
         int respCode = req.ResponseCode();
 
         if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("Sorry, you need a Premium account");
+            NotifyWarn("sorry, you need a Premium account");
+            warn("free account detected, disabling controls...");
+            S_Premium = false;
             return;
         }
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("API error - please check Openplanet log");
-            error("error toggling shuffle");
+            NotifyWarn("couldn't toggle shuffle", true);
             warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
