@@ -1,6 +1,6 @@
 /*
 c 2023-08-23
-m 2023-12-06
+m 2023-12-30
 */
 
 bool seeking = false;
@@ -93,6 +93,8 @@ void RenderPlayer() {
 
         UI::EndDisabled();
 
+        UI::BeginDisabled(UI::IsKeyPressed(UI::Key::Tab));
+
         UI::SetNextItemWidth((maxWidth - pre.x) / UI::GetScale());
         int seekPositionPercent = UI::SliderInt(
             "##songProgress",
@@ -101,6 +103,8 @@ void RenderPlayer() {
             100,
             FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000)
         );
+
+        UI::EndDisabled();
 
         if (seekPositionPercent != state.songProgressPercent) {
             seeking = true;
