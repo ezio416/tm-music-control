@@ -1,5 +1,5 @@
 // c 2023-11-23
-// m 2023-11-28
+// m 2024-01-19
 
 [Setting hidden]
 bool disclaimerAccepted = false;
@@ -27,6 +27,7 @@ Can my Spotify \$FA0username and password\$G be stolen?
 
 Should I be worried about this "client ID/secret"?
     - If someone gets access to these, they may be able to control your music \$FA0without your consent.\$G
+    - They may also be able to see your taste in music, which could be a good or bad thing, depending on how cringe you are.
     - At best, this will be annoying, and at worst, this will be annoying. When you go through the setup, make sure you understand what permissions you are giving to the app.
 
 How hard is it to set up?
