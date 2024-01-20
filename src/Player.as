@@ -123,7 +123,7 @@ void RenderPlayer() {
             string[]@ keys = playlists.GetKeys();
 
             UI::SetNextItemWidth(widthToSet);
-            if (UI::BeginCombo("##Playlists", current)) {
+            if (UI::BeginCombo("##playlists", current)) {
                 for (uint i = 0; i < keys.Length; i++) {
                     string context = keys[i];
                     string name = string(playlists[context]);
