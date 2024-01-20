@@ -87,7 +87,7 @@ namespace Auth {
             "client_id=" + clientId +
             "&response_type=code" +
             "&redirect_uri=" + redirectUri +
-            "&scope=user-modify-playback-state user-read-playback-state user-read-recently-played playlist-read-private"
+            "&scope=playlist-read-private user-library-read user-modify-playback-state user-read-currently-playing user-read-playback-state user-read-recently-played"
         );
     }
 
