@@ -19,11 +19,6 @@ void Main() {
     }
 }
 
-void OnSettingsChanged() {
-    if (S_WaitTime < 500)
-        S_WaitTime = 500;
-}
-
 void Render() {
     if (
         !S_Enabled ||

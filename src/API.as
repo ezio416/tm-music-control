@@ -53,6 +53,18 @@ namespace API {
         }
     }
 
+    // void GetCurrentSongIsInLibrary() {
+    //     trace("checking if song \"" + state.song + "\" is in user's library");
+
+    //     Net::HttpRequest@ req = Net::HttpRequest();
+    //     req.Method = Net::HttpMethod::Get;
+    //     req.Url = apiUrl + "/me/tracks/contains";
+    //     req.Headers["Authorization"] = string(auth["access"]);
+    //     req.Start();
+    //     while (!req.Finished())
+    //         yield();
+    // }
+
     bool GetDevices() {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
@@ -150,6 +162,10 @@ namespace API {
         return true;
     }
 
+    // void GetQueue() {
+    //     ;
+    // }
+
     // void GetRecentTracks() {
     //     Net::HttpRequest@ req = Net::HttpRequest();
     //     req.Method = Net::HttpMethod::Get;
@@ -179,40 +195,41 @@ namespace API {
 
         loopRunning = true;
 
-        uint waitTime = S_WaitTime;
+        uint waitTimeDefault = 1000;
+        uint waitTime = waitTimeDefault;
 
         while (true) {
             if (!Auth::Authorized() || !disclaimerAccepted)
                 break;
 
-            if (waitTime > S_WaitTime)
+            if (waitTime > waitTimeDefault)
                 warn("waiting " + waitTime + "ms to try contacting API again");
             sleep(waitTime);
 
             if (!runLoop)
-                continue;
+                break;
 
             if (!GetDevices()) {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = S_WaitTime;
+                waitTime = waitTimeDefault;
 
             if (!GetPlaybackState()) {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = S_WaitTime;
+                waitTime = waitTimeDefault;
 
             if (S_Playlists) {
                 if (!GetPlaylists())
                     waitTime *= 2;
                 else
-                    waitTime = S_WaitTime;
+                    waitTime = waitTimeDefault;
             }
 
-            if (waitTime > 8 * S_WaitTime)
-                waitTime = 8 * S_WaitTime;
+            if (waitTime > 8 * waitTimeDefault)
+                waitTime = 8 * waitTimeDefault;
         }
 
         loopRunning = false;
