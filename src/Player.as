@@ -128,7 +128,7 @@ void RenderPlayer() {
                     string context = keys[i];
                     string name = string(playlists[context]);
 
-                    if (UI::Selectable(name + "##name", name == current, (name == current ? UI::SelectableFlags::Disabled : UI::SelectableFlags::None))) {
+                    if (UI::Selectable(name + "##name", name == current, (name == current || !S_Premium ? UI::SelectableFlags::Disabled : UI::SelectableFlags::None))) {
                         selectedPlaylist = context;
                         startnew(API::Play);
                     }
