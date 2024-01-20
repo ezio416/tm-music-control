@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-01-19
+// m 2024-01-20
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = false;
@@ -41,8 +41,8 @@ bool S_ButtonControls = true;
 [Setting category="Player" name="Show scrubber bar"]
 bool S_Scrubber = true;
 
-[Setting category="Player" name="Show playlists menu"]
-bool S_Playlists = true;
+[Setting category="Player" name="Show playlists menu" description="Because of stricter API limits on this endpoint, playlists are checked less frequently"]
+bool S_Playlists = false;
 
 
 [Setting category="Windows" name="Show disclaimer window"]
