@@ -110,13 +110,13 @@ void RenderSetupPlaylists() {
     if (!S_PlaylistSetup)
         return;
 
-    UI::SetNextWindowSize(375, 190);
+    UI::SetNextWindowSize(375, 200);
 
     UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::NoResize);
         UI::TextWrapped(
-            "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view private playlists, " +
-            "otherwise you can only view your public ones. You will need to partially go through setup again to grant this permission. Don't worry, you " +
-            "don't have to do everything over again! Just do steps \\$F801\\$G and \\$F809-13\\$G again and the new permission should be good to go."
+            "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view private playlists, otherwise " +
+            "you can only view your public ones. You will need to partially go through setup again to grant this permission. Don't worry, you don't have to do everything " +
+            "over again! Just do steps \\$F801\\$G and \\$F809-13\\$G again and the new permission should be good to go. The feature is currently limited to 50 playlists."
         );
 
         UI::BeginDisabled(S_Setup);
