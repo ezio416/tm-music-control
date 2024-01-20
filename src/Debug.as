@@ -27,7 +27,7 @@ void RenderDebug() {
 
                     for (uint i = 0; i < devices.Length; i++) {
                         Device@ dev = @devices[i];
-                        if (UI::BeginTabItem(i + " " + dev.name + "###" + dev.name)) {
+                        if (UI::BeginTabItem(dev.name + "###" + dev.id)) {
                             UI::Text("id: " + dev.id);
                             UI::Text("type: " + dev.type);
                             UI::Text("active: " + dev.active);
