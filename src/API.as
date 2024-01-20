@@ -179,14 +179,14 @@ namespace API {
 
         loopRunning = true;
 
-        uint64 waitTime = 1000;
+        uint waitTime = S_WaitTime;
 
         while (true) {
             if (!Auth::Authorized() || !disclaimerAccepted)
                 break;
 
-            if (waitTime > 1000)
-                warn("waiting " + (waitTime / 1000) + "s to try contacting API again");
+            if (waitTime > S_WaitTime)
+                warn("waiting " + waitTime + "ms to try contacting API again");
             sleep(waitTime);
 
             if (!runLoop)
@@ -196,23 +196,23 @@ namespace API {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = 1000;
+                waitTime = S_WaitTime;
 
             if (!GetPlaybackState()) {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = 1000;
+                waitTime = S_WaitTime;
 
             if (S_Playlists) {
                 if (!GetPlaylists())
                     waitTime *= 2;
                 else
-                    waitTime = 1000;
+                    waitTime = S_WaitTime;
             }
 
-            if (waitTime > 8000)
-                waitTime = 8000;
+            if (waitTime > 8 * S_WaitTime)
+                waitTime = 8 * S_WaitTime;
         }
 
         loopRunning = false;

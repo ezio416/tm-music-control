@@ -10,8 +10,11 @@ bool S_HideWithGame = true;
 [Setting category="General" name="Show/hide with Openplanet UI"]
 bool S_HideWithOP = false;
 
-[Setting category="General" name="Show on-screen error messages" description="if disabled, you can still check the Openplanet log"]
+[Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log"]
 bool S_Errors = true;
+
+[Setting category="General" name="API update frequency" min=500 max=5000 description="Milliseconds between updates. Lower means faster."]
+uint S_WaitTime = 1000;
 
 
 [Setting category="Player" name="Show album cover"]
