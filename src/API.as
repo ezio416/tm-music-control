@@ -1,13 +1,14 @@
-/*
-c 2023-08-23
-m 2023-12-06
-*/
+// c 2023-08-23
+// m 2024-01-19
 
-string apiUrl           = "https://api.spotify.com/v1";
-bool   forceDevice      = false;
-bool   forceDeviceTried = false;
-bool   loopRunning      = false;
-int    seekPosition;
+const string apiUrl           = "https://api.spotify.com/v1";
+bool         forceDevice      = false;
+bool         forceDeviceTried = false;
+bool         loopRunning      = false;
+dictionary@  playlists        = dictionary();
+bool         runLoop          = false;
+int          seekPosition;
+string       selectedPlaylist;
 
 namespace API {
     enum ResponseCode {
@@ -114,6 +115,41 @@ namespace API {
         return true;
     }
 
+    bool GetPlaylists() {
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Get;
+        req.Url = apiUrl + "/me/playlists?limit=50";
+        req.Headers["Authorization"] = string(auth["access"]);
+        req.Start();
+        while (!req.Finished())
+            yield();
+
+        string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        if (respCode == ResponseCode::ExpiredAccess)
+            return true;
+
+        if (respCode < 200 || respCode >= 400) {
+            NotifyWarn("couldn't get playlists", true);
+            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+            return false;
+        }
+
+        Json::Value@ json = Json::Parse(resp);
+
+        playlists.DeleteAll();
+
+        string username = string(json["href"]).Replace("https://api.spotify.com/v1/users/", "").Replace("/playlists?offset=0&limit=50", "");
+        playlists["spotify:user:" + username + ":collection"] = "Liked Songs";
+
+        Json::Value@ items = json["items"];
+        for (uint i = 0; i < items.Length; i++)
+            playlists["spotify:playlist:" + string(items[i]["id"])] = string(items[i]["name"]);
+
+        return true;
+    }
+
     // void GetRecentTracks() {
     //     Net::HttpRequest@ req = Net::HttpRequest();
     //     req.Method = Net::HttpMethod::Get;
@@ -153,16 +189,30 @@ namespace API {
                 warn("waiting " + (waitTime / 1000) + "s to try contacting API again");
             sleep(waitTime);
 
+            if (!runLoop)
+                continue;
+
             if (!GetDevices()) {
                 waitTime *= 2;
                 continue;
             } else
                 waitTime = 1000;
 
-            if (!GetPlaybackState())
+            if (!GetPlaybackState()) {
                 waitTime *= 2;
-            else
+                continue;
+            } else
                 waitTime = 1000;
+
+            if (S_Playlists) {
+                if (!GetPlaylists())
+                    waitTime *= 2;
+                else
+                    waitTime = 1000;
+            }
+
+            if (waitTime > 8000)
+                waitTime = 8000;
         }
 
         loopRunning = false;
@@ -213,6 +263,18 @@ namespace API {
         req.Method = Net::HttpMethod::Put;
         req.Url = url;
         req.Headers["Authorization"] = string(auth["access"]);
+
+        if (selectedPlaylist.Length > 0) {
+            try {
+                trace("switching playlist to \"" + string(playlists[selectedPlaylist]) + "\"");
+            } catch {
+                warn("playlist \"" + selectedPlaylist + "\" not found");
+            }
+
+            req.Body = "{\"context_uri\":\"" + selectedPlaylist + "\"}";
+            selectedPlaylist = "";
+        }
+
         req.Start();
         while (!req.Finished())
             yield();

@@ -1,9 +1,7 @@
-/*
-c 2023-08-22
-m 2023-12-06
-*/
+// c 2023-08-22
+// m 2024-01-19
 
-string       albumArtFolder    = IO::FromStorageFolder("albumArt");
+const string albumArtFolder    = IO::FromStorageFolder("albumArt");
 bool         albumArtLoading   = false;
 string       loadedAlbumArtUrl = "";
 UI::Texture@ tex;
@@ -90,6 +88,14 @@ void NotifyWarn(const string &in text, bool logWarn = false) {
 
     if (logWarn)
         warn(text);
+}
+
+string ReplaceBadApostrophe(const string &in input) {
+    return input.Replace("’", "'");
+}
+
+string ReplaceBadApostrophe(Json::Value@ input) {
+    return ReplaceBadApostrophe(string(input));
 }
 
 string Zpad(uint num, uint digits = 2) {

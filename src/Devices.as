@@ -1,7 +1,5 @@
-/*
-c 2023-08-24
-m 2023-11-23
-*/
+// c 2023-08-24
+// m 2024-01-19
 
 Device@  activeDevice;
 Device[] devices;
@@ -21,25 +19,26 @@ class Device {
     int    volume;
 
     Device() { }
-    Device(Json::Value json) {
-        id             = string(json["id"]);
-        name           = string(json["name"]);
-        type           = string(json["type"]);
-        active         = bool  (json["is_active"]);
-        privateSession = bool  (json["is_private_session"]);
-        restricted     = bool  (json["is_restricted"]);
-        supportsVolume = bool  (json["supports_volume"]);
-        volume         = int   (json["volume_percent"]);
+    Device(Json::Value@ json) {
+        id             = json["id"];
+        name           = json["name"];
+        type           = json["type"];
+        active         = json["is_active"];
+        privateSession = json["is_private_session"];
+        restricted     = json["is_restricted"];
+        supportsVolume = json["supports_volume"];
+        volume         = json["volume_percent"];
     }
 }
 
-void SetDevices(Json::Value json) {
+void SetDevices(Json::Value@ json) {
     @activeDevice = null;
     devices.RemoveRange(0, devices.Length);
 
     for (uint i = 0; i < json.Length; i++) {
         Device dev = Device(json[i]);
         devices.InsertLast(dev);
+
         if (dev.active)
             @activeDevice = devices[devices.Length - 1];
     }
