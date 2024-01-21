@@ -11,6 +11,6 @@ Adds a simple music player. Currently only Spotify is supported, and sadly due t
 
 This does NOT play music within the game. You must be listening to Spotify elsewhere (i.e. the official desktop app) and this plugin will control playback from there.
 
-There are some notable features missing (but planned), like:
-    - switching devices
+There are some notable features missing (but planned), like:\
+    - switching devices\
     - scrolling text for long song names/artists/albums
