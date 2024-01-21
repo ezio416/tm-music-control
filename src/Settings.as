@@ -38,6 +38,9 @@ int S_MaxTextLength = -1;
 [Setting category="Player" name="Show button controls"]
 bool S_ButtonControls = true;
 
+[Setting category="Player" name="Stretch buttons to fill width"]
+bool S_StretchButtons = true;
+
 [Setting category="Player" name="Show scrubber bar"]
 bool S_Scrubber = true;
 
