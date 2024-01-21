@@ -12,12 +12,19 @@ string       selectedPlaylist;
 
 namespace API {
     enum ResponseCode {
-        Good             = 200,
-        ExpiredAccess    = 401,
-        InvalidOperation = 403,
-        NoActiveDevice   = 404,
-        TooManyRequests  = 429,
-        Unavailable      = 503
+        Good            = 200,
+        Created         = 201,
+        Accepted        = 202,
+        NoContent       = 204,
+        NotModified     = 304,
+        BadRequest      = 400,
+        Unauthorized    = 401,
+        Forbidden       = 403,
+        NotFound        = 404,
+        TooManyRequests = 429,
+        InternalError   = 500,
+        BadGateway      = 502,
+        Unavailable     = 503
     }
 
     void CycleRepeat() {
@@ -42,18 +49,18 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("CycleRepeat", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
                     S_Premium = false;
                 } else
                     warn("CycleRepeat(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("CycleRepeat", req);
                 break;
             default:
                 NotifyWarn("couldn't cycle repeat type", true);
@@ -88,11 +95,11 @@ namespace API {
         switch (respCode) {
             case ResponseCode::Good:
                 break;
-            case ResponseCode::TooManyRequests:
-                return RateLimited("GetDevices", req);
-            case ResponseCode::ExpiredAccess:
+            case ResponseCode::Unauthorized:
                 startnew(Auth::Refresh);
                 return true;
+            case ResponseCode::TooManyRequests:
+                return RateLimited("GetDevices", req);
             default:
                 NotifyWarn("couldn't get device list", true);
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
@@ -119,13 +126,11 @@ namespace API {
         switch (respCode) {
             case ResponseCode::Good:
                 break;
-            case ResponseCode::ExpiredAccess:
-                return true;  // handled by GetDevices()
+            case ResponseCode::NoContent:  // playback not active
+            case ResponseCode::Unauthorized:  // handled by GetDevices()
+                return true;
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetPlaybackState", req);
-            case ResponseCode::NoActiveDevice:
-                NotifyWarn("no active device", true);
-                return true;
             default:
                 NotifyWarn("couldn't get playback state", true);
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
@@ -156,8 +161,8 @@ namespace API {
         switch (respCode) {
             case ResponseCode::Good:
                 break;
-            case ResponseCode::ExpiredAccess:
-                return true;  // handled by GetDevices()
+            case ResponseCode::Unauthorized:  // handled by GetDevices()
+                return true;
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetPlaylists", req);
             default:
@@ -243,7 +248,7 @@ namespace API {
             } else
                 waitTime = waitTimeDefault;
 
-            if (S_Playlists && i++ % 10 == 0) {
+            if (S_Playlists && i++ % 20 == 0) {
                 if (!GetPlaylists())
                     waitTime *= 2;
                 else
@@ -274,12 +279,9 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("Pause", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
@@ -287,6 +289,9 @@ namespace API {
                     return;
                 }
                 startnew(Play);
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("Pause", req);
                 break;
             default:
                 NotifyWarn("couldn't pause playback", true);
@@ -326,12 +331,9 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("Play", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
@@ -340,7 +342,7 @@ namespace API {
                 }
                 startnew(Play);
                 break;
-            case ResponseCode::NoActiveDevice:
+            case ResponseCode::NotFound:
                 if (forceDeviceTried) {
                     NotifyWarn("couldn't find a device", true);
                     forceDevice = false;
@@ -353,6 +355,9 @@ namespace API {
                 sleep(1000);
                 startnew(Play);
                 return;
+            case ResponseCode::TooManyRequests:
+                RateLimited("Play", req);
+                break;
             default:
                 NotifyWarn("couldn't resume playback", true);
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
@@ -379,18 +384,18 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("Seek", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
                     S_Premium = false;
                 } else
                     warn("Seek(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("Seek", req);
                 break;
             default:
                 NotifyWarn("couldn't seek in song", true);
@@ -413,18 +418,18 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("SkipNext", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
                     S_Premium = false;
                 } else
                     warn("SkipNext(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("SkipNext", req);
                 break;
             default:
                 NotifyWarn("couldn't skip to next song", true);
@@ -447,18 +452,18 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("SkipPrevious", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
                     S_Premium = false;
                 } else
                     warn("SkipPrevious(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("SkipPrevious", req);
                 break;
             default:
                 NotifyWarn("couldn't skip to previous song", true);
@@ -481,18 +486,18 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
-            case ResponseCode::Good:
+            case ResponseCode::NoContent:
                 break;
-            case ResponseCode::TooManyRequests:
-                RateLimited("ToggleShuffle", req);
-                break;
-            case ResponseCode::InvalidOperation:
+            case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
                     NotifyWarn("sorry, you need a Premium account");
                     warn("free account detected, disabling controls...");
                     S_Premium = false;
                 } else
                     warn("ToggleShuffle(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("ToggleShuffle", req);
                 break;
             default:
                 NotifyWarn("couldn't toggle shuffle", true);
