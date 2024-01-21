@@ -1,17 +1,15 @@
-/*
-c 2023-08-22
-m 2023-12-06
-*/
+// c 2023-08-22
+// m 2024-01-19
 
-Json::Value auth;
-string      authFile         = IO::FromStorageFolder("auth.json");
-string      authUrl          = "https://accounts.spotify.com/api";
-string      callbackUrl      = "";
-string      clientId         = "";
-string      clientSecret     = "";
-string      code             = "";
-string      redirectUri      = "http://localhost:7777/callback";
-int64       refreshTimestamp = 0;
+Json::Value@ auth             = Json::Object();
+const string authFile         = IO::FromStorageFolder("auth.json");
+const string authUrl          = "https://accounts.spotify.com/api";
+string       callbackUrl      = "";
+string       clientId         = "";
+string       clientSecret     = "";
+string       code             = "";
+const string redirectUri      = "http://localhost:7777/callback";
+int64        refreshTimestamp = 0;
 
 namespace Auth {
     bool Authorized() {
@@ -50,7 +48,6 @@ namespace Auth {
     }
 
     void Init() {
-        auth = Json::Object();
         auth["basic"] = "";
         auth["access"] = "";
         auth["refresh"] = "";
@@ -90,7 +87,7 @@ namespace Auth {
             "client_id=" + clientId +
             "&response_type=code" +
             "&redirect_uri=" + redirectUri +
-            "&scope=user-modify-playback-state user-read-playback-state user-read-recently-played"
+            "&scope=playlist-read-private user-library-read user-modify-playback-state user-read-currently-playing user-read-playback-state user-read-recently-played"
         );
     }
 

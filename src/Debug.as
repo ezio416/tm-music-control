@@ -1,7 +1,5 @@
-/*
-c 2023-08-24
-m 2023-11-28
-*/
+// c 2023-08-24
+// m 2024-01-19
 
 void RenderDebug() {
     if (!S_Debug)
@@ -11,7 +9,7 @@ void RenderDebug() {
     if (!UI::IsOverlayShown())
         flags |= UI::WindowFlags::NoMove;
 
-    UI::Begin("MusicControl Debug", S_Debug, flags);
+    UI::Begin(title + " Debug", S_Debug, flags);
         UI::BeginTabBar("debug-tabs", UI::TabBarFlags::None);
             if (UI::BeginTabItem("devices")) {
                 UI::BeginTabBar("all-devices");
@@ -29,7 +27,7 @@ void RenderDebug() {
 
                     for (uint i = 0; i < devices.Length; i++) {
                         Device@ dev = @devices[i];
-                        if (UI::BeginTabItem(i + " " + dev.name)) {
+                        if (UI::BeginTabItem(dev.name + "###" + dev.id)) {
                             UI::Text("id: " + dev.id);
                             UI::Text("type: " + dev.type);
                             UI::Text("active: " + dev.active);

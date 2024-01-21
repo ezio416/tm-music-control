@@ -1,21 +1,30 @@
-/*
-c 2023-08-23
-m 2023-12-06
-*/
+// c 2023-08-23
+// m 2024-01-20
 
-string apiUrl           = "https://api.spotify.com/v1";
-bool   forceDevice      = false;
-bool   forceDeviceTried = false;
-bool   loopRunning      = false;
-int    seekPosition;
+const string apiUrl           = "https://api.spotify.com/v1";
+bool         forceDevice      = false;
+bool         forceDeviceTried = false;
+bool         loopRunning      = false;
+dictionary@  playlists        = dictionary();
+bool         runLoop          = false;
+int          seekPosition;
+string       selectedPlaylist;
 
 namespace API {
     enum ResponseCode {
-        ExpiredAccess    = 401,
-        InvalidOperation = 403,
-        NoActiveDevice   = 404,
-        TooManyRequests  = 429,
-        Unavailable      = 503
+        Good            = 200,
+        Created         = 201,
+        Accepted        = 202,
+        NoContent       = 204,
+        NotModified     = 304,
+        BadRequest      = 400,
+        Unauthorized    = 401,
+        Forbidden       = 403,
+        NotFound        = 404,
+        TooManyRequests = 429,
+        InternalError   = 500,
+        BadGateway      = 502,
+        Unavailable     = 503
     }
 
     void CycleRepeat() {
@@ -39,18 +48,37 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("sorry, you need a Premium account");
-            warn("free account detected, disabling controls...");
-            S_Premium = false;
-            return;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't cycle repeat type", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                } else
+                    warn("CycleRepeat(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("CycleRepeat", req);
+                break;
+            default:
+                NotifyWarn("couldn't cycle repeat type", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
+
+    // void GetCurrentSongIsInLibrary() {
+    //     trace("checking if song \"" + state.song + "\" is in user's library");
+
+    //     Net::HttpRequest@ req = Net::HttpRequest();
+    //     req.Method = Net::HttpMethod::Get;
+    //     req.Url = apiUrl + "/me/tracks/contains";
+    //     req.Headers["Authorization"] = string(auth["access"]);
+    //     req.Start();
+    //     while (!req.Finished())
+    //         yield();
+    // }
 
     bool GetDevices() {
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -64,15 +92,18 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::ExpiredAccess) {
-            startnew(Auth::Refresh);
-            return true;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't get device list", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
-            return false;
+        switch (respCode) {
+            case ResponseCode::Good:
+                break;
+            case ResponseCode::Unauthorized:
+                startnew(Auth::Refresh);
+                return true;
+            case ResponseCode::TooManyRequests:
+                return RateLimited("GetDevices", req);
+            default:
+                NotifyWarn("couldn't get device list", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+                return false;
         }
 
         SetDevices(Json::Parse(resp).Get("devices"));
@@ -92,27 +123,71 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::ExpiredAccess)
-            return true;
-
-        if (respCode == ResponseCode::NoActiveDevice) {
-            NotifyWarn("no active device", true);
-            return true;
+        switch (respCode) {
+            case ResponseCode::Good:
+                break;
+            case ResponseCode::NoContent:  // playback not active
+            case ResponseCode::Unauthorized:  // handled by GetDevices()
+                return true;
+            case ResponseCode::TooManyRequests:
+                return RateLimited("GetPlaybackState", req);
+            default:
+                NotifyWarn("couldn't get playback state", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+                return false;
         }
 
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't get playback state", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
-            return false;
-        }
+        Json::Value@ json = Json::Parse(resp);
 
-        Json::Value json = Json::Parse(resp);
         state = activeDevice !is null ? State(json) : State();
         if (state.albumArtUrl64 != loadedAlbumArtUrl)
             startnew(LoadAlbumArt);
 
         return true;
     }
+
+    bool GetPlaylists() {
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Get;
+        req.Url = apiUrl + "/me/playlists?limit=50";
+        req.Headers["Authorization"] = string(auth["access"]);
+        req.Start();
+        while (!req.Finished())
+            yield();
+
+        string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        switch (respCode) {
+            case ResponseCode::Good:
+                break;
+            case ResponseCode::Unauthorized:  // handled by GetDevices()
+                return true;
+            case ResponseCode::TooManyRequests:
+                return RateLimited("GetPlaylists", req);
+            default:
+                NotifyWarn("couldn't get playlists", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+                return false;
+        }
+
+        Json::Value@ json = Json::Parse(resp);
+
+        playlists.DeleteAll();
+
+        string username = string(json["href"]).Replace("https://api.spotify.com/v1/users/", "").Replace("/playlists?offset=0&limit=50", "");
+        playlists["spotify:user:" + username + ":collection"] = "Liked Songs";
+
+        Json::Value@ items = json["items"];
+        for (uint i = 0; i < items.Length; i++)
+            playlists["spotify:playlist:" + string(items[i]["id"])] = string(items[i]["name"]);
+
+        return true;
+    }
+
+    // void GetQueue() {
+    //     ;
+    // }
 
     // void GetRecentTracks() {
     //     Net::HttpRequest@ req = Net::HttpRequest();
@@ -143,26 +218,47 @@ namespace API {
 
         loopRunning = true;
 
-        uint64 waitTime = 1000;
+        uint waitTimeDefault = 1000;
+        uint waitTime = waitTimeDefault;
+
+        uint i = 0;
 
         while (true) {
             if (!Auth::Authorized() || !disclaimerAccepted)
                 break;
 
-            if (waitTime > 1000)
-                warn("waiting " + (waitTime / 1000) + "s to try contacting API again");
+            if (waitTime > waitTimeDefault)
+                warn("waiting " + waitTime + "ms to try contacting API again");
             sleep(waitTime);
+
+            if (!runLoop) {
+                state = State();
+                break;
+            }
 
             if (!GetDevices()) {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = 1000;
+                waitTime = waitTimeDefault;
 
-            if (!GetPlaybackState())
+            if (!GetPlaybackState()) {
                 waitTime *= 2;
-            else
-                waitTime = 1000;
+                continue;
+            } else
+                waitTime = waitTimeDefault;
+
+            if (S_Playlists && i++ % 20 == 0) {
+                if (!GetPlaylists())
+                    waitTime *= 2;
+                else
+                    waitTime = waitTimeDefault;
+
+                i = 1;
+            }
+
+            if (waitTime > 8 * waitTimeDefault)
+                waitTime = 8 * waitTimeDefault;
         }
 
         loopRunning = false;
@@ -182,21 +278,24 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation) {
-            if (resp.Contains("Premium required")) {
-                NotifyWarn("sorry, you need a Premium account");
-                warn("free account detected, disabling controls...");
-                S_Premium = false;
-                return;
-            }
-
-            startnew(Play);
-            return;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't pause playback", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                    return;
+                }
+                startnew(Play);
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("Pause", req);
+                break;
+            default:
+                NotifyWarn("couldn't pause playback", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
@@ -213,6 +312,17 @@ namespace API {
         req.Method = Net::HttpMethod::Put;
         req.Url = url;
         req.Headers["Authorization"] = string(auth["access"]);
+
+        if (selectedPlaylist.Length > 0) {
+            if (playlists.Exists(selectedPlaylist))
+                trace("switching playlist to \"" + string(playlists[selectedPlaylist]) + "\"");
+            else
+                warn("playlist \"" + selectedPlaylist + "\" not found");
+
+            req.Body = "{\"context_uri\":\"" + selectedPlaylist + "\"}";
+            selectedPlaylist = "";
+        }
+
         req.Start();
         while (!req.Finished())
             yield();
@@ -220,40 +330,40 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation) {
-            if (resp.Contains("Premium required")) {
-                NotifyWarn("sorry, you need a Premium account");
-                warn("free account detected, disabling controls...");
-                S_Premium = false;
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                    return;
+                }
+                startnew(Play);
+                break;
+            case ResponseCode::NotFound:
+                if (forceDeviceTried) {
+                    NotifyWarn("couldn't find a device", true);
+                    forceDevice = false;
+                    forceDeviceTried = false;
+                    return;
+                }
+                warn("no active device, trying again...");
+                forceDevice = true;
+                forceDeviceTried = true;
+                sleep(1000);
+                startnew(Play);
                 return;
-            }
-
-            startnew(Play);
-            return;
-        }
-
-        if (respCode == ResponseCode::NoActiveDevice) {
-            if (forceDeviceTried) {
-                NotifyWarn("couldn't find a device", true);
-                forceDevice = false;
-                forceDeviceTried = false;
-                return;
-            }
-
-            warn("no active device, trying again...");
-            forceDevice = true;
-            forceDeviceTried = true;
-            sleep(1000);
-            startnew(Play);
-            return;
+            case ResponseCode::TooManyRequests:
+                RateLimited("Play", req);
+                break;
+            default:
+                NotifyWarn("couldn't resume playback", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
 
         forceDevice = false;
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't resume playback", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
-        }
     }
 
     void Seek() {
@@ -273,16 +383,23 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("sorry, you need a Premium account");
-            warn("free account detected, disabling controls...");
-            S_Premium = false;
-            return;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't seek in song", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                } else
+                    warn("Seek(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("Seek", req);
+                break;
+            default:
+                NotifyWarn("couldn't seek in song", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
@@ -300,16 +417,23 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("sorry, you need a Premium account");
-            warn("free account detected, disabling controls...");
-            S_Premium = false;
-            return;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't skip to next song", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                } else
+                    warn("SkipNext(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("SkipNext", req);
+                break;
+            default:
+                NotifyWarn("couldn't skip to next song", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
@@ -327,16 +451,23 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("sorry, you need a Premium account");
-            warn("free account detected, disabling controls...");
-            S_Premium = false;
-            return;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't skip to previous song", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                } else
+                    warn("SkipPrevious(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("SkipPrevious", req);
+                break;
+            default:
+                NotifyWarn("couldn't skip to previous song", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
@@ -354,16 +485,23 @@ namespace API {
         string resp = req.String();
         int respCode = req.ResponseCode();
 
-        if (respCode == ResponseCode::InvalidOperation && resp.Contains("Premium required")) {
-            NotifyWarn("sorry, you need a Premium account");
-            warn("free account detected, disabling controls...");
-            S_Premium = false;
-            return;
-        }
-
-        if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("couldn't toggle shuffle", true);
-            warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        switch (respCode) {
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                } else
+                    warn("ToggleShuffle(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("ToggleShuffle", req);
+                break;
+            default:
+                NotifyWarn("couldn't toggle shuffle", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
 
@@ -394,4 +532,16 @@ namespace API {
 
     //     lastTransfer = Time::Stamp;
     // }
+
+    bool RateLimited(const string &in func, Net::HttpRequest@ req) {
+        dictionary@ headers = req.ResponseHeaders();
+        string msg = func + "(): rate limited" + (headers.Exists("retry-after") ? ", try again after " + string(headers["retry-after"]) + "s" : "");
+
+        if (S_Errors)
+            NotifyWarn(msg, true);
+        else
+            warn(msg);
+
+        return true;
+    }
 }
