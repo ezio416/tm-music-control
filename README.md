@@ -15,4 +15,5 @@ There are some notable features missing (but planned), like:\
     - switching devices\
     - scrolling text for long song names/artists/albums
 
-![image](/images/music-control.png)
+
+![image](images/music-control.png)
