@@ -1,13 +1,8 @@
 // c 2023-08-21
-// m 2024-01-20
+// m 2024-09-25
 
 const string title   = "\\$2D6" + Icons::Music + "\\$G Music Control";
 const string version = Meta::ExecutingPlugin().Version;
-
-void RenderMenu() {
-    if (UI::MenuItem(title, "", S_Enabled))
-        S_Enabled = !S_Enabled;
-}
 
 void Main() {
     Auth::Load();
@@ -34,4 +29,9 @@ void Render() {
     RenderSetup();
     RenderSetupPlaylists();
     RenderDebug();
+}
+
+void RenderMenu() {
+    if (UI::MenuItem(title, "", S_Enabled))
+        S_Enabled = !S_Enabled;
 }
