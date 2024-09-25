@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-01-20
+// m 2024-09-25
 
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
@@ -49,6 +49,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
@@ -279,6 +280,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
@@ -331,6 +333,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
@@ -384,6 +387,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
@@ -418,6 +422,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
@@ -452,6 +457,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
@@ -486,6 +492,7 @@ namespace API {
         int respCode = req.ResponseCode();
 
         switch (respCode) {
+            case ResponseCode::Good:
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
