@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-01-19
+// m 2024-09-25
 
 Json::Value@ auth             = Json::Object();
 const string authFile         = IO::FromStorageFolder("auth.json");
@@ -32,16 +32,16 @@ namespace Auth {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
-        string resp = req.String();
+        const int respCode = req.ResponseCode();
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("authorization error - please check Openplanet log");
             error("error getting authorization tokens");
-            warn("response: " + respCode + " " + resp);
+            warn("response: " + respCode + " " + req.String());
             return;
         }
 
-        Json::Value json = Json::Parse(resp);
+        Json::Value@ json = req.Json();
         auth["access"] = "Bearer " + string(json["access_token"]);
         auth["refresh"] = json["refresh_token"];
         Save();
@@ -71,10 +71,10 @@ namespace Auth {
             return;
         }
 
-        if (
-            !auth.HasKey("basic") ||
-            !auth.HasKey("access") ||
-            !auth.HasKey("refresh")
+        if (false
+            || !auth.HasKey("basic")
+            || !auth.HasKey("access")
+            || !auth.HasKey("refresh")
         ) {
             error("error in data from auth.json!");
             Init();
@@ -82,12 +82,21 @@ namespace Auth {
     }
 
     void OpenPage() {
+        const string[] perms = {
+            "playlist-read-private",        // 0.4.0
+            "user-library-read",            // 0.4.0
+            "user-modify-playback-state",   // 0.1.0
+            "user-read-currently-playing",  // 0.4.0
+            "user-read-playback-state",     // 0.1.0
+            "user-read-recently-played"     // 0.1.0
+        };
+
         OpenBrowserURL(
             "https://accounts.spotify.com/authorize?" +
             "client_id=" + clientId +
             "&response_type=code" +
             "&redirect_uri=" + redirectUri +
-            "&scope=playlist-read-private user-library-read user-modify-playback-state user-read-currently-playing user-read-playback-state user-read-recently-played"
+            "&scope=" + string::Join(perms, " ")
         );
     }
 
@@ -107,16 +116,16 @@ namespace Auth {
         while (!req.Finished())
             yield();
 
-        int respCode = req.ResponseCode();
-        string resp = req.String();
+        const int respCode = req.ResponseCode();
+
         if (respCode < 200 || respCode >= 400) {
             NotifyWarn("authorization error - please check Openplanet log");
             error("error refreshing authorization token");
-            warn("response: " + respCode + " " + resp);
+            warn("response: " + respCode + " " + req.String());
             return;
         }
 
-        auth["access"] = "Bearer " + string(Json::Parse(resp)["access_token"]);
+        auth["access"] = "Bearer " + string(req.Json()["access_token"]);
         Save();
 
         refreshTimestamp = Time::Stamp;

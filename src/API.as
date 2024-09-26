@@ -46,8 +46,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -91,8 +91,7 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -104,11 +103,11 @@ namespace API {
                 return RateLimited("GetDevices", req);
             default:
                 NotifyWarn("couldn't get device list", true);
-                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+                warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
 
-        SetDevices(Json::Parse(resp).Get("devices"));
+        SetDevices(req.Json().Get("devices"));
 
         return true;
     }
@@ -122,8 +121,7 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -135,13 +133,11 @@ namespace API {
                 return RateLimited("GetPlaybackState", req);
             default:
                 NotifyWarn("couldn't get playback state", true);
-                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+                warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
 
-        Json::Value@ json = Json::Parse(resp);
-
-        state = activeDevice !is null ? State(json) : State();
+        state = activeDevice !is null ? State(req.Json()) : State();
         if (state.albumArtUrl64 != loadedAlbumArtUrl)
             startnew(LoadAlbumArt);
 
@@ -157,8 +153,7 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -169,11 +164,11 @@ namespace API {
                 return RateLimited("GetPlaylists", req);
             default:
                 NotifyWarn("couldn't get playlists", true);
-                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+                warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
 
-        Json::Value@ json = Json::Parse(resp);
+        Json::Value@ json = req.Json();
 
         playlists.DeleteAll();
 
@@ -277,8 +272,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -330,8 +325,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -384,8 +379,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -422,8 +417,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -457,8 +452,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -492,8 +487,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -527,8 +522,8 @@ namespace API {
         while (!req.Finished())
             yield();
 
-        string resp = req.String();
-        int respCode = req.ResponseCode();
+        const string resp = req.String();
+        const int respCode = req.ResponseCode();
 
         switch (respCode) {
             case ResponseCode::Good:
@@ -580,8 +575,8 @@ namespace API {
     // }
 
     bool RateLimited(const string &in func, Net::HttpRequest@ req) {
-        dictionary@ headers = req.ResponseHeaders();
-        string msg = func + "(): rate limited" + (headers.Exists("retry-after") ? ", try again after " + string(headers["retry-after"]) + "s" : "");
+        const dictionary@ headers = req.ResponseHeaders();
+        const string msg = func + "(): rate limited" + (headers.Exists("retry-after") ? ", try again after " + string(headers["retry-after"]) + "s" : "");
 
         if (S_Errors)
             NotifyWarn(msg, true);

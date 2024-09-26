@@ -65,7 +65,7 @@ class State {
 
         playing = bool(json["is_playing"]);
 
-        string _repeat = string(json["repeat_state"]);
+        const string _repeat = string(json["repeat_state"]);
         if      (_repeat == "off")     repeat = Repeat::off;
         else if (_repeat == "context") repeat = Repeat::context;
         else if (_repeat == "track")   repeat = Repeat::track;
@@ -75,7 +75,7 @@ class State {
         songProgress = int(json["progress_ms"]);
         songProgressPercent = int(float(songProgress) / float(songDuration) * 100);
 
-        string _type = string(json["currently_playing_type"]);
+        const string _type = string(json["currently_playing_type"]);
         if      (_type == "track")   type = PlayingType::track;
         else if (_type == "episode") type = PlayingType::episode;
         else if (_type == "ad")      type = PlayingType::ad;

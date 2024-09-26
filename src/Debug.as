@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-01-19
+// m 2024-09-25
 
 void RenderDebug() {
     if (!S_Debug)
@@ -9,7 +9,7 @@ void RenderDebug() {
     if (!UI::IsOverlayShown())
         flags |= UI::WindowFlags::NoMove;
 
-    UI::Begin(title + " Debug", S_Debug, flags);
+    if (UI::Begin(title + " Debug", S_Debug, flags)) {
         UI::BeginTabBar("debug-tabs", UI::TabBarFlags::None);
             if (UI::BeginTabItem("devices")) {
                 UI::BeginTabBar("all-devices");
@@ -76,5 +76,6 @@ void RenderDebug() {
                 UI::EndTabItem();
             }
         UI::EndTabBar();
+    }
     UI::End();
 }

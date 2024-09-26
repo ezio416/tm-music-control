@@ -1,11 +1,11 @@
 // c 2023-08-22
-// m 2024-01-19
+// m 2024-09-25
 
 void RenderSetup() {
     if (!S_Setup || !disclaimerAccepted)
         return;
 
-    UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize);
+    if (UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
         UI::Text(
             "Welcome to MusicControl!\nSome setup is required to authorize this plugin with your Spotify account." +
             "\n\nRead all of these instructions BEFORE starting (good practice with any instructions)."
@@ -103,6 +103,7 @@ void RenderSetup() {
             if (UI::Button(Icons::Times + " Close setup window"))
                 S_Setup = false;
         }
+    }
     UI::End();
 }
 
@@ -112,7 +113,7 @@ void RenderSetupPlaylists() {
 
     UI::SetNextWindowSize(375, 200);
 
-    UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::NoResize);
+    if (UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::NoResize)) {
         UI::TextWrapped(
             "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view private playlists, otherwise " +
             "you can only view your public ones. You will need to partially go through setup again to grant this permission. Don't worry, you don't have to do everything " +
@@ -123,5 +124,6 @@ void RenderSetupPlaylists() {
         if (UI::Button(Icons::ExternalLink + " Open Setup"))
             S_Setup = true;
         UI::EndDisabled();
+    }
     UI::End();
 }

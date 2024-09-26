@@ -18,7 +18,7 @@ void RenderPlayer() {
     if (!UI::IsOverlayShown())
         flags |= UI::WindowFlags::NoMove;
 
-    UI::Begin("MusicControl", S_Enabled, flags);
+    if (UI::Begin("MusicControl", S_Enabled, flags)) {
         if (S_AlbumArt) {
             if (@tex !is null)
                 UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
@@ -178,6 +178,7 @@ void RenderPlayer() {
 
         if (!Auth::Authorized())
             UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
+    }
     UI::End();
 }
 
