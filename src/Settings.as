@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-01-20
+// m 2024-09-25
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = false;
@@ -43,6 +43,9 @@ bool S_StretchButtons = true;
 
 [Setting category="Player" name="Show scrubber bar"]
 bool S_Scrubber = true;
+
+[Setting category="Player" name="Show volume bar" description="The same change (i.e. 5%) at a high volume has a greater effect than at low volume. This should be solved in the future."]
+bool S_Volume = false;
 
 [Setting category="Player" name="Show playlists menu" description="Because of stricter API limits on this endpoint, playlists are checked less frequently"]
 bool S_Playlists = false;

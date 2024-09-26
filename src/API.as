@@ -7,8 +7,9 @@ bool         forceDeviceTried = false;
 bool         loopRunning      = false;
 dictionary@  playlists        = dictionary();
 bool         runLoop          = false;
-int          seekPosition;
+int          seekPosition     = 0;
 string       selectedPlaylist;
+int          volumeDesired    = 0;
 
 namespace API {
     enum ResponseCode {
@@ -219,7 +220,7 @@ namespace API {
 
         loopRunning = true;
 
-        uint waitTimeDefault = 1000;
+        const uint waitTimeDefault = 1000;
         uint waitTime = waitTimeDefault;
 
         uint i = 0;
@@ -229,7 +230,7 @@ namespace API {
                 break;
 
             if (waitTime > waitTimeDefault)
-                warn("waiting " + waitTime + "ms to try contacting API again");
+                warn("waiting " + waitTime + " ms to try contacting API again");
             sleep(waitTime);
 
             if (!runLoop) {
@@ -258,8 +259,8 @@ namespace API {
                 i = 1;
             }
 
-            if (waitTime > 8 * waitTimeDefault)
-                waitTime = 8 * waitTimeDefault;
+            if (waitTime > waitTimeDefault * 8)
+                waitTime = waitTimeDefault * 8;
         }
 
         loopRunning = false;
@@ -403,6 +404,44 @@ namespace API {
                 break;
             default:
                 NotifyWarn("couldn't seek in song", true);
+                warn("response: " + respCode + " " + resp.Replace("\n", ""));
+        }
+    }
+
+    void SetVolume() {
+        if (!S_Premium)
+            return;
+
+        trace("setting volume to " + volumeDesired + " %");
+
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Put;
+        req.Url = apiUrl + "/me/player/volume?volume_percent=" + volumeDesired;
+        req.Headers["Authorization"] = string(auth["access"]);
+        req.Start();
+        while (!req.Finished())
+            yield();
+
+        string resp = req.String();
+        int respCode = req.ResponseCode();
+
+        switch (respCode) {
+            case ResponseCode::Good:
+            case ResponseCode::NoContent:
+                break;
+            case ResponseCode::Forbidden:
+                if (resp.Contains("Premium required")) {
+                    NotifyWarn("sorry, you need a Premium account");
+                    warn("free account detected, disabling controls...");
+                    S_Premium = false;
+                } else
+                    warn("SetVolume(): " + resp.Replace("\n", ""));
+                break;
+            case ResponseCode::TooManyRequests:
+                RateLimited("SetVolume", req);
+                break;
+            default:
+                NotifyWarn("couldn't set volume", true);
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
