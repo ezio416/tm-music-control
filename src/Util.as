@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-01-19
+// m 2024-09-25
 
 const string albumArtFolder    = IO::FromStorageFolder("albumArt");
 bool         albumArtLoading   = false;
@@ -90,12 +90,12 @@ void NotifyWarn(const string &in text, bool logWarn = false) {
         warn(text);
 }
 
-string ReplaceBadApostrophe(const string &in input) {
-    return input.Replace("’", "'");
+string ReplaceBadQuotes(const string &in input) {
+    return input.Replace("‘", "'").Replace("’", "'").Replace("“", "\"").Replace("”", "\"");
 }
 
-string ReplaceBadApostrophe(Json::Value@ input) {
-    return ReplaceBadApostrophe(string(input));
+string ReplaceBadQuotes(Json::Value@ input) {
+    return ReplaceBadQuotes(string(input));
 }
 
 string Zpad(uint num, uint digits = 2) {

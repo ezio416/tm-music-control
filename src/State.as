@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-01-19
+// m 2024-09-25
 
 State state;
 
@@ -45,13 +45,13 @@ class State {
         Json::Value@ _item = json.Get("item");
 
         try {
-            song = ReplaceBadApostrophe(_item["name"]);
+            song = ReplaceBadQuotes(_item["name"]);
         } catch {
             return;
         }
 
         Json::Value@ _album = _item.Get("album");
-        album = ReplaceBadApostrophe(_album["name"]);
+        album = ReplaceBadQuotes(_album["name"]);
         albumRelease = string(_album["release_date"]);
         Json::Value@ _albumImages = _album.Get("images");
         albumArtUrl64 = string(_albumImages[2]["url"]);
@@ -60,7 +60,7 @@ class State {
         for (uint i = 0; i < _artists.Length; i++) {
             if (i > 0)
                 artists += ", ";
-            artists += ReplaceBadApostrophe(_artists[i]["name"]);
+            artists += ReplaceBadQuotes(_artists[i]["name"]);
         }
 
         playing = bool(json["is_playing"]);
