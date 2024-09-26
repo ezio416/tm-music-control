@@ -60,9 +60,6 @@ bool S_Setup = false;
 [Setting category="Windows" name="Show playlists setup window"]
 bool S_PlaylistSetup = false;
 
-[Setting category="Windows" name="Show debug window"]
-bool S_Debug = false;
-
 
 [Setting category="Premium" name="I know I have Premium" description="Only change if the plugin made a mistake!"]
 bool S_Premium = true;

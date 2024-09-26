@@ -28,7 +28,6 @@ void Render() {
     RenderDisclaimer();
     RenderSetup();
     RenderSetupPlaylists();
-    RenderDebug();
 }
 
 void RenderMenu() {
