@@ -1,7 +1,7 @@
 // c 2023-08-24
 // m 2024-09-27
 
-[SettingsTab name="Debug" icon="Bug"]
+[SettingsTab name="Debug" icon="Bug" order=1]
 void RenderDebug() {
     UI::BeginTabBar("debug-tabs", UI::TabBarFlags::None);
         if (UI::BeginTabItem("devices")) {
