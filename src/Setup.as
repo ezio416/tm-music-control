@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-09-25
+// m 2024-09-27
 
 void RenderSetup() {
     if (!S_Setup || !disclaimerAccepted)
@@ -115,8 +115,9 @@ void RenderSetupPlaylists() {
 
     if (UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::NoResize)) {
         UI::TextWrapped(
-            "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view private playlists, otherwise " +
-            "you can only view your public ones. You will need to partially go through setup again to grant this permission. Don't worry, you don't have to do everything " +
+            "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view " +
+            "private playlists, otherwise you can only view your public ones. This permission is also needed to check if a song is in your " +
+            "library. You will need to partially go through setup again to grant this permission. Don't worry, you don't have to do everything " +
             "over again! Just do steps \\$F801\\$G and \\$F809-13\\$G again and the new permission should be good to go. The feature is currently limited to 50 playlists."
         );
 

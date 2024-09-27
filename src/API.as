@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-09-25
+// m 2024-09-27
 
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
@@ -70,17 +70,44 @@ namespace API {
         }
     }
 
-    // void GetCurrentSongIsInLibrary() {
-    //     trace("checking if song \"" + state.song + "\" is in user's library");
+    bool GetCurrentSongIsInLibrary() {
+        // trace("checking if song \"" + state.song + "\" is in user's library");
 
-    //     Net::HttpRequest@ req = Net::HttpRequest();
-    //     req.Method = Net::HttpMethod::Get;
-    //     req.Url = apiUrl + "/me/tracks/contains";
-    //     req.Headers["Authorization"] = string(auth["access"]);
-    //     req.Start();
-    //     while (!req.Finished())
-    //         yield();
-    // }
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Get;
+        req.Url = apiUrl + "/me/tracks/contains?ids=" + state.songId;
+        req.Headers["Authorization"] = string(auth["access"]);
+        req.Start();
+        while (!req.Finished())
+            yield();
+        const int respCode = req.ResponseCode();
+        switch (respCode) {
+            case ResponseCode::Good:
+                break;
+            case ResponseCode::Unauthorized:  // handled by GetDevices()
+            case ResponseCode::Forbidden:     // might be missing new permission (untested)
+                state.songInLibrary = false;
+                inLibrary = false;
+                return true;
+            case ResponseCode::TooManyRequests:
+                return RateLimited("GetCurrentSongIsInLibrary", req);
+            default:
+                NotifyWarn("couldn't check if song is in library", true);
+                warn("response: " + respCode + " " + req.String().Replace("\n", ""));
+                return false;
+        }
+        Json::Value@ json = req.Json();
+        inLibrary = false;
+        try {
+            state.songInLibrary = bool(json[0]);
+            inLibrary = state.songInLibrary;
+            return true;
+        } catch {
+            NotifyWarn("couldn't check if song is in library", true);
+            warn("got: " + Json::Write(json));
+        }
+        return false;
+    }
 
     bool GetDevices() {
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -233,17 +260,19 @@ namespace API {
                 break;
             }
 
-            if (!GetDevices()) {
+            if (!GetDevices() || !GetPlaybackState()) {
                 waitTime *= 2;
                 continue;
             } else
                 waitTime = waitTimeDefault;
 
-            if (!GetPlaybackState()) {
-                waitTime *= 2;
-                continue;
-            } else
-                waitTime = waitTimeDefault;
+            if (S_InLibrary) {
+                if (!GetCurrentSongIsInLibrary()) {  // need to limit this, apparently I get rate-limited
+                    waitTime *= 2;
+                    continue;
+                } else
+                    waitTime = waitTimeDefault;
+            }
 
             if (S_Playlists && i++ % 20 == 0) {
                 if (!GetPlaylists())

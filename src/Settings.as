@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-09-25
+// m 2024-09-27
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = false;
@@ -19,6 +19,9 @@ bool S_AlbumArt = true;
 
 [Setting category="Player" name="Album cover width" min=10 max=128]
 int S_AlbumArtWidth = 128;
+
+[Setting category="Player" name="Show if song is in library" description="Only shows when album art is also shown. I couldn't find a good place to put this in every circumstance. If you have a suggestion, please make an issue on the GitHub!"]
+bool S_InLibrary = false;
 
 [Setting category="Player" name="Show song name"]
 bool S_Song = true;

@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-09-25
+// m 2024-09-27
 
 [SettingsTab name="Debug" icon="Bug"]
 void RenderDebug() {
@@ -46,6 +46,10 @@ void RenderDebug() {
                 IO::SetClipboard(state.context);
             if (UI::Selectable("song: " + state.song, false))
                 IO::SetClipboard(state.song);
+            if (UI::Selectable("song ID: " + state.songId, false))
+                IO::SetClipboard(state.songId);
+            if (UI::Selectable("song in library: " + tostring(state.songInLibrary), false))
+                IO::SetClipboard(tostring(state.songInLibrary));
             if (UI::Selectable("artists: " + state.artists, false))
                 IO::SetClipboard(state.artists);
             if (UI::Selectable("album: " + state.album, false))

@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-09-25
+// m 2024-09-27
 
 bool        changingVolume     = false;
 const float scale              = UI::GetScale();
@@ -19,6 +19,8 @@ void RenderPlayer() {
         flags |= UI::WindowFlags::NoMove;
 
     if (UI::Begin("MusicControl", S_Enabled, flags)) {
+        const vec2 pre = UI::GetCursorPos();
+
         if (S_AlbumArt) {
             if (@tex !is null)
                 UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
@@ -26,6 +28,15 @@ void RenderPlayer() {
                 UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
 
             UI::SameLine();
+
+            if (S_AlbumArt && S_InLibrary) {
+                const string icon = state.songInLibrary ? Icons::Heart : Icons::HeartO;
+                UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
+                UI::Text("\\$000" + icon);
+                UI::SetCursorPos(pre);
+                UI::Text("\\$0F0" + icon);
+                HoverTooltip((state.songInLibrary ? "" : "not ") + "in library");
+            }
         }
 
         float maxTextWidth = 0.0f;

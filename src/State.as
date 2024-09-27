@@ -1,6 +1,7 @@
 // c 2023-08-24
-// m 2024-09-25
+// m 2024-09-27
 
+bool  inLibrary = false;  // to prevent flickering when checking, probably a better way to do this?
 State state;
 
 enum PlayingType {
@@ -28,6 +29,8 @@ class State {
     bool        shuffle;
     string      song;
     int         songDuration;
+    string      songId;
+    bool        songInLibrary = inLibrary;
     int         songProgress;
     int         songProgressPercent;
     PlayingType type;
@@ -49,6 +52,8 @@ class State {
         } catch {
             return;
         }
+
+        songId = _item["id"];
 
         Json::Value@ _album = _item.Get("album");
         album = ReplaceBadQuotes(_album["name"]);

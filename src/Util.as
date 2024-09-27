@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-09-25
+// m 2024-09-27
 
 const string albumArtFolder    = IO::FromStorageFolder("albumArt");
 bool         albumArtLoading   = false;
@@ -31,7 +31,7 @@ void LoadAlbumArt() {
     IO::CreateFolder(albumArtFolder);
     const string filepath = albumArtFolder + "/" + state.albumArtUrl64.Replace(":", "_").Replace("/", "_") + ".jpg";
 
-    if (filepath == ".jpg") {
+    if (filepath == ".jpg") {  // probably wrong, fix at some point
         albumArtLoading = false;
         warn("blank album art");
         return;
