@@ -71,6 +71,9 @@ namespace API {
     }
 
     bool GetCurrentSongIsInLibrary() {
+        if (state.songId.Length == 0)
+            return true;
+
         // trace("checking if song \"" + state.song + "\" is in user's library");
 
         Net::HttpRequest@ req = Net::HttpRequest();
