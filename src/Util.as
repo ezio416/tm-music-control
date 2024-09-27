@@ -10,6 +10,15 @@ string FormatSeconds(int seconds) {
     return Zpad(seconds / 60) + ":" + Zpad(seconds % 60);
 }
 
+void HoverTooltip(const string &in msg) {
+    if (!UI::IsItemHovered())
+        return;
+
+    UI::BeginTooltip();
+        UI::Text(msg);
+    UI::EndTooltip();
+}
+
 void LoadAlbumArt() {
     if (!S_AlbumArt) {
         loadedAlbumArtUrl = "";
@@ -72,15 +81,6 @@ void LoadAlbumArt() {
     loadedAlbumArtUrl = state.albumArtUrl64;
 
     albumArtLoading = false;
-}
-
-void HoverTooltip(const string &in msg) {
-    if (!UI::IsItemHovered())
-        return;
-
-    UI::BeginTooltip();
-        UI::Text(msg);
-    UI::EndTooltip();
 }
 
 void NotifyWarn(const string &in text, bool logWarn = false) {
