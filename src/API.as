@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-09-27
+// m 2024-09-28
 
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
@@ -270,7 +270,7 @@ namespace API {
             } else
                 waitTime = waitTimeDefault;
 
-            if (S_InLibrary && checkLibrary++ % 5 == 0) {
+            if (S_AlbumArt_.heart && checkLibrary++ % 5 == 0) {
                 if (!GetCurrentSongIsInLibrary())
                     waitTime *= 2;
                 else

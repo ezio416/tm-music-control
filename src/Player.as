@@ -23,9 +23,9 @@ void RenderPlayer() {
 
         if (S_AlbumArt) {
             if (@tex !is null)
-                UI::Image(tex, vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+                UI::Image(tex, vec2(S_AlbumArt_.width));
             else
-                UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
+                UI::Dummy(vec2(S_AlbumArt_.width));
 
             UI::SameLine();
         }
@@ -57,7 +57,7 @@ void RenderPlayer() {
                 UI::Text(albumRelease);
             }
 
-            if (S_AlbumArt && S_InLibrary) {
+            if (S_AlbumArt && S_AlbumArt_.heart) {
                 const string icon = state.songInLibrary ? Icons::Heart : Icons::HeartO;
                 UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
                 UI::Text("\\$000" + icon);
@@ -67,12 +67,12 @@ void RenderPlayer() {
             }
         UI::EndGroup();
 
-        const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArtWidth + sameLineWidth : 0.0f) + maxTextWidth;
-        const float buttonWidth = S_StretchButtons ? Math::Max((albumArtAndTextWidth - (sameLineWidth * 4.0f)) / 5.0f, buttonWidthDefault) : buttonWidthDefault;
+        const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArt_.width + sameLineWidth : 0.0f) + maxTextWidth;
+        const float buttonWidth = S_Buttons_.stretch ? Math::Max((albumArtAndTextWidth - (sameLineWidth * 4.0f)) / 5.0f, buttonWidthDefault) : buttonWidthDefault;
         const vec2  buttonSize = vec2(buttonWidth, buttonHeight);
 
         UI::BeginDisabled(!S_Premium);
-            if (S_ButtonControls) {
+            if (S_Buttons) {
                 if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random, buttonSize))
                     startnew(API::ToggleShuffle);
                 HoverTooltip("shuffle: " + (state.shuffle ? "on" : "off"));
@@ -114,9 +114,9 @@ void RenderPlayer() {
 
             const float widthToSet = Math::Max(albumArtAndTextWidth, ((buttonWidth * 5.0f) + (sameLineWidth * 4.0f))) / scale;
 
-            if (S_Scrubber) {
+            if (S_Progress) {
                 UI::SetNextItemWidth(widthToSet);
-                const int seekPositionPercent = UI::SliderInt(
+                int seekPositionPercent = UI::SliderInt(
                     "##songProgress",
                     state.songProgressPercent,
                     0,
@@ -124,6 +124,18 @@ void RenderPlayer() {
                     FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
                     UI::SliderFlags::NoInput
                 );
+
+                if (S_Progress_.scroll && UI::IsItemHovered()) {
+                    switch (int(UI::GetMouseWheelDelta())) {
+                        case -1:
+                            seekPositionPercent -= (seekPositionPercent < int(S_Progress_.step) ? seekPositionPercent : S_Progress_.step);
+                            break;
+                        case 1:
+                            seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_.step) ? 100 - seekPositionPercent : S_Progress_.step);
+                            break;
+                        default:;
+                    }
+                }
 
                 if (seekPositionPercent != state.songProgressPercent) {
                     seeking = true;
@@ -136,20 +148,33 @@ void RenderPlayer() {
                 }
             }
 
-            if (S_Volume) {
+            const bool supportsVolume = activeDevice !is null && activeDevice.supportsVolume;
+            if (S_Volume && (supportsVolume || (!supportsVolume && S_Volume_.unsupported))) {
                 const int currentVolume = activeDevice !is null ? activeDevice.volume : -1;
                 const string volumeIcon = currentVolume < 34 ? Icons::VolumeOff : currentVolume < 67 ? Icons::VolumeDown : Icons::VolumeUp;
 
-                UI::BeginDisabled(activeDevice is null || !activeDevice.supportsVolume);
+                UI::BeginDisabled(!supportsVolume);
                     UI::SetNextItemWidth(widthToSet);
-                    const int volume = UI::SliderInt(
+                    int volume = UI::SliderInt(
                         "##volume",
                         currentVolume,
                         0,
                         100,
-                        volumeIcon + " " + (changingVolume ? volumeDesired : currentVolume) + "%%",
+                        volumeIcon + " " + (changingVolume ? volumeDesired : currentVolume) + " %%",
                         UI::SliderFlags::NoInput
                     );
+
+                    if (S_Volume_.scroll && UI::IsItemHovered()) {
+                        switch (int(UI::GetMouseWheelDelta())) {
+                            case -1:
+                                volume -= (volume < int(S_Volume_.step) ? volume : S_Volume_.step);
+                                break;
+                            case 1:
+                                volume += (volume > 100 - int(S_Volume_.step) ? 100 - volume : S_Volume_.step);
+                                break;
+                            default:;
+                        }
+                    }
                 UI::EndDisabled();
 
                 if (activeDevice !is null && volume != activeDevice.volume) {
