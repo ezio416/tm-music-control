@@ -1,9 +1,8 @@
 // c 2023-08-23
-// m 2024-09-27
+// m 2024-09-28
 
 bool        changingVolume     = false;
 const float scale              = UI::GetScale();
-const float buttonHeight       = scale * 24.0f;
 const float buttonWidthDefault = scale * 30.0f;
 const float sameLineWidth      = scale * 10.0f;
 bool        seeking            = false;
@@ -31,6 +30,8 @@ void RenderPlayer() {
         }
 
         float maxTextWidth = 0.0f;
+
+        UI::PushFont(font);
 
         UI::BeginGroup();
             if (S_Song) {
@@ -69,7 +70,7 @@ void RenderPlayer() {
 
         const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArt_.width + sameLineWidth : 0.0f) + maxTextWidth;
         const float buttonWidth = S_Buttons_.stretch ? Math::Max((albumArtAndTextWidth - (sameLineWidth * 4.0f)) / 5.0f, buttonWidthDefault) : buttonWidthDefault;
-        const vec2  buttonSize = vec2(buttonWidth, buttonHeight);
+        const vec2  buttonSize = vec2(buttonWidth, scale * fontSize * 1.4f);
 
         UI::BeginDisabled(!S_Premium);
             if (S_Buttons) {
@@ -160,7 +161,7 @@ void RenderPlayer() {
                         currentVolume,
                         0,
                         100,
-                        volumeIcon + " " + (changingVolume ? volumeDesired : currentVolume) + " %%",
+                        volumeIcon + "  " + (changingVolume ? volumeDesired : currentVolume) + " %%",
                         UI::SliderFlags::NoInput
                     );
 
@@ -215,6 +216,8 @@ void RenderPlayer() {
 
         if (!Auth::Authorized())
             UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
+
+        UI::PopFont();
     }
     UI::End();
 }

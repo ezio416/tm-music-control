@@ -13,6 +13,9 @@ bool S_HideWithOP = false;
 [Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log."]
 bool S_Errors = true;
 
+[Setting category="General" name="Font style/size" description="Loading a font for the first time causes game to hang for a bit."]
+Font S_Font = Font::DroidSans_16;
+
 
 [Setting category="Player" name="Show album artwork"]
 bool S_AlbumArt = true;
