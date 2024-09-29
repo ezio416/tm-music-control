@@ -28,15 +28,6 @@ void RenderPlayer() {
                 UI::Dummy(vec2(S_AlbumArtWidth, S_AlbumArtWidth));
 
             UI::SameLine();
-
-            if (S_AlbumArt && S_InLibrary) {
-                const string icon = state.songInLibrary ? Icons::Heart : Icons::HeartO;
-                UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
-                UI::Text("\\$000" + icon);
-                UI::SetCursorPos(pre);
-                UI::Text("\\$0F0" + icon);
-                HoverTooltip((state.songInLibrary ? "" : "not ") + "in library");
-            }
         }
 
         float maxTextWidth = 0.0f;
@@ -64,6 +55,15 @@ void RenderPlayer() {
                 const string albumRelease = state.albumRelease.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.albumRelease.Length));
                 maxTextWidth = GetMaxTextWidth(maxTextWidth, albumRelease);
                 UI::Text(albumRelease);
+            }
+
+            if (S_AlbumArt && S_InLibrary) {
+                const string icon = state.songInLibrary ? Icons::Heart : Icons::HeartO;
+                UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
+                UI::Text("\\$000" + icon);
+                UI::SetCursorPos(pre);
+                UI::Text("\\$0F0" + icon);
+                HoverTooltip((state.songInLibrary ? "" : "not ") + "in library");
             }
         UI::EndGroup();
 
@@ -138,6 +138,7 @@ void RenderPlayer() {
 
             if (S_Volume) {
                 const int currentVolume = activeDevice !is null ? activeDevice.volume : -1;
+                const string volumeIcon = currentVolume < 34 ? Icons::VolumeOff : currentVolume < 67 ? Icons::VolumeDown : Icons::VolumeUp;
 
                 UI::BeginDisabled(activeDevice is null || !activeDevice.supportsVolume);
                     UI::SetNextItemWidth(widthToSet);
@@ -146,7 +147,7 @@ void RenderPlayer() {
                         currentVolume,
                         0,
                         100,
-                        "Volume: " + (changingVolume ? volumeDesired : currentVolume) + "%%",
+                        volumeIcon + " " + (changingVolume ? volumeDesired : currentVolume) + "%%",
                         UI::SliderFlags::NoInput
                     );
                 UI::EndDisabled();
