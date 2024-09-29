@@ -248,7 +248,8 @@ namespace API {
         const uint waitTimeDefault = 1000;
         uint waitTime = waitTimeDefault;
 
-        uint i = 0;
+        uint checkLibrary   = 0;
+        uint checkPlaylists = 0;
 
         while (true) {
             if (!Auth::Authorized() || !disclaimerAccepted)
@@ -269,21 +270,22 @@ namespace API {
             } else
                 waitTime = waitTimeDefault;
 
-            if (S_InLibrary) {
-                if (!GetCurrentSongIsInLibrary()) {  // need to limit this, apparently I get rate-limited
+            if (S_InLibrary && checkLibrary++ % 5 == 0) {
+                if (!GetCurrentSongIsInLibrary())
                     waitTime *= 2;
-                    continue;
-                } else
+                else
                     waitTime = waitTimeDefault;
+
+                checkLibrary = 1;
             }
 
-            if (S_Playlists && i++ % 20 == 0) {
+            if (S_Playlists && checkPlaylists++ % 20 == 0) {
                 if (!GetPlaylists())
                     waitTime *= 2;
                 else
                     waitTime = waitTimeDefault;
 
-                i = 1;
+                checkPlaylists = 1;
             }
 
             if (waitTime > waitTimeDefault * 8)

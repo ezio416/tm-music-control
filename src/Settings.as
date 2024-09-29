@@ -10,7 +10,7 @@ bool S_HideWithGame = true;
 [Setting category="General" name="Show/hide with Openplanet UI"]
 bool S_HideWithOP = false;
 
-[Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log"]
+[Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log."]
 bool S_Errors = true;
 
 
@@ -20,7 +20,7 @@ bool S_AlbumArt = true;
 [Setting category="Player" name="Album cover width" min=10 max=128]
 int S_AlbumArtWidth = 128;
 
-[Setting category="Player" name="Show if song is in library" description="Only shows when album art is also shown. I couldn't find a good place to put this in every circumstance. If you have a suggestion, please make an issue on the GitHub!"]
+[Setting category="Player" name="Show if song is in library" description="Because of stricter API limits on this endpoint, this is checked less frequently. Only shows when album art is also shown. I couldn't find a good place to put this in every circumstance. If you have a suggestion, please make an issue on the GitHub!"]
 bool S_InLibrary = false;
 
 [Setting category="Player" name="Show song name"]
@@ -50,7 +50,7 @@ bool S_Scrubber = true;
 [Setting category="Player" name="Show volume bar" description="The same change (i.e. 5%) at a high volume has a greater effect than at low volume. This should be solved in the future."]
 bool S_Volume = false;
 
-[Setting category="Player" name="Show playlists menu" description="Because of stricter API limits on this endpoint, playlists are checked less frequently"]
+[Setting category="Player" name="Show playlists menu" description="Because of stricter API limits on this endpoint, this is checked less frequently."]
 bool S_Playlists = false;
 
 
