@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-09-27
+// m 2024-09-28
 
 bool  inLibrary = false;  // to prevent flickering when checking, probably a better way to do this?
 State state;
@@ -11,6 +11,12 @@ enum PlayingType {
     unknown
 }
 
+enum ReleasePrecision {
+    day,
+    month,
+    year
+}
+
 enum Repeat {
     off,
     context,
@@ -18,22 +24,24 @@ enum Repeat {
 }
 
 class State {
-    string      album;
-    string      albumArtUrl64;
-    string      albumRelease;
-    string      artists;
-    string      context;
-    string      deviceId;
-    bool        playing;
-    Repeat      repeat;
-    bool        shuffle;
-    string      song;
-    int         songDuration;
-    string      songId;
-    bool        songInLibrary = inLibrary;
-    int         songProgress;
-    int         songProgressPercent;
-    PlayingType type;
+    string           album;
+    string           albumArtUrl64;
+    string           albumRelease;
+    ReleasePrecision albumReleasePrecision;
+    string           artists;
+    string           context;
+    string           deviceId;
+    bool             playing;
+    Repeat           repeat;
+    bool             shuffle;
+    bool             smartShuffle;
+    string           song;
+    int              songDuration;
+    string           songId;
+    bool             songInLibrary = inLibrary;
+    int              songProgress;
+    int              songProgressPercent;
+    PlayingType      type;
 
     State() { }
     State(Json::Value@ json) {
@@ -58,6 +66,12 @@ class State {
         Json::Value@ _album = _item.Get("album");
         album = ReplaceBadQuotes(_album["name"]);
         albumRelease = string(_album["release_date"]);
+
+        const string _relPrec = string(_album["release_date_precision"]);
+        if      (_relPrec == "day")   albumReleasePrecision = ReleasePrecision::day;
+        else if (_relPrec == "month") albumReleasePrecision = ReleasePrecision::month;
+        else if (_relPrec == "year")  albumReleasePrecision = ReleasePrecision::year;
+
         Json::Value@ _albumImages = _album.Get("images");
         albumArtUrl64 = string(_albumImages[2]["url"]);
 
@@ -76,6 +90,7 @@ class State {
         else if (_repeat == "track")   repeat = Repeat::track;
 
         shuffle = bool(json["shuffle_state"]);
+        smartShuffle = bool(json["smart_shuffle"]);
         songDuration = int(_item["duration_ms"]);
         songProgress = int(json["progress_ms"]);
         songProgressPercent = int(float(songProgress) / float(songDuration) * 100);

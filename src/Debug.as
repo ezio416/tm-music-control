@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-09-27
+// m 2024-09-28
 
 [SettingsTab name="Debug" icon="Bug" order=1]
 void RenderDebug() {
@@ -56,6 +56,8 @@ void RenderDebug() {
                 IO::SetClipboard(state.album);
             if (UI::Selectable("album release: " + state.albumRelease, false))
                 IO::SetClipboard(state.albumRelease);
+            if (UI::Selectable("album release precision: " + tostring(state.albumReleasePrecision), false))
+                IO::SetClipboard(tostring(state.albumReleasePrecision));
             if (UI::Selectable("album art URL: " + state.albumArtUrl64, false))
                 IO::SetClipboard(state.albumArtUrl64);
             if (UI::Selectable("playing: " + state.playing, false))
@@ -70,6 +72,8 @@ void RenderDebug() {
                 IO::SetClipboard(tostring(state.repeat));
             if (UI::Selectable("shuffle: " + state.shuffle, false))
                 IO::SetClipboard(tostring(state.shuffle));
+            if (UI::Selectable("smart shuffle: " + state.smartShuffle, false))
+                IO::SetClipboard(tostring(state.smartShuffle));
             UI::EndTabItem();
         }
     UI::EndTabBar();
