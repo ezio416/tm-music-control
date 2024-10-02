@@ -14,12 +14,12 @@ bool S_HideWithOP = false;
 bool S_Errors = true;
 
 enum UpdateSpeed {
-    Slowest,
-    Slower,
-    Slow,
-    Normal,
-    Fast,
-    Faster
+    Slowest = 5000,
+    Slower  = 3000,
+    Slow    = 1500,
+    Normal  = 1000,
+    Fast    = 750,
+    Faster  = 500
 }
 
 [Setting category="General" name="Update speed" description="Only change this if you're getting rate-limit errors."]
