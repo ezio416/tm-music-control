@@ -258,8 +258,8 @@ namespace API {
                 Warn("Waiting " + waitTime + " ms to try contacting API again");
             sleep(waitTime);
 
-            if (waitTime > S_UpdateSpeed * 8)
-                waitTime = S_UpdateSpeed * 8;
+            if (waitTime > S_UpdateSpeed * 4)
+                waitTime = S_UpdateSpeed * 4;
 
             if (!runLoop) {
                 state = State();
