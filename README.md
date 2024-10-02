@@ -14,7 +14,8 @@ This does NOT play music within the game. You must be listening to Spotify elsew
 
 There are some notable features missing (but planned), like:\
     - switching devices\
-    - scrolling text for long song names/artists/albums
-    - exports for other plugins
+    - scrolling text for long song names/artists/albums\
+    - exports for other plugins\
+    - toggling smart shuffle
 
 ![image](images/music-control.png)
