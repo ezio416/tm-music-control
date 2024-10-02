@@ -1,7 +1,7 @@
 // c 2023-08-24
-// m 2024-09-28
+// m 2024-10-01
 
-bool  inLibrary = false;  // to prevent flickering when checking, probably a better way to do this?
+bool  liked = false;  // to prevent flickering when checking, probably a better way to do this?
 State state;
 
 enum PlayingType {
@@ -38,7 +38,7 @@ class State {
     string           song;
     int              songDuration;
     string           songId;
-    bool             songInLibrary = inLibrary;
+    bool             songLiked = liked;
     int              songProgress;
     int              songProgressPercent;
     PlayingType      type;

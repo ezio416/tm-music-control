@@ -48,8 +48,8 @@ void RenderDebug() {
                 IO::SetClipboard(state.song);
             if (UI::Selectable("song ID: " + state.songId, false))
                 IO::SetClipboard(state.songId);
-            if (UI::Selectable("song in library: " + tostring(state.songInLibrary), false))
-                IO::SetClipboard(tostring(state.songInLibrary));
+            if (UI::Selectable("song liked: " + tostring(state.songLiked), false))
+                IO::SetClipboard(tostring(state.songLiked));
             if (UI::Selectable("artists: " + state.artists, false))
                 IO::SetClipboard(state.artists);
             if (UI::Selectable("album: " + state.album, false))

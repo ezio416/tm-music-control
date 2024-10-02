@@ -59,12 +59,12 @@ void RenderPlayer() {
             }
 
             if (S_AlbumArt && S_AlbumArt_.heart) {
-                const string icon = state.songInLibrary ? Icons::Heart : Icons::HeartO;
+                const string icon = state.songLiked ? Icons::Heart : Icons::HeartO;
                 UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
                 UI::Text("\\$000" + icon);
                 UI::SetCursorPos(pre);
                 UI::Text("\\$0F0" + icon);
-                HoverTooltip((state.songInLibrary ? "" : "not ") + "in library");
+                HoverTooltip((state.songLiked ? "" : "not ") + "in library");
             }
         UI::EndGroup();
 
@@ -129,15 +129,17 @@ void RenderPlayer() {
             const float widthToSet = Math::Max(albumArtAndTextWidth, ((buttonWidth * 5.0f) + (sameLineWidth * 4.0f))) / scale;
 
             if (S_Progress) {
-                UI::SetNextItemWidth(widthToSet);
-                int seekPositionPercent = UI::SliderInt(
-                    "##songProgress",
-                    state.songProgressPercent,
-                    0,
-                    100,
-                    FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
-                    UI::SliderFlags::NoInput
-                );
+                UI::BeginDisabled(Time::Now - lastSeek < 2000);
+                    UI::SetNextItemWidth(widthToSet);
+                    int seekPositionPercent = UI::SliderInt(
+                        "##songProgress",
+                        state.songProgressPercent,
+                        0,
+                        100,
+                        FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
+                        UI::SliderFlags::NoInput
+                    );
+                UI::EndDisabled();
 
                 if (S_Progress_.scroll && UI::IsItemHovered()) {
                     switch (int(UI::GetMouseWheelDelta())) {
@@ -166,15 +168,17 @@ void RenderPlayer() {
             if (S_Volume && (supportsVolume || (!supportsVolume && S_Volume_.unsupported))) {
                 const int currentVolume = activeDevice !is null ? activeDevice.volume : -1;
                 const string volumeIcon = currentVolume < 34 ? Icons::VolumeOff : currentVolume < 67 ? Icons::VolumeDown : Icons::VolumeUp;
+                const bool eggValue = (!changingVolume && currentVolume == 69) || (changingVolume && volumeDesired == 69);
+                const string volumeText = (S_Volume_.egg && eggValue) ? "\\$I\\$888 NICE\\$Z " : tostring(changingVolume ? volumeDesired : currentVolume);
 
-                UI::BeginDisabled(!supportsVolume);
+                UI::BeginDisabled(!supportsVolume || Time::Now - lastVolume < 2000);
                     UI::SetNextItemWidth(widthToSet);
                     int volume = UI::SliderInt(
                         "##volume",
                         currentVolume,
                         0,
                         100,
-                        volumeIcon + " " + ((S_Volume_.egg && currentVolume == 69) ? "\\$I\\$888 NICE\\$Z " : tostring(changingVolume ? volumeDesired : currentVolume)) + " %%",
+                        volumeIcon + " " + volumeText + " %%",
                         UI::SliderFlags::NoInput
                     );
 

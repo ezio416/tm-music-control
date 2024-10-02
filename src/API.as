@@ -4,6 +4,8 @@
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
 bool         forceDeviceTried = false;
+uint64       lastSeek         = 0;
+uint64       lastVolume       = 0;
 bool         loopRunning      = false;
 dictionary@  playlists        = dictionary();
 bool         runLoop          = false;
@@ -68,7 +70,7 @@ namespace API {
         }
     }
 
-    bool GetCurrentSongIsInLibrary() {
+    bool GetCurrentSongIsLiked() {
         if (state.songId.Length == 0)
             return true;
 
@@ -87,24 +89,24 @@ namespace API {
                 break;
             case ResponseCode::Unauthorized:  // handled by GetDevices()
             case ResponseCode::Forbidden:     // might be missing new permission (untested)
-                state.songInLibrary = false;
-                inLibrary = false;
+                state.songLiked = false;
+                liked = false;
                 return true;
             case ResponseCode::TooManyRequests:
-                return RateLimited("GetCurrentSongIsInLibrary", req);
+                return RateLimited("GetCurrentSongIsLiked", req);
             default:
-                Error("Couldn't check if song is in library");
+                Error("Couldn't check if song is liked");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
         Json::Value@ json = req.Json();
-        inLibrary = false;
+        liked = false;
         try {
-            state.songInLibrary = bool(json[0]);
-            inLibrary = state.songInLibrary;
+            state.songLiked = bool(json[0]);
+            liked = state.songLiked;
             return true;
         } catch {
-            Error("Couldn't check if song is in library");
+            Error("Couldn't check if song is liked");
             warn("got: " + Json::Write(json));
         }
         return false;
@@ -245,7 +247,7 @@ namespace API {
 
         int waitTime = S_UpdateSpeed;
 
-        uint checkLibrary   = 0;
+        uint checkLiked     = 0;
         uint checkPlaylists = 0;
 
         while (true) {
@@ -265,7 +267,7 @@ namespace API {
             }
 
             if (!S_AlbumArt_.heart)
-                checkLibrary = 0;
+                checkLiked = 0;
 
             if (!S_Playlists)
                 checkPlaylists = 0;
@@ -276,13 +278,13 @@ namespace API {
             } else
                 waitTime = S_UpdateSpeed;
 
-            if (S_AlbumArt_.heart && checkLibrary++ % 5 == 0) {
-                if (!GetCurrentSongIsInLibrary())
+            if (S_AlbumArt_.heart && checkLiked++ % 5 == 0) {
+                if (!GetCurrentSongIsLiked())
                     waitTime *= 2;
                 else
                     waitTime = S_UpdateSpeed;
 
-                checkLibrary = 1;
+                checkLiked = 1;
             }
 
             if (S_Playlists && checkPlaylists++ % 20 == 0) {
@@ -402,6 +404,12 @@ namespace API {
         if (!S_Premium)
             return;
 
+        const uint64 now = Time::Now;
+        if (now - lastSeek < 2000) {
+            warn("wait to seek again");
+            return;
+        }
+
         trace(seekPosition == 0 ? "restarting song" : "seeking to " + FormatSeconds(seekPosition / 1000));
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -432,13 +440,21 @@ namespace API {
                 Error("Couldn't seek in song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
+
+        lastSeek = now;
     }
 
     void SetVolume() {
         if (!S_Premium)
             return;
 
-        trace("setting volume to " + volumeDesired + " %");
+        const uint64 now = Time::Now;
+        if (now - lastVolume < 2000) {
+            warn("wait to change volume again");
+            return;
+        }
+
+        trace("setting volume to " + volumeDesired + " %" + (S_Volume_.egg && volumeDesired == 69 ? " (nice)" : ""));
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
@@ -468,6 +484,8 @@ namespace API {
                 Error("Couldn't set volume");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
+
+        lastVolume = now;
     }
 
     void SkipNext() {
