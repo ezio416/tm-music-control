@@ -74,9 +74,10 @@ void RenderPlayer() {
 
         UI::BeginDisabled(!S_Premium);
             if (S_Buttons) {
-                if (UI::Button((state.shuffle ? "\\$0F0" : "") + Icons::Random, buttonSize))
+                UI::BeginDisabled(state.shuffle && state.smartShuffle);
+                if (UI::Button((state.shuffle ? (state.smartShuffle ? "\\$F80" : "\\$0F0") : "") + Icons::Random, buttonSize))
                     startnew(API::ToggleShuffle);
-                HoverTooltip("shuffle: " + (state.shuffle ? "on" : "off"));
+                UI::EndDisabled();
 
                 UI::SameLine();
                 const bool skipPrevious = state.songProgress < 3000;
@@ -105,7 +106,7 @@ void RenderPlayer() {
                 string repeatIcon;
                 switch (state.repeat) {
                     case Repeat::context: repeatIcon = "\\$0F0" + Icons::Refresh; break;
-                    case Repeat::track:   repeatIcon = "\\$F0F" + Icons::Refresh; break;
+                    case Repeat::track:   repeatIcon = "\\$F80" + Icons::Refresh; break;
                     default:              repeatIcon = Icons::Refresh;
                 }
                 if (UI::Button(repeatIcon, buttonSize))
