@@ -16,7 +16,7 @@ bool S_Warnings = false;
 [Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log."]
 bool S_Errors = true;
 
-enum UpdateSpeed {
+enum UpdateFreq {
     Slowest = 5000,
     Slower  = 3000,
     Slow    = 1500,
@@ -25,8 +25,8 @@ enum UpdateSpeed {
     Faster  = 500
 }
 
-[Setting category="General" name="Update speed" description="Only change this if you're getting rate-limit errors."]
-UpdateSpeed S_UpdateSpeed = UpdateSpeed::Normal;
+[Setting category="General" name="Update frequency" description="Only change this if you're getting rate-limit errors."]
+UpdateFreq S_UpdateFreq = UpdateFreq::Normal;
 
 [Setting category="Player" name="Font style/size" description="Loading a font for the first time causes game to hang for a bit."]
 Font S_Font = Font::DroidSans_16;

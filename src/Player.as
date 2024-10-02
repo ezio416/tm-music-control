@@ -70,7 +70,7 @@ void RenderPlayer() {
 
         const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArt_.width + sameLineWidth : 0.0f) + maxTextWidth;
         const float buttonWidth = S_Buttons_.stretch ? Math::Max((albumArtAndTextWidth - (sameLineWidth * 4.0f)) / 5.0f, buttonWidthDefault) : buttonWidthDefault;
-        const vec2  buttonSize = vec2(buttonWidth, scale * fontSize * 1.4f);
+        const vec2  buttonSize = vec2(buttonWidth, scale * font.FontSize * 1.4f);
 
         UI::BeginDisabled(!S_Premium);
             if (S_Buttons) {

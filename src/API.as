@@ -245,7 +245,7 @@ namespace API {
 
         loopRunning = true;
 
-        int waitTime = S_UpdateSpeed;
+        int waitTime = S_UpdateFreq;
 
         uint checkLiked     = 0;
         uint checkPlaylists = 0;
@@ -254,12 +254,12 @@ namespace API {
             if (!Auth::Authorized() || !disclaimerAccepted)
                 break;
 
-            if (waitTime > S_UpdateSpeed)
+            if (waitTime > S_UpdateFreq)
                 Warn("Waiting " + waitTime + " ms to try contacting API again");
             sleep(waitTime);
 
-            if (waitTime > S_UpdateSpeed * 4)
-                waitTime = S_UpdateSpeed * 4;
+            if (waitTime > S_UpdateFreq * 4)
+                waitTime = S_UpdateFreq * 4;
 
             if (!runLoop) {
                 state = State();
@@ -276,13 +276,13 @@ namespace API {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = S_UpdateSpeed;
+                waitTime = S_UpdateFreq;
 
             if (S_AlbumArt_.heart && checkLiked++ % 5 == 0) {
                 if (!GetCurrentSongIsLiked())
                     waitTime *= 2;
                 else
-                    waitTime = S_UpdateSpeed;
+                    waitTime = S_UpdateFreq;
 
                 checkLiked = 1;
             }
@@ -291,7 +291,7 @@ namespace API {
                 if (!GetPlaylists())
                     waitTime *= 2;
                 else
-                    waitTime = S_UpdateSpeed;
+                    waitTime = S_UpdateFreq;
 
                 checkPlaylists = 1;
             }

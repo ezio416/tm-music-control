@@ -3,7 +3,6 @@
 
 Font      currentFont = S_Font;
 UI::Font@ font;
-uint      fontSize    = GetFontSize(currentFont);
 
 enum Font {
     DroidSans_16,
@@ -32,20 +31,4 @@ void ChangeFont() {
     }
 
     currentFont = S_Font;
-    fontSize = GetFontSize(currentFont);
-}
-
-uint GetFontSize(Font f) {
-    switch (f) {
-        case Font::DroidSans_16:
-        case Font::DroidSansBold_16:
-        case Font::DroidSansMono_16:
-            return 16;
-        case Font::DroidSans_20:
-        case Font::DroidSansBold_20:
-        case Font::DroidSansMono_20:
-            return 20;
-        default:
-            return 26;
-    }
 }
