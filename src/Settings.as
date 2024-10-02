@@ -38,7 +38,7 @@ class SettingsAlbumArt {
     [Setting min=10 max=256]
     uint width = 128;
 
-    [Setting name="heart for library song" description="Because of stricter API limits on this endpoint, this is checked less frequently. I couldn't find a good place to put this in every circumstance, so if you have a suggestion, please make an issue on the GitHub!"]
+    [Setting name="heart for liked song" description="Because of stricter API limits on this endpoint, this is checked less frequently. I couldn't find a good place to put this in every circumstance, so if you have a suggestion, please make an issue on the GitHub!"]
     bool heart = false;
 }
 
