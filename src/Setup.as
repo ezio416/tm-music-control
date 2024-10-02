@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-09-27
+// m 2024-10-01
 
 void RenderSetup() {
     if (!S_Setup || !disclaimerAccepted)
@@ -113,7 +113,7 @@ void RenderSetupPlaylists() {
 
     UI::SetNextWindowSize(375, 200);
 
-    if (UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::NoResize)) {
+    if (UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::AlwaysAutoResize)) {
         UI::TextWrapped(
             "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view " +
             "private playlists, otherwise you can only view your public ones. This permission is also needed to check if a song is in your " +
