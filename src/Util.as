@@ -45,18 +45,20 @@ void LoadAlbumArt() {
         "clearing album art"
     );
 
-    IO::CreateFolder(albumArtFolder);
-    const string filepath = albumArtFolder + "/" + state.albumArtUrl64.Replace(":", "_").Replace("/", "_") + ".jpg";
-
-    if (filepath == ".jpg") {  // probably wrong, fix at some point
+    if (state.albumArtUrl64.Length == 0) {
         albumArtLoading = false;
-        warn("blank album art");
+        Warn("Blank album art: " + state.album);
         return;
     }
+
+    IO::CreateFolder(albumArtFolder);
+    const string filepath = albumArtFolder + "/" + Path::SanitizeFileName(state.albumArtUrl64) + ".jpg";
 
     if (!IO::FileExists(filepath)) {
         const uint max_timeout = 3000;
         const uint max_wait = 2000;
+
+        trace("downloading album art");
 
         while (true) {
             uint64 nowTimeout = Time::Now;
