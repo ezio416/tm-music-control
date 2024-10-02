@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-09-28
+// m 2024-10-01
 
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
@@ -54,11 +54,9 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
-                } else
+                if (resp.Contains("Premium required"))
+                    Premium();
+                else
                     warn("CycleRepeat(): " + resp.Replace("\n", ""));
                 break;
             case ResponseCode::TooManyRequests:
@@ -315,9 +313,7 @@ namespace API {
                 break;
             case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
+                    Premium();
                     return;
                 }
                 startnew(Play);
@@ -368,9 +364,7 @@ namespace API {
                 break;
             case ResponseCode::Forbidden:
                 if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
+                    Premium();
                     return;
                 }
                 startnew(Play);
@@ -421,11 +415,9 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
-                } else
+                if (resp.Contains("Premium required"))
+                    Premium();
+                else
                     warn("Seek(): " + resp.Replace("\n", ""));
                 break;
             case ResponseCode::TooManyRequests:
@@ -459,11 +451,9 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
-                } else
+                if (resp.Contains("Premium required"))
+                    Premium();
+                else
                     warn("SetVolume(): " + resp.Replace("\n", ""));
                 break;
             case ResponseCode::TooManyRequests:
@@ -494,11 +484,9 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
-                } else
+                if (resp.Contains("Premium required"))
+                    Premium();
+                else
                     warn("SkipNext(): " + resp.Replace("\n", ""));
                 break;
             case ResponseCode::TooManyRequests:
@@ -529,11 +517,9 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
-                } else
+                if (resp.Contains("Premium required"))
+                    Premium();
+                else
                     warn("SkipPrevious(): " + resp.Replace("\n", ""));
                 break;
             case ResponseCode::TooManyRequests:
@@ -564,11 +550,9 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required")) {
-                    NotifyWarn("sorry, you need a Premium account");
-                    warn("free account detected, disabling controls...");
-                    S_Premium = false;
-                } else
+                if (resp.Contains("Premium required"))
+                    Premium();
+                else
                     warn("ToggleShuffle(): " + resp.Replace("\n", ""));
                 break;
             case ResponseCode::TooManyRequests:
@@ -607,6 +591,12 @@ namespace API {
 
     //     lastTransfer = Time::Stamp;
     // }
+
+    void Premium() {
+        Error("Sorry, you need a Premium account");
+        warn("free account detected, disabling controls...");
+        S_Premium = false;
+    }
 
     bool RateLimited(const string &in func, Net::HttpRequest@ req) {
         const dictionary@ headers = req.ResponseHeaders();
