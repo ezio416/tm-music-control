@@ -243,8 +243,7 @@ namespace API {
 
         loopRunning = true;
 
-        const uint waitTimeDefault = 1000;
-        uint waitTime = waitTimeDefault;
+        int waitTime = S_UpdateSpeed;
 
         uint checkLibrary   = 0;
         uint checkPlaylists = 0;
@@ -253,9 +252,11 @@ namespace API {
             if (!Auth::Authorized() || !disclaimerAccepted)
                 break;
 
-            if (waitTime > waitTimeDefault)
-                warn("waiting " + waitTime + " ms to try contacting API again");
+            if (waitTime > S_UpdateSpeed)
             sleep(waitTime);
+
+            if (waitTime > S_UpdateSpeed * 8)
+                waitTime = S_UpdateSpeed * 8;
 
             if (!runLoop) {
                 state = State();
@@ -266,13 +267,13 @@ namespace API {
                 waitTime *= 2;
                 continue;
             } else
-                waitTime = waitTimeDefault;
+                waitTime = S_UpdateSpeed;
 
             if (S_AlbumArt_.heart && checkLibrary++ % 5 == 0) {
                 if (!GetCurrentSongIsInLibrary())
                     waitTime *= 2;
                 else
-                    waitTime = waitTimeDefault;
+                    waitTime = S_UpdateSpeed;
 
                 checkLibrary = 1;
             }
@@ -281,13 +282,10 @@ namespace API {
                 if (!GetPlaylists())
                     waitTime *= 2;
                 else
-                    waitTime = waitTimeDefault;
+                    waitTime = S_UpdateSpeed;
 
                 checkPlaylists = 1;
             }
-
-            if (waitTime > waitTimeDefault * 8)
-                waitTime = waitTimeDefault * 8;
         }
 
         loopRunning = false;

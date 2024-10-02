@@ -13,6 +13,17 @@ bool S_HideWithOP = false;
 [Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log."]
 bool S_Errors = true;
 
+enum UpdateSpeed {
+    Slowest,
+    Slower,
+    Slow,
+    Normal,
+    Fast,
+    Faster
+}
+
+[Setting category="General" name="Update speed" description="Only change this if you're getting rate-limit errors."]
+UpdateSpeed S_UpdateSpeed = UpdateSpeed::Normal;
 
 [Setting category="Player" name="Font style/size" description="Loading a font for the first time causes game to hang for a bit."]
 Font S_Font = Font::DroidSans_16;
