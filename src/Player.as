@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-09-28
+// m 2024-10-01
 
 bool        changingVolume     = false;
 const float scale              = UI::GetScale();
@@ -223,5 +223,5 @@ void RenderPlayer() {
 }
 
 float GetMaxTextWidth(float input, const string &in text) {
-    return Math::Max(input, Draw::MeasureString(text).x);
+    return Math::Max(input, Draw::MeasureString(text, font).x);
 }
