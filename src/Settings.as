@@ -35,7 +35,7 @@ Font S_Font = Font::DroidSans_16;
 bool S_AlbumArt = true;
 
 class SettingsAlbumArt {
-    [Setting min=10 max=256 description="Artwork files are 128x128 so it's not recommended to go larger."]
+    [Setting min=10 max=256]
     uint width = 128;
 
     [Setting name="heart for library song" description="Because of stricter API limits on this endpoint, this is checked less frequently. I couldn't find a good place to put this in every circumstance, so if you have a suggestion, please make an issue on the GitHub!"]
