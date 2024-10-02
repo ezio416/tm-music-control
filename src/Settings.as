@@ -100,6 +100,9 @@ class SettingsVolume {
 
     [Setting name="scroll step percentage"]
     uint step = 10;
+
+    [Setting name="Easter egg"]
+    bool egg = false;
 }
 
 [Setting category="Player" name="Volume" if="S_Volume"]

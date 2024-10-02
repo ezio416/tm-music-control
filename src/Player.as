@@ -166,6 +166,7 @@ void RenderPlayer() {
             if (S_Volume && (supportsVolume || (!supportsVolume && S_Volume_.unsupported))) {
                 const int currentVolume = activeDevice !is null ? activeDevice.volume : -1;
                 const string volumeIcon = currentVolume < 34 ? Icons::VolumeOff : currentVolume < 67 ? Icons::VolumeDown : Icons::VolumeUp;
+                const string egg = S_Volume_.egg && currentVolume == 69 ? " (nice)" : "";
 
                 UI::BeginDisabled(!supportsVolume);
                     UI::SetNextItemWidth(widthToSet);
@@ -174,7 +175,7 @@ void RenderPlayer() {
                         currentVolume,
                         0,
                         100,
-                        volumeIcon + "  " + (changingVolume ? volumeDesired : currentVolume) + " %%",
+                        volumeIcon + "  " + (changingVolume ? volumeDesired : currentVolume) + " %%" + egg,
                         UI::SliderFlags::NoInput
                     );
 
