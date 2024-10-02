@@ -266,7 +266,7 @@ namespace API {
                 break;
             }
 
-            if (!S_AlbumArt_.heart)
+            if (!S_AlbumArt_Cond.heart)
                 checkLiked = 0;
 
             if (!S_Playlists)
@@ -278,7 +278,7 @@ namespace API {
             } else
                 waitTime = S_UpdateFreq;
 
-            if (S_AlbumArt_.heart && checkLiked++ % 5 == 0) {
+            if (S_AlbumArt_Cond.heart && checkLiked++ % 5 == 0) {
                 if (!GetCurrentSongIsLiked())
                     waitTime *= 2;
                 else
@@ -454,7 +454,7 @@ namespace API {
             return;
         }
 
-        trace("setting volume to " + volumeDesired + " %" + (S_Volume_.egg && volumeDesired == 69 ? " (nice)" : ""));
+        trace("setting volume to " + volumeDesired + " %" + (S_Volume_Cond.egg && volumeDesired == 69 ? " (nice)" : ""));
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;

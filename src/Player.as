@@ -22,9 +22,9 @@ void RenderPlayer() {
 
         if (S_AlbumArt) {
             if (@tex !is null)
-                UI::Image(tex, vec2(S_AlbumArt_.width));
+                UI::Image(tex, vec2(S_AlbumArt_Cond.width));
             else
-                UI::Dummy(vec2(S_AlbumArt_.width));
+                UI::Dummy(vec2(S_AlbumArt_Cond.width));
 
             UI::SameLine();
         }
@@ -58,7 +58,7 @@ void RenderPlayer() {
                 UI::Text(albumRelease);
             }
 
-            if (S_AlbumArt && S_AlbumArt_.heart) {
+            if (S_AlbumArt && S_AlbumArt_Cond.heart) {
                 const string icon = state.songLiked ? Icons::Heart : Icons::HeartO;
                 UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
                 UI::Text("\\$000" + icon);
@@ -68,9 +68,9 @@ void RenderPlayer() {
             }
         UI::EndGroup();
 
-        const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArt_.width + sameLineWidth : 0.0f) + maxTextWidth;
-        const float buttonWidth = S_Buttons_.stretch ? Math::Max((albumArtAndTextWidth - (sameLineWidth * 4.0f)) / 5.0f, buttonWidthDefault) : buttonWidthDefault;
-        const vec2  buttonSize = vec2(buttonWidth, scale * font.FontSize * 1.4f);
+        const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArt_Cond.width + sameLineWidth : 0.0f) + maxTextWidth;
+        const float buttonWidth = S_Buttons_Cond.stretch ? Math::Max((albumArtAndTextWidth - (sameLineWidth * 4.0f)) / 5.0f, buttonWidthDefault) : buttonWidthDefault;
+        const vec2  buttonSize = vec2(buttonWidth, scale * font.FontSize * S_Buttons_Cond.height);
 
         UI::BeginDisabled(!S_Premium);
             if (S_Buttons) {
@@ -78,7 +78,7 @@ void RenderPlayer() {
                 if (UI::Button((state.shuffle ? (state.smartShuffle ? "\\$F80" : "\\$0F0") : "") + Icons::Random, buttonSize))
                     startnew(API::ToggleShuffle);
                 UI::EndDisabled();
-                if (S_Buttons_.tooltips)
+                if (S_Buttons_Cond.tooltips)
                     HoverTooltip("shuffle: " + (state.shuffle ? (state.smartShuffle ? "smart" : "on"): "off"));
 
                 UI::SameLine();
@@ -91,26 +91,26 @@ void RenderPlayer() {
                         startnew(API::Seek);
                     }
                 }
-                if (S_Buttons_.tooltips)
+                if (S_Buttons_Cond.tooltips)
                     HoverTooltip(skipPrevious ? "previous" : "restart");
 
                 UI::SameLine();
                 if (state.playing) {
                     if (UI::Button(Icons::Pause, buttonSize))
                         startnew(API::Pause);
-                    if (S_Buttons_.tooltips)
+                    if (S_Buttons_Cond.tooltips)
                         HoverTooltip("pause");
                 } else {
                     if (UI::Button(Icons::Play, buttonSize))
                         startnew(API::Play);
-                    if (S_Buttons_.tooltips)
+                    if (S_Buttons_Cond.tooltips)
                         HoverTooltip("resume");
                 }
 
                 UI::SameLine();
                 if (UI::Button(Icons::StepForward, buttonSize))
                     startnew(API::SkipNext);
-                if (S_Buttons_.tooltips)
+                if (S_Buttons_Cond.tooltips)
                     HoverTooltip("next");
 
                 UI::SameLine();
@@ -122,7 +122,7 @@ void RenderPlayer() {
                 }
                 if (UI::Button(repeatIcon, buttonSize))
                     startnew(API::CycleRepeat);
-                if (S_Buttons_.tooltips)
+                if (S_Buttons_Cond.tooltips)
                     HoverTooltip("repeat: " + tostring(state.repeat));
             }
 
@@ -141,13 +141,13 @@ void RenderPlayer() {
                     );
                 UI::EndDisabled();
 
-                if (S_Progress_.scroll && UI::IsItemHovered()) {
+                if (S_Progress_Cond.scroll && UI::IsItemHovered()) {
                     switch (int(UI::GetMouseWheelDelta())) {
                         case -1:
-                            seekPositionPercent -= (seekPositionPercent < int(S_Progress_.step) ? seekPositionPercent : S_Progress_.step);
+                            seekPositionPercent -= (seekPositionPercent < int(S_Progress_Cond.step) ? seekPositionPercent : S_Progress_Cond.step);
                             break;
                         case 1:
-                            seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_.step) ? 100 - seekPositionPercent : S_Progress_.step);
+                            seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_Cond.step) ? 100 - seekPositionPercent : S_Progress_Cond.step);
                             break;
                         default:;
                     }
@@ -165,11 +165,11 @@ void RenderPlayer() {
             }
 
             const bool supportsVolume = activeDevice !is null && activeDevice.supportsVolume;
-            if (S_Volume && (supportsVolume || (!supportsVolume && S_Volume_.unsupported))) {
+            if (S_Volume && (supportsVolume || (!supportsVolume && S_Volume_Cond.unsupported))) {
                 const int currentVolume = activeDevice !is null ? activeDevice.volume : -1;
                 const string volumeIcon = currentVolume < 34 ? Icons::VolumeOff : currentVolume < 67 ? Icons::VolumeDown : Icons::VolumeUp;
                 const bool eggValue = (!changingVolume && currentVolume == 69) || (changingVolume && volumeDesired == 69);
-                const string volumeText = (S_Volume_.egg && eggValue) ? "\\$I\\$888 NICE\\$Z " : tostring(changingVolume ? volumeDesired : currentVolume);
+                const string volumeText = (S_Volume_Cond.egg && eggValue) ? "\\$I\\$888 NICE\\$Z " : tostring(changingVolume ? volumeDesired : currentVolume);
 
                 UI::BeginDisabled(!supportsVolume || Time::Now - lastVolume < 2000);
                     UI::SetNextItemWidth(widthToSet);
@@ -182,13 +182,13 @@ void RenderPlayer() {
                         UI::SliderFlags::NoInput
                     );
 
-                    if (S_Volume_.scroll && UI::IsItemHovered()) {
+                    if (S_Volume_Cond.scroll && UI::IsItemHovered()) {
                         switch (int(UI::GetMouseWheelDelta())) {
                             case -1:
-                                volume -= (volume < int(S_Volume_.step) ? volume : S_Volume_.step);
+                                volume -= (volume < int(S_Volume_Cond.step) ? volume : S_Volume_Cond.step);
                                 break;
                             case 1:
-                                volume += (volume > 100 - int(S_Volume_.step) ? 100 - volume : S_Volume_.step);
+                                volume += (volume > 100 - int(S_Volume_Cond.step) ? 100 - volume : S_Volume_Cond.step);
                                 break;
                             default:;
                         }

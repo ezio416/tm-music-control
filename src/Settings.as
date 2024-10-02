@@ -43,7 +43,7 @@ class SettingsAlbumArt {
 }
 
 [Setting category="Player" name="Album artwork" if="S_AlbumArt"]
-SettingsAlbumArt S_AlbumArt_;
+SettingsAlbumArt S_AlbumArt_Cond;
 
 [Setting category="Player" name="Show song name"]
 bool S_Song = true;
@@ -69,10 +69,13 @@ class SettingsButtons {
 
     [Setting]
     bool tooltips = true;
+
+    [Setting step=0.1f]
+    float height = 1.2f;
 }
 
 [Setting category="Player" name="Buttons" if="S_Buttons"]
-SettingsButtons S_Buttons_;
+SettingsButtons S_Buttons_Cond;
 
 [Setting category="Player" name="Show progress bar"]
 bool S_Progress = true;
@@ -86,7 +89,7 @@ class SettingsProgress {
 }
 
 [Setting category="Player" name="Progress" if="S_Progress"]
-SettingsProgress S_Progress_;
+SettingsProgress S_Progress_Cond;
 
 [Setting category="Player" name="Show volume bar" description="The same change (i.e. 5%) at a high volume has a greater effect than at low volume. This should be solved in the future."]
 bool S_Volume = false;
@@ -106,7 +109,7 @@ class SettingsVolume {
 }
 
 [Setting category="Player" name="Volume" if="S_Volume"]
-SettingsVolume S_Volume_;
+SettingsVolume S_Volume_Cond;
 
 [Setting category="Player" name="Show playlists menu" description="Because of stricter API limits on this endpoint, this is checked less frequently."]
 bool S_Playlists = false;
