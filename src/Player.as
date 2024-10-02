@@ -78,6 +78,8 @@ void RenderPlayer() {
                 if (UI::Button((state.shuffle ? (state.smartShuffle ? "\\$F80" : "\\$0F0") : "") + Icons::Random, buttonSize))
                     startnew(API::ToggleShuffle);
                 UI::EndDisabled();
+                if (S_Buttons_.tooltips)
+                    HoverTooltip("shuffle: " + (state.shuffle ? (state.smartShuffle ? "smart" : "on"): "off"));
 
                 UI::SameLine();
                 const bool skipPrevious = state.songProgress < 3000;
@@ -89,18 +91,27 @@ void RenderPlayer() {
                         startnew(API::Seek);
                     }
                 }
+                if (S_Buttons_.tooltips)
+                    HoverTooltip(skipPrevious ? "previous" : "restart");
 
                 UI::SameLine();
                 if (state.playing) {
                     if (UI::Button(Icons::Pause, buttonSize))
                         startnew(API::Pause);
-                } else
+                    if (S_Buttons_.tooltips)
+                        HoverTooltip("pause");
+                } else {
                     if (UI::Button(Icons::Play, buttonSize))
                         startnew(API::Play);
+                    if (S_Buttons_.tooltips)
+                        HoverTooltip("resume");
+                }
 
                 UI::SameLine();
                 if (UI::Button(Icons::StepForward, buttonSize))
                     startnew(API::SkipNext);
+                if (S_Buttons_.tooltips)
+                    HoverTooltip("next");
 
                 UI::SameLine();
                 string repeatIcon;
@@ -111,7 +122,8 @@ void RenderPlayer() {
                 }
                 if (UI::Button(repeatIcon, buttonSize))
                     startnew(API::CycleRepeat);
-                HoverTooltip("repeat: " + tostring(state.repeat));
+                if (S_Buttons_.tooltips)
+                    HoverTooltip("repeat: " + tostring(state.repeat));
             }
 
             const float widthToSet = Math::Max(albumArtAndTextWidth, ((buttonWidth * 5.0f) + (sameLineWidth * 4.0f))) / scale;

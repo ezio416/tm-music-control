@@ -66,6 +66,9 @@ bool S_Buttons = true;
 class SettingsButtons {
     [Setting name="stretch to fill width"]
     bool stretch = true;
+
+    [Setting]
+    bool tooltips = true;
 }
 
 [Setting category="Player" name="Buttons" if="S_Buttons"]
