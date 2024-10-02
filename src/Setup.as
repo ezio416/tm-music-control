@@ -74,7 +74,7 @@ void RenderSetup() {
                 code = callbackUrl.Split("http://localhost:7777/callback?code=")[1];
                 startnew(Auth::Get);
             } catch {
-                NotifyWarn("error with callback URL - make sure you copy the entire thing!");
+                Error("Error with callback URL - make sure you copy the entire thing!");
                 warn("bad callback URL: " + callbackUrl);
                 code = "";
             }

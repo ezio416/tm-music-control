@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-09-25
+// m 2024-10-01
 
 Json::Value@ auth             = Json::Object();
 const string authFile         = IO::FromStorageFolder("auth.json");
@@ -35,8 +35,7 @@ namespace Auth {
         const int respCode = req.ResponseCode();
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("authorization error - please check Openplanet log");
-            error("error getting authorization tokens");
+            Error("Error getting authorization tokens");
             warn("response: " + respCode + " " + req.String());
             return;
         }
@@ -119,8 +118,7 @@ namespace Auth {
         const int respCode = req.ResponseCode();
 
         if (respCode < 200 || respCode >= 400) {
-            NotifyWarn("authorization error - please check Openplanet log");
-            error("error refreshing authorization token");
+            Error("Error refreshing authorization token");
             warn("response: " + respCode + " " + req.String());
             return;
         }

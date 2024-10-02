@@ -10,6 +10,9 @@ bool S_HideWithGame = true;
 [Setting category="General" name="Show/hide with Openplanet UI"]
 bool S_HideWithOP = false;
 
+[Setting category="General" name="Show on-screen warning messages" description="If disabled, you can still check the Openplanet log."]
+bool S_Warnings = false;
+
 [Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log."]
 bool S_Errors = true;
 
@@ -32,7 +35,7 @@ Font S_Font = Font::DroidSans_16;
 bool S_AlbumArt = true;
 
 class SettingsAlbumArt {
-    [Setting min=10 max=128]
+    [Setting min=10 max=256 description="Artwork files are 128x128 so it's not recommended to go larger."]
     uint width = 128;
 
     [Setting name="heart for library song" description="Because of stricter API limits on this endpoint, this is checked less frequently. I couldn't find a good place to put this in every circumstance, so if you have a suggestion, please make an issue on the GitHub!"]

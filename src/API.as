@@ -63,7 +63,7 @@ namespace API {
                 RateLimited("CycleRepeat", req);
                 break;
             default:
-                NotifyWarn("couldn't cycle repeat type", true);
+                Error("Couldn't cycle repeat type");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -93,7 +93,7 @@ namespace API {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetCurrentSongIsInLibrary", req);
             default:
-                NotifyWarn("couldn't check if song is in library", true);
+                Error("Couldn't check if song is in library");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -104,7 +104,7 @@ namespace API {
             inLibrary = state.songInLibrary;
             return true;
         } catch {
-            NotifyWarn("couldn't check if song is in library", true);
+            Error("Couldn't check if song is in library");
             warn("got: " + Json::Write(json));
         }
         return false;
@@ -130,7 +130,7 @@ namespace API {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetDevices", req);
             default:
-                NotifyWarn("couldn't get device list", true);
+                Error("Couldn't get device list");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -160,7 +160,7 @@ namespace API {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetPlaybackState", req);
             default:
-                NotifyWarn("couldn't get playback state", true);
+                Error("Couldn't get playback state");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -191,7 +191,7 @@ namespace API {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetPlaylists", req);
             default:
-                NotifyWarn("couldn't get playlists", true);
+                Error("Couldn't get playlists");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -253,6 +253,7 @@ namespace API {
                 break;
 
             if (waitTime > S_UpdateSpeed)
+                Warn("Waiting " + waitTime + " ms to try contacting API again");
             sleep(waitTime);
 
             if (waitTime > S_UpdateSpeed * 8)
@@ -262,6 +263,12 @@ namespace API {
                 state = State();
                 break;
             }
+
+            if (!S_AlbumArt_.heart)
+                checkLibrary = 0;
+
+            if (!S_Playlists)
+                checkPlaylists = 0;
 
             if (!GetDevices() || !GetPlaybackState()) {
                 waitTime *= 2;
@@ -320,7 +327,7 @@ namespace API {
                 RateLimited("Pause", req);
                 break;
             default:
-                NotifyWarn("couldn't pause playback", true);
+                Error("Couldn't pause playback");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -369,7 +376,7 @@ namespace API {
                 break;
             case ResponseCode::NotFound:
                 if (forceDeviceTried) {
-                    NotifyWarn("couldn't find a device", true);
+                    Error("Couldn't find a device");
                     forceDevice = false;
                     forceDeviceTried = false;
                     return;
@@ -384,7 +391,7 @@ namespace API {
                 RateLimited("Play", req);
                 break;
             default:
-                NotifyWarn("couldn't resume playback", true);
+                Error("Couldn't resume playback");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
 
@@ -422,7 +429,7 @@ namespace API {
                 RateLimited("Seek", req);
                 break;
             default:
-                NotifyWarn("couldn't seek in song", true);
+                Error("Couldn't seek in song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -458,7 +465,7 @@ namespace API {
                 RateLimited("SetVolume", req);
                 break;
             default:
-                NotifyWarn("couldn't set volume", true);
+                Error("Couldn't set volume");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -491,7 +498,7 @@ namespace API {
                 RateLimited("SkipNext", req);
                 break;
             default:
-                NotifyWarn("couldn't skip to next song", true);
+                Error("Couldn't skip to next song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -524,7 +531,7 @@ namespace API {
                 RateLimited("SkipPrevious", req);
                 break;
             default:
-                NotifyWarn("couldn't skip to previous song", true);
+                Error("Couldn't skip to previous song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -557,7 +564,7 @@ namespace API {
                 RateLimited("ToggleShuffle", req);
                 break;
             default:
-                NotifyWarn("couldn't toggle shuffle", true);
+                Error("couldn't toggle shuffle");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -600,10 +607,7 @@ namespace API {
         const dictionary@ headers = req.ResponseHeaders();
         const string msg = func + "(): rate limited" + (headers.Exists("retry-after") ? ", try again after " + string(headers["retry-after"]) + "s" : "");
 
-        if (S_Errors)
-            NotifyWarn(msg, true);
-        else
-            warn(msg);
+        Error(msg);
 
         return true;
     }
