@@ -1,5 +1,5 @@
 // c 2023-11-23
-// m 2024-01-19
+// m 2024-09-25
 
 [Setting hidden]
 bool disclaimerAccepted = false;
@@ -15,7 +15,7 @@ void RenderDisclaimer() {
     if (disclaimerOpened == 0)
         disclaimerOpened = Time::Stamp;
 
-    UI::Begin(title + " Disclaimer", UI::WindowFlags::AlwaysAutoResize);
+    if (UI::Begin(title + " Disclaimer", UI::WindowFlags::AlwaysAutoResize)) {
         UI::Text("\\$F50DISCLAIMER:\n");
         UI::NewLine();
         UI::TextWrapped("""
@@ -45,10 +45,11 @@ If you still want to proceed into the setup, click the button below. Otherwise, 
         """);
 
         UI::BeginDisabled(Time::Stamp - disclaimerOpened < 15);
-        if (UI::Button(Icons::Check + " I understand the risks and limitations above")) {
-            disclaimerAccepted = true;
-            S_Disclaimer = false;
-        }
+            if (UI::Button(Icons::Check + " I understand the risks and limitations above")) {
+                disclaimerAccepted = true;
+                S_Disclaimer = false;
+            }
         UI::EndDisabled();
+    }
     UI::End();
 }

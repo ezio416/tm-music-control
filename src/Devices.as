@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-01-19
+// m 2024-09-25
 
 Device@  activeDevice;
 Device[] devices;
@@ -33,10 +33,10 @@ class Device {
 
 void SetDevices(Json::Value@ json) {
     @activeDevice = null;
-    devices.RemoveRange(0, devices.Length);
+    devices = {};
 
     for (uint i = 0; i < json.Length; i++) {
-        Device dev = Device(json[i]);
+        Device@ dev = Device(json[i]);
         devices.InsertLast(dev);
 
         if (dev.active)
