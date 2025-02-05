@@ -10,6 +10,9 @@ bool S_HideWithGame = true;
 [Setting category="General" name="Show/hide with Openplanet UI"]
 bool S_HideWithOP = false;
 
+[Setting category="General" name="Show/hide with Playback"]
+bool S_HideWithPlayback = false;
+
 [Setting category="General" name="Show on-screen warning messages" description="If disabled, you can still check the Openplanet log."]
 bool S_Warnings = false;
 
