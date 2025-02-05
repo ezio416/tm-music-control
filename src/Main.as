@@ -31,7 +31,7 @@ void Render() {
     } else
         runLoop = true;
 
-    if ((S_HideWithGame && !UI::IsGameUIVisible()) || (S_HideWithOP && !UI::IsOverlayShown()))
+    if ((S_HideWithGame && !UI::IsGameUIVisible()) || (S_HideWithOP && !UI::IsOverlayShown()) || (S_HideWithPlayback && !state.playing))
         return;
 
     RenderPlayer();
