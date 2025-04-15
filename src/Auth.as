@@ -8,7 +8,7 @@ string       callbackUrl      = "";
 string       clientId         = "";
 string       clientSecret     = "";
 string       code             = "";
-const string redirectUri      = "http://localhost:7777/callback";
+const string redirectUri      = "http://127.0.0.0:7777/callback";
 int64        refreshTimestamp = 0;
 
 namespace Auth {
