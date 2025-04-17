@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-10-01
+// m 2025-04-13
 
 void RenderSetup() {
     if (!S_Setup || !disclaimerAccepted)
@@ -71,7 +71,7 @@ void RenderSetup() {
         if (UI::Button(Icons::Unlock + " Finish Authorization")) {
             auth["basic"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
             try {
-                code = callbackUrl.Split("http://localhost:7777/callback?code=")[1];
+                code = callbackUrl.Split(redirectUri + "?code=")[1];
                 startnew(Auth::Get);
             } catch {
                 Error("Error with callback URL - make sure you copy the entire thing!");
