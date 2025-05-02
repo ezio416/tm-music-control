@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-10-01
+// m 2025-04-17
 
 bool  liked = false;  // to prevent flickering when checking, probably a better way to do this?
 State state;
@@ -26,6 +26,9 @@ enum Repeat {
 class State {
     string           album;
     string           albumArtUrl64;
+    string           albumArtUrl300;
+    string           albumArtUrl640;
+    string           albumArtUrlSelected;
     string           albumRelease;
     ReleasePrecision albumReleasePrecision;
     string           artists;
@@ -73,7 +76,14 @@ class State {
         else if (_relPrec == "year")  albumReleasePrecision = ReleasePrecision::year;
 
         Json::Value@ _albumImages = _album.Get("images");
-        albumArtUrl64 = string(_albumImages[2]["url"]);
+        albumArtUrl640 = string(_albumImages[0]["url"]);
+        albumArtUrl300 = string(_albumImages[1]["url"]);
+        albumArtUrl64  = string(_albumImages[2]["url"]);
+        switch (S_AlbumArt_Cond.resolution) {
+            case AlbumArtRes::x64:  albumArtUrlSelected = albumArtUrl64;  break;
+            case AlbumArtRes::x300: albumArtUrlSelected = albumArtUrl300; break;
+            case AlbumArtRes::x640: albumArtUrlSelected = albumArtUrl640; break;
+        }
 
         Json::Value@ _artists = _item.Get("artists");
         for (uint i = 0; i < _artists.Length; i++) {
