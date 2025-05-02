@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-10-01
+// m 2025-05-01
 
 bool        changingVolume     = false;
 const float scale              = UI::GetScale();
@@ -9,6 +9,9 @@ bool        seeking            = false;
 
 void RenderPlayer() {
     if (!disclaimerAccepted)
+        return;
+
+    if (S_HideInactive && Time::Stamp - lastActive > int(S_Inactivity))
         return;
 
     int flags = UI::WindowFlags::AlwaysAutoResize |

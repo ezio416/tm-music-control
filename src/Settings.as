@@ -28,6 +28,13 @@ enum UpdateFreq {
 [Setting category="General" name="Update frequency" description="Only change this if you're getting rate-limit errors."]
 UpdateFreq S_UpdateFreq = UpdateFreq::Normal;
 
+
+[Setting category="Player" name="Hide when inactive" description="When music is paused for a certain time"]
+bool S_HideInactive = false;
+
+[Setting category="Player" name="Inactivity time (seconds)" if="S_HideInactive"]
+uint S_Inactivity = 30;
+
 [Setting category="Player" name="Font style/size" description="Loading a font for the first time causes game to hang for a bit."]
 Font S_Font = Font::DroidSans_16;
 
@@ -135,6 +142,7 @@ bool S_PlaylistSetup = false;
 
 [Setting category="Windows" name="Show URI setup window"]
 bool S_URISetup = false;
+
 
 [Setting category="Premium" name="I know I have Premium" description="Only change if the plugin made a mistake!"]
 bool S_Premium = true;
