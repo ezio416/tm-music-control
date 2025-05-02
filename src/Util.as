@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2025-04-17
+// m 2025-05-01
 
 const string albumArtFolder    = IO::FromStorageFolder("albumArt");
 bool         albumArtLoading   = false;
@@ -19,7 +19,7 @@ string FormatSeconds(int seconds) {
 }
 
 void HoverTooltip(const string &in msg) {
-    if (!UI::IsItemHovered())
+    if (!UI::IsItemHovered(UI::HoveredFlags::AllowWhenDisabled))
         return;
 
     UI::BeginTooltip();

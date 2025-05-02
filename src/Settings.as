@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2025-04-17
+// m 2025-05-01
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = false;
@@ -133,6 +133,8 @@ bool S_Setup = false;
 [Setting category="Windows" name="Show playlists setup window"]
 bool S_PlaylistSetup = false;
 
+[Setting category="Windows" name="Show URI setup window"]
+bool S_URISetup = false;
 
 [Setting category="Premium" name="I know I have Premium" description="Only change if the plugin made a mistake!"]
 bool S_Premium = true;
