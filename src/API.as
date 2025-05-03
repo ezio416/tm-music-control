@@ -1,5 +1,5 @@
 // c 2023-08-23
-// m 2024-10-01
+// m 2025-04-17
 
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
@@ -168,7 +168,7 @@ namespace API {
         }
 
         state = activeDevice !is null ? State(req.Json()) : State();
-        if (state.albumArtUrl64 != loadedAlbumArtUrl)
+        if (state.albumArtUrlSelected != loadedAlbumArtUrl)
             startnew(LoadAlbumArt);
 
         return true;

@@ -1,5 +1,5 @@
 // c 2023-08-24
-// m 2024-09-28
+// m 2025-05-01
 
 [SettingsTab name="Debug" icon="Bug" order=1]
 void RenderDebug() {
@@ -58,8 +58,14 @@ void RenderDebug() {
                 IO::SetClipboard(state.albumRelease);
             if (UI::Selectable("album release precision: " + tostring(state.albumReleasePrecision), false))
                 IO::SetClipboard(tostring(state.albumReleasePrecision));
-            if (UI::Selectable("album art URL: " + state.albumArtUrl64, false))
+            if (UI::Selectable("album art URL (x64): " + state.albumArtUrl64, false))
                 IO::SetClipboard(state.albumArtUrl64);
+            if (UI::Selectable("album art URL (x300): " + state.albumArtUrl300, false))
+                IO::SetClipboard(state.albumArtUrl300);
+            if (UI::Selectable("album art URL (x640): " + state.albumArtUrl640, false))
+                IO::SetClipboard(state.albumArtUrl640);
+            if (UI::Selectable("album art URL (selected): " + state.albumArtUrlSelected, false))
+                IO::SetClipboard(state.albumArtUrlSelected);
             if (UI::Selectable("playing: " + state.playing, false))
                 IO::SetClipboard(tostring(state.playing));
             if (UI::Selectable("progress: " + state.songProgress, false))

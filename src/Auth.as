@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-10-01
+// m 2025-04-13
 
 Json::Value@ auth             = Json::Object();
 const string authFile         = IO::FromStorageFolder("auth.json");
@@ -8,7 +8,7 @@ string       callbackUrl      = "";
 string       clientId         = "";
 string       clientSecret     = "";
 string       code             = "";
-const string redirectUri      = "http://localhost:7777/callback";
+const string redirectUri      = "http://127.0.0.1:7777/callback";
 int64        refreshTimestamp = 0;
 
 namespace Auth {

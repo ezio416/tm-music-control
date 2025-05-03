@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-10-01
+// m 2025-05-01
 
 const string albumArtFolder    = IO::FromStorageFolder("albumArt");
 bool         albumArtLoading   = false;
@@ -19,7 +19,7 @@ string FormatSeconds(int seconds) {
 }
 
 void HoverTooltip(const string &in msg) {
-    if (!UI::IsItemHovered())
+    if (!UI::IsItemHovered(UI::HoveredFlags::AllowWhenDisabled))
         return;
 
     UI::BeginTooltip();
@@ -45,14 +45,14 @@ void LoadAlbumArt() {
         "clearing album art"
     );
 
-    if (state.albumArtUrl64.Length == 0) {
+    if (state.albumArtUrlSelected.Length == 0) {
         albumArtLoading = false;
         Warn("Blank album art: " + state.album);
         return;
     }
 
     IO::CreateFolder(albumArtFolder);
-    const string filepath = albumArtFolder + "/" + Path::SanitizeFileName(state.albumArtUrl64) + ".jpg";
+    const string filepath = albumArtFolder + "/" + Path::SanitizeFileName(state.albumArtUrlSelected) + ".jpg";
 
     if (!IO::FileExists(filepath)) {
         const uint max_timeout = 3000;
@@ -64,7 +64,7 @@ void LoadAlbumArt() {
             uint64 nowTimeout = Time::Now;
             bool timedOut = false;
 
-            Net::HttpRequest@ req = Net::HttpGet(state.albumArtUrl64);
+            Net::HttpRequest@ req = Net::HttpGet(state.albumArtUrlSelected);
             while (!req.Finished()) {
                 if (Time::Now - nowTimeout > max_timeout) {
                     timedOut = true;
@@ -88,7 +88,7 @@ void LoadAlbumArt() {
 
     IO::File file(filepath, IO::FileMode::Read);
     @tex = UI::LoadTexture(file.Read(file.Size()));
-    loadedAlbumArtUrl = state.albumArtUrl64;
+    loadedAlbumArtUrl = state.albumArtUrlSelected;
 
     albumArtLoading = false;
 }

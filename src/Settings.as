@@ -1,5 +1,5 @@
 // c 2023-08-22
-// m 2024-10-01
+// m 2025-05-01
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = false;
@@ -28,15 +28,31 @@ enum UpdateFreq {
 [Setting category="General" name="Update frequency" description="Only change this if you're getting rate-limit errors."]
 UpdateFreq S_UpdateFreq = UpdateFreq::Normal;
 
+
+[Setting category="Player" name="Hide when inactive" description="When music is paused for a certain time"]
+bool S_HideInactive = false;
+
+[Setting category="Player" name="Inactivity time (seconds)" if="S_HideInactive"]
+uint S_Inactivity = 30;
+
 [Setting category="Player" name="Font style/size" description="Loading a font for the first time causes game to hang for a bit."]
 Font S_Font = Font::DroidSans_16;
 
 [Setting category="Player" name="Show album artwork"]
 bool S_AlbumArt = true;
 
+enum AlbumArtRes {
+    x64,
+    x300,
+    x640
+}
+
 class SettingsAlbumArt {
     [Setting min=10 max=256]
     uint width = 128;
+
+    [Setting]
+    AlbumArtRes resolution = AlbumArtRes::x64;
 
     [Setting name="heart for liked song" description="Because of stricter API limits on this endpoint, this is checked less frequently. I couldn't find a good place to put this in every circumstance, so if you have a suggestion, please make an issue on the GitHub!"]
     bool heart = false;
@@ -123,6 +139,9 @@ bool S_Setup = false;
 
 [Setting category="Windows" name="Show playlists setup window"]
 bool S_PlaylistSetup = false;
+
+[Setting category="Windows" name="Show URI setup window"]
+bool S_URISetup = false;
 
 
 [Setting category="Premium" name="I know I have Premium" description="Only change if the plugin made a mistake!"]

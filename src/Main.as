@@ -1,10 +1,13 @@
 // c 2023-08-21
-// m 2024-09-28
+// m 2025-05-01
 
 const string title   = "\\$2D6" + Icons::Music + "\\$G Music Control";
 const string version = Meta::ExecutingPlugin().Version;
 
 void Main() {
+    if (!uriChanged && !IO::FileExists(authFile))
+        uriChanged = true;  // user's first install >= v0.6.0, no need to do this setup
+
     Auth::Load();
     S_Setup = !Auth::Authorized();
 
@@ -38,6 +41,7 @@ void Render() {
     RenderDisclaimer();
     RenderSetup();
     RenderSetupPlaylists();
+    RenderURISetup();
 }
 
 void RenderMenu() {
