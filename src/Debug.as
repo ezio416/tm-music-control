@@ -1,4 +1,4 @@
-[SettingsTab name="Debug" icon="Bug" order=1]
+[SettingsTab name="Debug" icon="Bug" order=2]
 void RenderDebug() {
     UI::BeginTabBar("debug-tabs", UI::TabBarFlags::None);
         if (UI::BeginTabItem("devices")) {

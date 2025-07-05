@@ -32,10 +32,16 @@ bool S_HideInactive = false;
 [Setting category="Player" name="Inactivity time (seconds)" if="S_HideInactive"]
 uint S_Inactivity = 30;
 
-[Setting category="Player" name="Font"]
+[Setting category="Player" name="Opacity" min=0.05f max=1.0f]
+float S_Opacity = 1.0f;
+
+[Setting category="Player" name="Font" hidden]
 Font S_Font = Font::DroidSans;
 
-[Setting category="Player" name="Font size" min=8 max=72]
+[Setting category="Player" name="Font (system)" hidden]
+string S_SystemFont;
+
+[Setting category="Player" name="Font size" min=8 max=72 hidden]
 int S_FontSize = 16;
 
 [Setting category="Player" name="Show album artwork"]
