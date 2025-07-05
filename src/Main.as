@@ -27,6 +27,8 @@ void OnSettingsChanged() {
     if (currentFont != S_Font) {
         ChangeFont();
     }
+
+    S_Opacity = Math::Clamp(S_Opacity, 0.05f, 1.0f);
 }
 
 void Render() {

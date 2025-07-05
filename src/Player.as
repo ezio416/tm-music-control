@@ -24,12 +24,26 @@ void RenderPlayer() {
         flags |= UI::WindowFlags::NoMove;
     }
 
+    const vec4 styleButton     = UI::GetStyleColor(UI::Col::Button);
+    const vec4 styleFrameBg    = UI::GetStyleColor(UI::Col::FrameBg);
+    const vec4 stylePopupBg    = UI::GetStyleColor(UI::Col::PopupBg);
+    const vec4 styleSliderGrab = UI::GetStyleColor(UI::Col::SliderGrab);
+    const vec4 styleText       = UI::GetStyleColor(UI::Col::Text);
+    const vec4 styleWindowBg   = UI::GetStyleColor(UI::Col::WindowBg);
+
+    UI::PushStyleColor(UI::Col::Button,     vec4(styleButton.xyz,     Math::Min(S_Opacity, styleButton.w)));
+    UI::PushStyleColor(UI::Col::FrameBg,    vec4(styleFrameBg.xyz,    Math::Min(S_Opacity, styleFrameBg.w)));
+    UI::PushStyleColor(UI::Col::PopupBg,    vec4(stylePopupBg.xyz,    Math::Min(S_Opacity, stylePopupBg.w)));
+    UI::PushStyleColor(UI::Col::SliderGrab, vec4(styleSliderGrab.xyz, Math::Min(S_Opacity, styleSliderGrab.w)));
+    UI::PushStyleColor(UI::Col::Text,       vec4(styleText.xyz,       Math::Min(S_Opacity, styleText.w)));
+    UI::PushStyleColor(UI::Col::WindowBg,   vec4(styleWindowBg.xyz,   Math::Min(S_Opacity, styleWindowBg.w)));
+
     if (UI::Begin("MusicControl", S_Enabled, flags)) {
         const vec2 pre = UI::GetCursorPos();
 
         if (S_AlbumArt) {
             if (@tex !is null) {
-                UI::Image(tex, vec2(S_AlbumArt_Cond.width));
+                UI::ImageWithBg(tex, vec2(S_AlbumArt_Cond.width), tint_col: vec4(vec3(1.0f), S_Opacity));
             } else {
                 UI::Dummy(vec2(S_AlbumArt_Cond.width));
             }
@@ -304,6 +318,8 @@ void RenderPlayer() {
     }
 
     UI::End();
+
+    UI::PopStyleColor(6);
 }
 
 float GetMaxTextWidth(const float input, const string&in text) {
