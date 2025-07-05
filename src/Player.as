@@ -61,7 +61,13 @@ void RenderPlayer() {
             }
 
             if (S_AlbumRelease) {
-                const string albumRelease = state.albumRelease.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.albumRelease.Length));
+                string albumRelease = state.albumRelease.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.albumRelease.Length));
+                if (true
+                    and S_AlbumReleaseTruncate
+                    and albumRelease.EndsWith("-01-01")
+                ) {
+                    albumRelease = albumRelease.SubStr(0, 4);  // only show year
+                }
                 maxTextWidth = GetMaxTextWidth(maxTextWidth, albumRelease);
                 UI::Text(albumRelease);
             }

@@ -70,6 +70,9 @@ bool S_AlbumName = true;
 [Setting category="Player" name="Show release date"]
 bool S_AlbumRelease = true;
 
+[Setting category="Player" name="Truncate date if January 1" description="Many albums claim to be released on January 1 which is generally not true"]
+bool S_AlbumReleaseTruncate = true;
+
 [Setting category="Player" name="Limit text length" min=-1 max=200 description="Some details, usually album names, can have really long names. -1 means no limit. This setting is a temporary solution until scrolling text can be figured out."]
 int S_MaxTextLength = -1;
 
