@@ -12,6 +12,10 @@ void Main() {
     Auth::Load();
     S_Setup = !Auth::Authorized();
 
+    LoadFonts();
+    if (S_Font > 2) {  // enum before 0.7 had more options so the setting gets messed up
+        S_Font = Font::DroidSans;
+    }
     ChangeFont();
 
     while (true) {

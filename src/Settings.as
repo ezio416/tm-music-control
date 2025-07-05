@@ -32,8 +32,11 @@ bool S_HideInactive = false;
 [Setting category="Player" name="Inactivity time (seconds)" if="S_HideInactive"]
 uint S_Inactivity = 30;
 
-[Setting category="Player" name="Font style/size" description="Loading a font for the first time causes game to hang for a bit."]
-Font S_Font = Font::DroidSans_16;
+[Setting category="Player" name="Font"]
+Font S_Font = Font::DroidSans;
+
+[Setting category="Player" name="Font size" min=8 max=72]
+int S_FontSize = 16;
 
 [Setting category="Player" name="Show album artwork"]
 bool S_AlbumArt = true;

@@ -39,7 +39,7 @@ void RenderPlayer() {
 
         float maxTextWidth = 0.0f;
 
-        UI::PushFont(font);
+        UI::PushFont(font, S_FontSize);
 
         UI::BeginGroup();
             if (S_Song) {
