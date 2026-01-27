@@ -1,6 +1,3 @@
-// c 2023-08-23
-// m 2025-04-17
-
 const string apiUrl           = "https://api.spotify.com/v1";
 bool         forceDevice      = false;
 bool         forceDeviceTried = false;

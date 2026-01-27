@@ -1,6 +1,3 @@
-// c 2023-11-23
-// m 2024-09-25
-
 [Setting hidden]
 bool disclaimerAccepted = false;
 

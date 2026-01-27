@@ -1,6 +1,3 @@
-// c 2023-08-24
-// m 2025-05-01
-
 [SettingsTab name="Debug" icon="Bug" order=1]
 void RenderDebug() {
     UI::BeginTabBar("debug-tabs", UI::TabBarFlags::None);

@@ -1,6 +1,3 @@
-// c 2023-08-24
-// m 2024-09-25
-
 Device@  activeDevice;
 Device[] devices;
 Device@  lastDevice;

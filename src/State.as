@@ -1,6 +1,3 @@
-// c 2023-08-24
-// m 2025-05-01
-
 int64 lastActive;
 bool  liked = false;  // to prevent flickering when checking, probably a better way to do this?
 State state;

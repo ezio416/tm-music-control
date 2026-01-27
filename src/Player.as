@@ -1,6 +1,3 @@
-// c 2023-08-23
-// m 2025-05-01
-
 bool        changingVolume     = false;
 const float scale              = UI::GetScale();
 const float buttonWidthDefault = scale * 30.0f;

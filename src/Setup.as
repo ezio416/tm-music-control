@@ -1,6 +1,3 @@
-// c 2023-08-22
-// m 2025-05-01
-
 void RenderSetup() {
     if (!S_Setup || !disclaimerAccepted)
         return;

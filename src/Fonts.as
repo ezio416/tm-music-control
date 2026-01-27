@@ -1,6 +1,3 @@
-// c 2023-08-04
-// m 2024-10-01
-
 Font      currentFont = S_Font;
 UI::Font@ font;
 

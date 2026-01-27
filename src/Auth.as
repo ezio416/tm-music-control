@@ -1,6 +1,3 @@
-// c 2023-08-22
-// m 2025-04-13
-
 Json::Value@ auth             = Json::Object();
 const string authFile         = IO::FromStorageFolder("auth.json");
 const string authUrl          = "https://accounts.spotify.com/api";

@@ -1,6 +1,3 @@
-// c 2023-08-21
-// m 2025-05-01
-
 const string title   = "\\$2D6" + Icons::Music + "\\$G Music Control";
 const string version = Meta::ExecutingPlugin().Version;
 
