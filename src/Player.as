@@ -176,7 +176,6 @@ void RenderPlayer() {
                         case 1:
                             seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_Cond.step) ? 100 - seekPositionPercent : S_Progress_Cond.step);
                             break;
-                        default:;
                     }
                 }
 
@@ -239,7 +238,6 @@ void RenderPlayer() {
                             case 1:
                                 volume += (volume > 100 - int(S_Volume_Cond.step) ? 100 - volume : S_Volume_Cond.step);
                                 break;
-                            default:;
                         }
                     }
                 UI::EndDisabled();
