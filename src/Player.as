@@ -302,5 +302,5 @@ void RenderPlayer() {
 }
 
 float GetMaxTextWidth(const float input, const string&in text) {
-    return Math::Max(input, Draw::MeasureString(text, font).x);
+    return Math::Max(input, UI::MeasureString(text, font).x);
 }
