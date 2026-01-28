@@ -1,8 +1,5 @@
-bool        changingVolume     = false;
-const float scale              = UI::GetScale();
-const float buttonWidthDefault = scale * 30.0f;
-const float sameLineWidth      = scale * 10.0f;
-bool        seeking            = false;
+bool changingVolume = false;
+bool seeking        = false;
 
 void RenderPlayer() {
     if (!disclaimerAccepted) {
@@ -15,6 +12,10 @@ void RenderPlayer() {
     ) {
         return;
     }
+
+    const float scale              = UI::GetScale();
+    const float buttonWidthDefault = scale * 30.0f;
+    const float sameLineWidth      = scale * 10.0f;
 
     int flags = UI::WindowFlags::AlwaysAutoResize |
                 UI::WindowFlags::NoTitleBar;
