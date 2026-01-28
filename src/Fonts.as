@@ -15,15 +15,15 @@ enum Font {
 
 void ChangeFont() {
     switch (S_Font) {
-        case Font::DroidSans_16:     @font = UI::LoadFont("DroidSans.ttf",      16.0f, -1, -1, true, true, true); break;
-        case Font::DroidSans_20:     @font = UI::LoadFont("DroidSans.ttf",      20.0f, -1, -1, true, true, true); break;
-        case Font::DroidSans_26:     @font = UI::LoadFont("DroidSans.ttf",      26.0f, -1, -1, true, true, true); break;
-        case Font::DroidSansBold_16: @font = UI::LoadFont("DroidSans-Bold.ttf", 16.0f, -1, -1, true, true, true); break;
-        case Font::DroidSansBold_20: @font = UI::LoadFont("DroidSans-Bold.ttf", 20.0f, -1, -1, true, true, true); break;
-        case Font::DroidSansBold_26: @font = UI::LoadFont("DroidSans-Bold.ttf", 26.0f, -1, -1, true, true, true); break;
-        case Font::DroidSansMono_16: @font = UI::LoadFont("DroidSansMono.ttf",  16.0f, -1, -1, true, true, true); break;
-        case Font::DroidSansMono_20: @font = UI::LoadFont("DroidSansMono.ttf",  20.0f, -1, -1, true, true, true); break;
-        case Font::DroidSansMono_26: @font = UI::LoadFont("DroidSansMono.ttf",  26.0f, -1, -1, true, true, true); break;
+        case Font::DroidSans_16:     @font = UI::LoadFont("DroidSans.ttf",      16.0f); break;
+        case Font::DroidSans_20:     @font = UI::LoadFont("DroidSans.ttf",      20.0f); break;
+        case Font::DroidSans_26:     @font = UI::LoadFont("DroidSans.ttf",      26.0f); break;
+        case Font::DroidSansBold_16: @font = UI::LoadFont("DroidSans-Bold.ttf", 16.0f); break;
+        case Font::DroidSansBold_20: @font = UI::LoadFont("DroidSans-Bold.ttf", 20.0f); break;
+        case Font::DroidSansBold_26: @font = UI::LoadFont("DroidSans-Bold.ttf", 26.0f); break;
+        case Font::DroidSansMono_16: @font = UI::LoadFont("DroidSansMono.ttf",  16.0f); break;
+        case Font::DroidSansMono_20: @font = UI::LoadFont("DroidSansMono.ttf",  20.0f); break;
+        case Font::DroidSansMono_26: @font = UI::LoadFont("DroidSansMono.ttf",  26.0f); break;
         default:;
     }
 
