@@ -42,8 +42,9 @@ namespace API {
         req.Url = url;
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -53,10 +54,11 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required"))
+                if (resp.Contains("Premium required")) {
                     Premium();
-                else
+                } else {
                     warn("CycleRepeat(): " + resp.Replace("\n", ""));
+                }
                 break;
             case ResponseCode::TooManyRequests:
                 RateLimited("CycleRepeat", req);
@@ -68,8 +70,9 @@ namespace API {
     }
 
     bool GetCurrentSongIsLiked() {
-        if (state.songId.Length == 0)
+        if (state.songId.Length == 0) {
             return true;
+        }
 
         // trace("checking if song \"" + state.song + "\" is in user's library");
 
@@ -78,8 +81,9 @@ namespace API {
         req.Url = apiUrl + "/me/tracks/contains?ids=" + state.songId;
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
         const int respCode = req.ResponseCode();
         switch (respCode) {
             case ResponseCode::Good:
@@ -115,8 +119,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/devices";
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const int respCode = req.ResponseCode();
 
@@ -145,8 +150,9 @@ namespace API {
         req.Url = apiUrl + "/me/player";
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const int respCode = req.ResponseCode();
 
@@ -165,8 +171,9 @@ namespace API {
         }
 
         state = activeDevice !is null ? State(req.Json()) : State();
-        if (state.albumArtUrlSelected != loadedAlbumArtUrl)
+        if (state.albumArtUrlSelected != loadedAlbumArtUrl) {
             startnew(LoadAlbumArt);
+        }
 
         return true;
     }
@@ -177,8 +184,9 @@ namespace API {
         req.Url = apiUrl + "/me/playlists?limit=50";
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const int respCode = req.ResponseCode();
 
@@ -203,8 +211,9 @@ namespace API {
         playlists["spotify:user:" + username + ":collection"] = "Liked Songs";
 
         Json::Value@ items = json["items"];
-        for (uint i = 0; i < items.Length; i++)
+        for (uint i = 0; i < items.Length; i++) {
             playlists["spotify:playlist:" + string(items[i]["id"])] = string(items[i]["name"]);
+        }
 
         return true;
     }
@@ -248,47 +257,66 @@ namespace API {
         uint checkPlaylists = 0;
 
         while (true) {
-            if (!Auth::Authorized() || !disclaimerAccepted)
+            if (false
+                or !Auth::Authorized()
+                or !disclaimerAccepted
+            ) {
                 break;
+            }
 
-            if (waitTime > S_UpdateFreq)
+            if (waitTime > S_UpdateFreq) {
                 Warn("Waiting " + waitTime + " ms to try contacting API again");
+            }
             sleep(waitTime);
 
-            if (waitTime > S_UpdateFreq * 4)
+            if (waitTime > S_UpdateFreq * 4) {
                 waitTime = S_UpdateFreq * 4;
+            }
 
             if (!runLoop) {
                 state = State();
                 break;
             }
 
-            if (!S_AlbumArt_Cond.heart)
+            if (!S_AlbumArt_Cond.heart) {
                 checkLiked = 0;
+            }
 
-            if (!S_Playlists)
+            if (!S_Playlists) {
                 checkPlaylists = 0;
+            }
 
-            if (!GetDevices() || !GetPlaybackState()) {
+            if (false
+                or !GetDevices()
+                or !GetPlaybackState()
+            ) {
                 waitTime *= 2;
                 continue;
             } else
                 waitTime = S_UpdateFreq;
 
-            if (S_AlbumArt_Cond.heart && checkLiked++ % 5 == 0) {
-                if (!GetCurrentSongIsLiked())
+            if (true
+                and S_AlbumArt_Cond.heart
+                and checkLiked++ % 5 == 0
+            ) {
+                if (!GetCurrentSongIsLiked()) {
                     waitTime *= 2;
-                else
+                } else {
                     waitTime = S_UpdateFreq;
+                }
 
                 checkLiked = 1;
             }
 
-            if (S_Playlists && checkPlaylists++ % 20 == 0) {
-                if (!GetPlaylists())
+            if (true
+                and S_Playlists
+                and checkPlaylists++ % 20 == 0
+            ) {
+                if (!GetPlaylists()) {
                     waitTime *= 2;
-                else
+                } else {
                     waitTime = S_UpdateFreq;
+                }
 
                 checkPlaylists = 1;
             }
@@ -305,8 +333,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/pause";
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -346,18 +375,20 @@ namespace API {
         req.Headers["Authorization"] = string(auth["access"]);
 
         if (selectedPlaylist.Length > 0) {
-            if (playlists.Exists(selectedPlaylist))
+            if (playlists.Exists(selectedPlaylist)) {
                 trace("switching playlist to \"" + string(playlists[selectedPlaylist]) + "\"");
-            else
+            } else {
                 warn("playlist \"" + selectedPlaylist + "\" not found");
+            }
 
             req.Body = "{\"context_uri\":\"" + selectedPlaylist + "\"}";
             selectedPlaylist = "";
         }
 
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -398,8 +429,9 @@ namespace API {
     }
 
     void Seek() {
-        if (!S_Premium)
+        if (!S_Premium) {
             return;
+        }
 
         const uint64 now = Time::Now;
         if (now - lastSeek < 2000) {
@@ -414,8 +446,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/seek?position_ms=" + seekPosition;
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -425,10 +458,11 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required"))
+                if (resp.Contains("Premium required")) {
                     Premium();
-                else
+                } else {
                     warn("Seek(): " + resp.Replace("\n", ""));
+                }
                 break;
             case ResponseCode::TooManyRequests:
                 RateLimited("Seek", req);
@@ -442,8 +476,9 @@ namespace API {
     }
 
     void SetVolume() {
-        if (!S_Premium)
+        if (!S_Premium) {
             return;
+        }
 
         const uint64 now = Time::Now;
         if (now - lastVolume < 2000) {
@@ -458,8 +493,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/volume?volume_percent=" + volumeDesired;
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -469,10 +505,11 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required"))
+                if (resp.Contains("Premium required")) {
                     Premium();
-                else
+                } else {
                     warn("SetVolume(): " + resp.Replace("\n", ""));
+                }
                 break;
             case ResponseCode::TooManyRequests:
                 RateLimited("SetVolume", req);
@@ -493,8 +530,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/next";
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -504,10 +542,11 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required"))
+                if (resp.Contains("Premium required")) {
                     Premium();
-                else
+                } else {
                     warn("SkipNext(): " + resp.Replace("\n", ""));
+                }
                 break;
             case ResponseCode::TooManyRequests:
                 RateLimited("SkipNext", req);
@@ -526,8 +565,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/previous";
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -537,10 +577,11 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required"))
+                if (resp.Contains("Premium required")) {
                     Premium();
-                else
+                } else {
                     warn("SkipPrevious(): " + resp.Replace("\n", ""));
+                }
                 break;
             case ResponseCode::TooManyRequests:
                 RateLimited("SkipPrevious", req);
@@ -559,8 +600,9 @@ namespace API {
         req.Url = apiUrl + "/me/player/shuffle?state=" + !state.shuffle;
         req.Headers["Authorization"] = string(auth["access"]);
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -570,10 +612,11 @@ namespace API {
             case ResponseCode::NoContent:
                 break;
             case ResponseCode::Forbidden:
-                if (resp.Contains("Premium required"))
+                if (resp.Contains("Premium required")) {
                     Premium();
-                else
+                } else {
                     warn("ToggleShuffle(): " + resp.Replace("\n", ""));
+                }
                 break;
             case ResponseCode::TooManyRequests:
                 RateLimited("ToggleShuffle", req);
@@ -618,7 +661,7 @@ namespace API {
         S_Premium = false;
     }
 
-    bool RateLimited(const string &in func, Net::HttpRequest@ req) {
+    bool RateLimited(const string&in func, Net::HttpRequest@ req) {
         const dictionary@ headers = req.ResponseHeaders();
         const string msg = func + "(): rate limited" + (headers.Exists("retry-after") ? ", try again after " + string(headers["retry-after"]) + "s" : "");
 

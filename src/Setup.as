@@ -1,6 +1,10 @@
 void RenderSetup() {
-    if (!S_Setup || !disclaimerAccepted)
+    if (false
+        or !S_Setup
+        or !disclaimerAccepted
+    ) {
         return;
+    }
 
     if (UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
         UI::Text(
@@ -11,8 +15,9 @@ void RenderSetup() {
             "\n    1. Click this button to open the Developer Dashboard in your browser"
         );
 
-        if (UI::Button(Icons::Spotify + " Developer Dashboard"))
+        if (UI::Button(Icons::Spotify + " Developer Dashboard")) {
             OpenBrowserURL("https://developer.spotify.com/dashboard");
+        }
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
         UI::Text(
@@ -24,8 +29,9 @@ void RenderSetup() {
             "\n    6. Click this button, then paste this into the \\$F0FRedirect URI\\$G field"
         );
 
-        if (UI::Button(Icons::Retweet + " Redirect URI"))
+        if (UI::Button(Icons::Retweet + " Redirect URI")) {
             IO::SetClipboard(redirectUri);
+        }
         HoverTooltip("copy to clipboard " + Icons::Clipboard);
 
         UI::Text(
@@ -45,14 +51,16 @@ void RenderSetup() {
         );
 
         UI::BeginDisabled(clientId.Length != 32);
-        if (UI::Button(Icons::Spotify + " Authorization Page"))
+        if (UI::Button(Icons::Spotify + " Authorization Page")) {
             Auth::OpenPage();
+        }
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
         UI::EndDisabled();
 
         UI::SameLine();
-        if (UI::Button(Icons::Spotify + " Manage Apps"))
+        if (UI::Button(Icons::Spotify + " Manage Apps")) {
             OpenBrowserURL("https://www.spotify.com/us/account/apps/");
+        }
         HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
         UI::Text(
@@ -64,7 +72,10 @@ void RenderSetup() {
 
         callbackUrl = UI::InputText("Localhost callback URL", callbackUrl);
 
-        UI::BeginDisabled(clientId.Length != 32 && clientSecret.Length != 32);
+        UI::BeginDisabled(true
+            and clientId.Length != 32
+            and clientSecret.Length != 32
+        );
         if (UI::Button(Icons::Unlock + " Finish Authorization")) {
             auth["basic"] = "Basic " + Text::EncodeBase64(clientId + ":" + clientSecret);
             try {
@@ -79,7 +90,11 @@ void RenderSetup() {
         UI::EndDisabled();
 
         UI::SameLine();
-        UI::BeginDisabled(clientId.Length == 0 && clientSecret.Length == 0 && callbackUrl.Length == 0);
+        UI::BeginDisabled(true
+            and clientId.Length == 0
+            and clientSecret.Length == 0
+            and callbackUrl.Length == 0
+        );
         if (UI::Button(Icons::Times + " Clear Fields")) {
             clientId = "";
             clientSecret = "";
@@ -91,24 +106,28 @@ void RenderSetup() {
 
         UI::SameLine();
         UI::BeginDisabled(!authorized);
-        if (UI::Button(Icons::ChainBroken + " Unauthorize"))
+        if (UI::Button(Icons::ChainBroken + " Unauthorize")) {
             Auth::Clear();
+        }
         HoverTooltip("You'll need to repeat steps 9-13!");
         UI::EndDisabled();
 
         UI::Text("Authorized: " + (authorized ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
 
         if (authorized) {
-            if (UI::Button(Icons::Times + " Close setup window"))
+            if (UI::Button(Icons::Times + " Close setup window")) {
                 S_Setup = false;
+            }
         }
     }
+
     UI::End();
 }
 
 void RenderSetupPlaylists() {
-    if (!S_PlaylistSetup)
+    if (!S_PlaylistSetup) {
         return;
+    }
 
     UI::SetNextWindowSize(375, 200);
 
@@ -121,10 +140,12 @@ void RenderSetupPlaylists() {
         );
 
         UI::BeginDisabled(S_Setup);
-        if (UI::Button(Icons::ExternalLink + " Open Setup"))
+        if (UI::Button(Icons::ExternalLink + " Open Setup")) {
             S_Setup = true;
+        }
         UI::EndDisabled();
     }
+
     UI::End();
 }
 
@@ -132,8 +153,12 @@ void RenderSetupPlaylists() {
 bool uriChanged = false;
 
 void RenderURISetup() {
-    if (!S_URISetup && uriChanged)
+    if (true
+        and !S_URISetup
+        and uriChanged
+    ) {
         return;
+    }
 
     UI::SetNextWindowSize(550, 350);
 
@@ -149,12 +174,16 @@ void RenderURISetup() {
         );
 
         UI::BeginDisabled(S_Setup);
-        if (UI::Button(Icons::ExternalLink + " Open Setup"))
+        if (UI::Button(Icons::ExternalLink + " Open Setup")) {
             S_Setup = true;
+        }
         UI::EndDisabled();
 
         UI::SameLine();
-        UI::BeginDisabled(uriChanged || !Auth::Authorized());
+        UI::BeginDisabled(false
+            or uriChanged
+            or !Auth::Authorized()
+        );
         if (UI::Button(Icons::Check + " I've made the change!")) {
             uriChanged = true;
             S_URISetup = false;
@@ -162,5 +191,6 @@ void RenderURISetup() {
         HoverTooltip("You can show this window again from settings");
         UI::EndDisabled();
     }
+
     UI::End();
 }

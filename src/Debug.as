@@ -4,14 +4,16 @@ void RenderDebug() {
         if (UI::BeginTabItem("devices")) {
             UI::BeginTabBar("all-devices");
                 if (UI::BeginTabItem("active")) {
-                    if (activeDevice !is null)
+                    if (activeDevice !is null) {
                         UI::Text(activeDevice.name);
+                    }
                     UI::EndTabItem();
                 }
 
                 if (UI::BeginTabItem("last")) {
-                    if (lastDevice !is null)
+                    if (lastDevice !is null) {
                         UI::Text(lastDevice.name);
+                    }
                     UI::EndTabItem();
                 }
 
@@ -29,6 +31,7 @@ void RenderDebug() {
                         UI::EndTabItem();
                     }
                 }
+
             UI::EndTabBar();
             UI::EndTabItem();
         }
@@ -37,47 +40,69 @@ void RenderDebug() {
             UI::Text("click any row to copy value to clipboard");
             UI::Separator();
 
-            if (UI::Selectable("device ID: " + state.deviceId, false))
+            if (UI::Selectable("device ID: " + state.deviceId, false)) {
                 IO::SetClipboard(state.deviceId);
-            if (UI::Selectable("context: " + state.context, false))
+            }
+            if (UI::Selectable("context: " + state.context, false)) {
                 IO::SetClipboard(state.context);
-            if (UI::Selectable("song: " + state.song, false))
+            }
+            if (UI::Selectable("song: " + state.song, false)) {
                 IO::SetClipboard(state.song);
-            if (UI::Selectable("song ID: " + state.songId, false))
+            }
+            if (UI::Selectable("song ID: " + state.songId, false)) {
                 IO::SetClipboard(state.songId);
-            if (UI::Selectable("song liked: " + tostring(state.songLiked), false))
+            }
+            if (UI::Selectable("song liked: " + tostring(state.songLiked), false)) {
                 IO::SetClipboard(tostring(state.songLiked));
-            if (UI::Selectable("artists: " + state.artists, false))
+            }
+            if (UI::Selectable("artists: " + state.artists, false)) {
                 IO::SetClipboard(state.artists);
-            if (UI::Selectable("album: " + state.album, false))
+            }
+            if (UI::Selectable("album: " + state.album, false)) {
                 IO::SetClipboard(state.album);
-            if (UI::Selectable("album release: " + state.albumRelease, false))
+            }
+            if (UI::Selectable("album release: " + state.albumRelease, false)) {
                 IO::SetClipboard(state.albumRelease);
-            if (UI::Selectable("album release precision: " + tostring(state.albumReleasePrecision), false))
+            }
+            if (UI::Selectable("album release precision: " + tostring(state.albumReleasePrecision), false)) {
                 IO::SetClipboard(tostring(state.albumReleasePrecision));
-            if (UI::Selectable("album art URL (x64): " + state.albumArtUrl64, false))
+            }
+            if (UI::Selectable("album art URL (x64): " + state.albumArtUrl64, false)) {
                 IO::SetClipboard(state.albumArtUrl64);
-            if (UI::Selectable("album art URL (x300): " + state.albumArtUrl300, false))
+            }
+            if (UI::Selectable("album art URL (x300): " + state.albumArtUrl300, false)) {
                 IO::SetClipboard(state.albumArtUrl300);
-            if (UI::Selectable("album art URL (x640): " + state.albumArtUrl640, false))
+            }
+            if (UI::Selectable("album art URL (x640): " + state.albumArtUrl640, false)) {
                 IO::SetClipboard(state.albumArtUrl640);
-            if (UI::Selectable("album art URL (selected): " + state.albumArtUrlSelected, false))
+            }
+            if (UI::Selectable("album art URL (selected): " + state.albumArtUrlSelected, false)) {
                 IO::SetClipboard(state.albumArtUrlSelected);
-            if (UI::Selectable("playing: " + state.playing, false))
+            }
+            if (UI::Selectable("playing: " + state.playing, false)) {
                 IO::SetClipboard(tostring(state.playing));
-            if (UI::Selectable("progress: " + state.songProgress, false))
+            }
+            if (UI::Selectable("progress: " + state.songProgress, false)) {
                 IO::SetClipboard(tostring(state.songProgress));
-            if (UI::Selectable("duration: " + state.songDuration, false))
+            }
+            if (UI::Selectable("duration: " + state.songDuration, false)) {
                 IO::SetClipboard(tostring(state.songDuration));
-            if (UI::Selectable("progress%: " + state.songProgressPercent, false))
+            }
+            if (UI::Selectable("progress%: " + state.songProgressPercent, false)) {
                 IO::SetClipboard(tostring(state.songProgressPercent));
-            if (UI::Selectable("repeat: " + tostring(state.repeat), false))
+            }
+            if (UI::Selectable("repeat: " + tostring(state.repeat), false)) {
                 IO::SetClipboard(tostring(state.repeat));
-            if (UI::Selectable("shuffle: " + state.shuffle, false))
+            }
+            if (UI::Selectable("shuffle: " + state.shuffle, false)) {
                 IO::SetClipboard(tostring(state.shuffle));
-            if (UI::Selectable("smart shuffle: " + state.smartShuffle, false))
+            }
+            if (UI::Selectable("smart shuffle: " + state.smartShuffle, false)) {
                 IO::SetClipboard(tostring(state.smartShuffle));
+            }
+
             UI::EndTabItem();
         }
+
     UI::EndTabBar();
 }

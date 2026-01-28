@@ -5,26 +5,33 @@ const float sameLineWidth      = scale * 10.0f;
 bool        seeking            = false;
 
 void RenderPlayer() {
-    if (!disclaimerAccepted)
+    if (!disclaimerAccepted) {
         return;
+    }
 
-    if (S_HideInactive && Time::Stamp - lastActive > int(S_Inactivity))
+    if (true
+        and S_HideInactive
+        and Time::Stamp - lastActive > int(S_Inactivity)
+    ) {
         return;
+    }
 
     int flags = UI::WindowFlags::AlwaysAutoResize |
                 UI::WindowFlags::NoTitleBar;
 
-    if (!UI::IsOverlayShown())
+    if (!UI::IsOverlayShown()) {
         flags |= UI::WindowFlags::NoMove;
+    }
 
     if (UI::Begin("MusicControl", S_Enabled, flags)) {
         const vec2 pre = UI::GetCursorPos();
 
         if (S_AlbumArt) {
-            if (@tex !is null)
+            if (@tex !is null) {
                 UI::Image(tex, vec2(S_AlbumArt_Cond.width));
-            else
+            } else {
                 UI::Dummy(vec2(S_AlbumArt_Cond.width));
+            }
 
             UI::SameLine();
         }
@@ -58,7 +65,10 @@ void RenderPlayer() {
                 UI::Text(albumRelease);
             }
 
-            if (S_AlbumArt && S_AlbumArt_Cond.heart) {
+            if (true
+                and S_AlbumArt
+                and S_AlbumArt_Cond.heart
+            ) {
                 const string icon = state.songLiked ? Icons::Heart : Icons::HeartO;
                 UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
                 UI::Text("\\$000" + icon);
@@ -74,44 +84,56 @@ void RenderPlayer() {
 
         UI::BeginDisabled(!S_Premium);
             if (S_Buttons) {
-                UI::BeginDisabled(state.shuffle && state.smartShuffle);
-                if (UI::Button((state.shuffle ? (state.smartShuffle ? "\\$F80" : "\\$0F0") : "") + Icons::Random, buttonSize))
+                UI::BeginDisabled(true
+                    and state.shuffle
+                    and state.smartShuffle
+                );
+                if (UI::Button((state.shuffle ? (state.smartShuffle ? "\\$F80" : "\\$0F0") : "") + Icons::Random, buttonSize)) {
                     startnew(API::ToggleShuffle);
+                }
                 UI::EndDisabled();
-                if (S_Buttons_Cond.tooltips)
+                if (S_Buttons_Cond.tooltips) {
                     HoverTooltip("shuffle: " + (state.shuffle ? (state.smartShuffle ? "smart" : "on"): "off"));
+                }
 
                 UI::SameLine();
                 const bool skipPrevious = state.songProgress < 3000;
                 if (UI::Button(skipPrevious ? Icons::FastBackward : Icons::StepBackward, buttonSize)) {
-                    if (skipPrevious)
+                    if (skipPrevious) {
                         startnew(API::SkipPrevious);
-                    else {
+                    } else {
                         seekPosition = 0;
                         startnew(API::Seek);
                     }
                 }
-                if (S_Buttons_Cond.tooltips)
+                if (S_Buttons_Cond.tooltips) {
                     HoverTooltip(skipPrevious ? "previous" : "restart");
-
-                UI::SameLine();
-                if (state.playing) {
-                    if (UI::Button(Icons::Pause, buttonSize))
-                        startnew(API::Pause);
-                    if (S_Buttons_Cond.tooltips)
-                        HoverTooltip("pause");
-                } else {
-                    if (UI::Button(Icons::Play, buttonSize))
-                        startnew(API::Play);
-                    if (S_Buttons_Cond.tooltips)
-                        HoverTooltip("resume");
                 }
 
                 UI::SameLine();
-                if (UI::Button(Icons::StepForward, buttonSize))
+                if (state.playing) {
+                    if (UI::Button(Icons::Pause, buttonSize)) {
+                        startnew(API::Pause);
+                    }
+                    if (S_Buttons_Cond.tooltips) {
+                        HoverTooltip("pause");
+                    }
+                } else {
+                    if (UI::Button(Icons::Play, buttonSize)) {
+                        startnew(API::Play);
+                    }
+                    if (S_Buttons_Cond.tooltips) {
+                        HoverTooltip("resume");
+                    }
+                }
+
+                UI::SameLine();
+                if (UI::Button(Icons::StepForward, buttonSize)) {
                     startnew(API::SkipNext);
-                if (S_Buttons_Cond.tooltips)
+                }
+                if (S_Buttons_Cond.tooltips) {
                     HoverTooltip("next");
+                }
 
                 UI::SameLine();
                 string repeatIcon;
@@ -120,10 +142,12 @@ void RenderPlayer() {
                     case Repeat::track:   repeatIcon = "\\$F80" + Icons::Refresh; break;
                     default:              repeatIcon = Icons::Refresh;
                 }
-                if (UI::Button(repeatIcon, buttonSize))
+                if (UI::Button(repeatIcon, buttonSize)) {
                     startnew(API::CycleRepeat);
-                if (S_Buttons_Cond.tooltips)
+                }
+                if (S_Buttons_Cond.tooltips) {
                     HoverTooltip("repeat: " + tostring(state.repeat));
+                }
             }
 
             const float widthToSet = Math::Max(albumArtAndTextWidth, ((buttonWidth * 5.0f) + (sameLineWidth * 4.0f))) / scale;
@@ -141,7 +165,10 @@ void RenderPlayer() {
                     );
                 UI::EndDisabled();
 
-                if (S_Progress_Cond.scroll && UI::IsItemHovered()) {
+                if (true
+                    and S_Progress_Cond.scroll
+                    and UI::IsItemHovered()
+                ) {
                     switch (int(UI::GetMouseWheelDelta())) {
                         case -1:
                             seekPositionPercent -= (seekPositionPercent < int(S_Progress_Cond.step) ? seekPositionPercent : S_Progress_Cond.step);
@@ -158,20 +185,39 @@ void RenderPlayer() {
                     seekPosition = int(state.songDuration * (float(seekPositionPercent) / 100.0f));
                 }
 
-                if (seeking && !UI::IsMouseDown()) {
+                if (true
+                    and seeking
+                    and !UI::IsMouseDown()
+                ) {
                     startnew(API::Seek);
                     seeking = false;
                 }
             }
 
-            const bool supportsVolume = activeDevice !is null && activeDevice.supportsVolume;
-            if (S_Volume && (supportsVolume || (!supportsVolume && S_Volume_Cond.unsupported))) {
+            const bool supportsVolume = true
+                and activeDevice !is null
+                and activeDevice.supportsVolume
+            ;
+
+            if (true
+                and S_Volume
+                and (false
+                    or supportsVolume
+                    or (true
+                        and !supportsVolume
+                        and S_Volume_Cond.unsupported
+                    )
+                )
+            ) {  // TODO fix this mess
                 const int currentVolume = activeDevice !is null ? activeDevice.volume : -1;
                 const string volumeIcon = currentVolume < 34 ? Icons::VolumeOff : currentVolume < 67 ? Icons::VolumeDown : Icons::VolumeUp;
                 const bool eggValue = (!changingVolume && currentVolume == 69) || (changingVolume && volumeDesired == 69);
                 const string volumeText = (S_Volume_Cond.egg && eggValue) ? "\\$I\\$888 NICE\\$Z " : tostring(changingVolume ? volumeDesired : currentVolume);
 
-                UI::BeginDisabled(!supportsVolume || Time::Now - lastVolume < 2000);
+                UI::BeginDisabled(false
+                    or !supportsVolume
+                    or Time::Now - lastVolume < 2000
+                );
                     UI::SetNextItemWidth(widthToSet);
                     int volume = UI::SliderInt(
                         "##volume",
@@ -182,7 +228,10 @@ void RenderPlayer() {
                         UI::SliderFlags::NoInput
                     );
 
-                    if (S_Volume_Cond.scroll && UI::IsItemHovered()) {
+                    if (true
+                        and S_Volume_Cond.scroll
+                        and UI::IsItemHovered()
+                    ) {
                         switch (int(UI::GetMouseWheelDelta())) {
                             case -1:
                                 volume -= (volume < int(S_Volume_Cond.step) ? volume : S_Volume_Cond.step);
@@ -195,12 +244,18 @@ void RenderPlayer() {
                     }
                 UI::EndDisabled();
 
-                if (activeDevice !is null && volume != activeDevice.volume) {
+                if (true
+                    and activeDevice !is null
+                    and volume != activeDevice.volume
+                ) {
                     changingVolume = true;
                     volumeDesired = volume;
                 }
 
-                if (changingVolume && !UI::IsMouseDown()) {
+                if (true
+                    and changingVolume
+                    and !UI::IsMouseDown()
+                ) {
                     startnew(API::SetVolume);
                     changingVolume = false;
                 }
@@ -219,7 +274,12 @@ void RenderPlayer() {
                         if (UI::Selectable(
                             name + "##name",
                             name == current,
-                            name == current || !S_Premium ? UI::SelectableFlags::Disabled : UI::SelectableFlags::None
+                            (false
+                                or name == current
+                                or !S_Premium
+                            )
+                                ? UI::SelectableFlags::Disabled
+                                : UI::SelectableFlags::None
                         )) {
                             selectedPlaylist = context;
                             startnew(API::Play);
@@ -231,14 +291,16 @@ void RenderPlayer() {
             }
         UI::EndDisabled();
 
-        if (!Auth::Authorized())
+        if (!Auth::Authorized()) {
             UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
+        }
 
         UI::PopFont();
     }
+
     UI::End();
 }
 
-float GetMaxTextWidth(float input, const string &in text) {
+float GetMaxTextWidth(const float input, const string&in text) {
     return Math::Max(input, Draw::MeasureString(text, font).x);
 }

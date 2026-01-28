@@ -26,12 +26,16 @@ namespace Auth {
         req.Headers["Authorization"] = string(auth["basic"]);
         req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const int respCode = req.ResponseCode();
 
-        if (respCode < 200 || respCode >= 400) {
+        if (false
+            or respCode < 200
+            or respCode >= 400
+        ) {
             Error("Error getting authorization tokens");
             warn("response: " + respCode + " " + req.String());
             return;
@@ -68,9 +72,9 @@ namespace Auth {
         }
 
         if (false
-            || !auth.HasKey("basic")
-            || !auth.HasKey("access")
-            || !auth.HasKey("refresh")
+            or !auth.HasKey("basic")
+            or !auth.HasKey("access")
+            or !auth.HasKey("refresh")
         ) {
             error("error in data from auth.json!");
             Init();
@@ -99,9 +103,11 @@ namespace Auth {
     void Refresh() {
         trace("refreshing access token...");
 
-        if (refreshTimestamp > 0)  // wait 5 seconds between refreshes just in case
-            while (Time::Stamp - refreshTimestamp < 5)
+        if (refreshTimestamp > 0) {  // wait 5 seconds between refreshes just in case
+            while (Time::Stamp - refreshTimestamp < 5) {
                 yield();
+            }
+        }
 
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Post;
@@ -109,12 +115,16 @@ namespace Auth {
         req.Headers["Authorization"] = string(auth["basic"]);
         req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
         req.Start();
-        while (!req.Finished())
+        while (!req.Finished()) {
             yield();
+        }
 
         const int respCode = req.ResponseCode();
 
-        if (respCode < 200 || respCode >= 400) {
+        if (false
+            or respCode < 200
+            or respCode >= 400
+        ) {
             Error("Error refreshing authorization token");
             warn("response: " + respCode + " " + req.String());
             return;

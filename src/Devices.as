@@ -36,8 +36,9 @@ void SetDevices(Json::Value@ json) {
         Device@ dev = Device(json[i]);
         devices.InsertLast(dev);
 
-        if (dev.active)
+        if (dev.active) {
             @activeDevice = devices[devices.Length - 1];
+        }
     }
 
     if (activeDevice !is null) {

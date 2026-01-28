@@ -9,8 +9,9 @@ void RenderDisclaimer() {
         return;
     }
 
-    if (disclaimerOpened == 0)
+    if (disclaimerOpened == 0) {
         disclaimerOpened = Time::Stamp;
+    }
 
     if (UI::Begin(title + " Disclaimer", UI::WindowFlags::AlwaysAutoResize)) {
         UI::Text("\\$F50DISCLAIMER:\n");
@@ -42,11 +43,12 @@ If you still want to proceed into the setup, click the button below. Otherwise, 
         """);
 
         UI::BeginDisabled(Time::Stamp - disclaimerOpened < 15);
-            if (UI::Button(Icons::Check + " I understand the risks and limitations above")) {
-                disclaimerAccepted = true;
-                S_Disclaimer = false;
-            }
+        if (UI::Button(Icons::Check + " I understand the risks and limitations above")) {
+            disclaimerAccepted = true;
+            S_Disclaimer = false;
+        }
         UI::EndDisabled();
     }
+
     UI::End();
 }

@@ -3,24 +3,27 @@ bool         albumArtLoading   = false;
 string       loadedAlbumArtUrl = "";
 UI::Texture@ tex;
 
-void Error(const string &in msg, bool log = true) {
-    if (log)
+void Error(const string&in msg, const bool log = true) {
+    if (log) {
         error(msg);
+    }
 
-    if (S_Errors)
+    if (S_Errors) {
         UI::ShowNotification("MusicControl", msg, UI::HSV(0.02f, 0.8f, 0.9f));
+    }
 }
 
-string FormatSeconds(int seconds) {
+string FormatSeconds(const int seconds) {
     return Zpad(seconds / 60) + ":" + Zpad(seconds % 60);
 }
 
-void HoverTooltip(const string &in msg) {
-    if (!UI::IsItemHovered(UI::HoveredFlags::AllowWhenDisabled))
+void HoverTooltip(const string&in msg) {
+    if (!UI::IsItemHovered(UI::HoveredFlags::AllowWhenDisabled)) {
         return;
+    }
 
     UI::BeginTooltip();
-        UI::Text(msg);
+    UI::Text(msg);
     UI::EndTooltip();
 }
 
@@ -31,8 +34,9 @@ void LoadAlbumArt() {
         return;
     }
 
-    if (albumArtLoading)
+    if (albumArtLoading) {
         return;
+    }
 
     albumArtLoading = true;
 
@@ -73,8 +77,9 @@ void LoadAlbumArt() {
             if (timedOut) {
                 trace("timed out, waiting " + max_wait + " ms");
                 const uint64 nowWait = Time::Now;
-                while (Time::Now - nowWait < max_wait)
+                while (Time::Now - nowWait < max_wait) {
                     yield();
+                }
                 continue;
             }
 
@@ -90,31 +95,38 @@ void LoadAlbumArt() {
     albumArtLoading = false;
 }
 
-string ReplaceBadQuotes(const string &in input) {
+string ReplaceBadQuotes(const string&in input) {
     return input.Replace("‘", "'").Replace("’", "'").Replace("“", "\"").Replace("”", "\"");
 }
 
 string ReplaceBadQuotes(Json::Value@ input) {
-    if (input is null || input.GetType() != Json::Type::String)
+    if (false
+        or input is null
+        or input.GetType() != Json::Type::String
+    ) {
         return "";
+    }
 
     return ReplaceBadQuotes(string(input));
 }
 
-void Warn(const string &in msg, bool log = true) {
-    if (log)
+void Warn(const string&in msg, const bool log = true) {
+    if (log) {
         warn(msg);
+    }
 
-    if (S_Warnings)
+    if (S_Warnings) {
         UI::ShowNotification("MusicControl", msg, UI::HSV(0.1f, 0.8f, 0.9f));
+    }
 }
 
-string Zpad(uint num, uint digits = 2) {
+string Zpad(const uint num, const uint digits = 2) {
     string zeroes = "";
     const string result = tostring(num);
 
-    for (uint i = 0; i < digits - uint(result.Length); i++)
+    for (uint i = 0; i < digits - uint(result.Length); i++) {
         zeroes += "0";
+    }
 
     return zeroes + result;
 }

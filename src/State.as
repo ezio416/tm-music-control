@@ -85,14 +85,16 @@ class State {
 
         Json::Value@ _artists = _item.Get("artists");
         for (uint i = 0; i < _artists.Length; i++) {
-            if (i > 0)
+            if (i > 0) {
                 artists += ", ";
+            }
             artists += ReplaceBadQuotes(_artists[i]["name"]);
         }
 
         playing = bool(json["is_playing"]);
-        if (playing)
+        if (playing) {
             lastActive = Time::Stamp;
+        }
 
         const string _repeat = string(json["repeat_state"]);
         if      (_repeat == "off")     repeat = Repeat::off;
