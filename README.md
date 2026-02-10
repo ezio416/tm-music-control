@@ -4,6 +4,7 @@
 ![](https://img.shields.io/badge/Game-TM-blue)
 ![](https://img.shields.io/badge/Game-MP4-blue)
 ![](https://img.shields.io/badge/Game-Turbo-blue)
+![](https://img.shields.io/badge/Game-Forever-blue)
 ![](https://img.shields.io/badge/API-Spotify-1ED760)
 
 # Music Control
