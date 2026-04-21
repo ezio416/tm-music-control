@@ -18,7 +18,7 @@ void RenderDisclaimer() {
         UI::NewLine();
         UI::TextWrapped("""
 Can I use a free account?
-    - Technically yes, but you won't be able to control playback at all. You can only view the current state.
+    - Nope. This used to be possible, but due to Spotify's API changes, a Premium account is required.
 
 Can my Spotify \$FA0username and password\$G be stolen?
     - No, we don't need those, so they are safe. However, we do store an app's client ID/secret in a simple text file, so those could be stolen.

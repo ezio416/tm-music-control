@@ -63,7 +63,10 @@ void Render() {
 }
 
 void RenderMenu() {
-    if (UI::MenuItem(title, "", S_Enabled)) {
+    if (true
+        and S_Premium
+        and UI::MenuItem(title, "", S_Enabled)
+    ) {
         S_Enabled = !S_Enabled;
     }
 }

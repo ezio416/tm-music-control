@@ -246,8 +246,9 @@ namespace API {
     // }
 
     void Loop() {
-        if (loopRunning)
+        if (loopRunning) {
             return;
+        }
 
         loopRunning = true;
 
@@ -326,6 +327,10 @@ namespace API {
     }
 
     void Pause() {
+        if (!S_Premium) {
+            return;
+        }
+
         trace("pausing song");
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -361,6 +366,10 @@ namespace API {
     }
 
     void Play() {
+        if (!S_Premium) {
+            return;
+        }
+
         trace("playing song");
 
         string url = apiUrl + "/me/player/play";
@@ -523,6 +532,10 @@ namespace API {
     }
 
     void SkipNext() {
+        if (!S_Premium) {
+            return;
+        }
+
         trace("next song");
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -558,6 +571,10 @@ namespace API {
     }
 
     void SkipPrevious() {
+        if (!S_Premium) {
+            return;
+        }
+
         trace("previous song");
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -593,6 +610,10 @@ namespace API {
     }
 
     void ToggleShuffle() {
+        if (!S_Premium) {
+            return;
+        }
+
         trace("toggling shuffle");
 
         Net::HttpRequest@ req = Net::HttpRequest();
@@ -657,7 +678,7 @@ namespace API {
 
     void Premium() {
         Error("Sorry, you need a Premium account");
-        warn("free account detected, disabling controls...");
+        warn("free account detected, disabling plugin...");
         S_Premium = false;
     }
 
