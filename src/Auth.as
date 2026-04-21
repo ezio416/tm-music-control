@@ -96,7 +96,7 @@ namespace Auth {
             "client_id=" + clientId +
             "&response_type=code" +
             "&redirect_uri=" + redirectUri +
-            "&scope=" + string::Join(perms, " ")
+            "&scope=" + Text::Join(perms, " ")
         );
     }
 
