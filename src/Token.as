@@ -1,10 +1,17 @@
 SpotifyToken@ spotify;
-Token@        token;
-// YoutubeToken@ youtube;
+YoutubeToken@ youtube;
+
+Token@ get_token() {
+    switch (S_API) {
+        case TokenType::Spotify: return spotify;
+        case TokenType::YouTube: return youtube;
+        default:                 return null;
+    }
+}
 
 enum TokenType {
     Spotify,
-    Youtube
+    YouTube
 }
 
 abstract class Token {
@@ -252,7 +259,7 @@ class SpotifyToken : Token {
 
         Json::Value@ json;
         try {
-            @json = req.Json();
+            @json  = req.Json();
             access = "Bearer " + string(json["access_token"]);
             trace("refreshed Spotify token");
             timestamp = Time::Stamp;
@@ -273,17 +280,195 @@ class SpotifyToken : Token {
     }
 }
 
-// class YoutubeToken : Token {  // TODO yt token
-//     YoutubeToken() {
-//         AUTH_FILE = IO::FromStorageFolder("youtube.json");
-//         type = TokenType::Youtube;
-//     }
+class YoutubeToken : Token {
+    private string OAUTH_CODE_URL   = "https://www.youtube.com/o/oauth2/device/code";
+    private string OAUTH_SCOPE      = "https://www.googleapis.com/auth/youtube";
+    private string OAUTH_TOKEN_URL  = "https://oauth2.googleapis.com/token";
+    private string USER_AGENT       = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0";
+    private string OAUTH_USER_AGENT = USER_AGENT + " Cobalt/Version";
+    private string TOKEN_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code";
+    // private string YTM_DOMAIN       = "https://music.youtube.com";
+    // private string YTM_BASE_API     = YTM_DOMAIN + "/youtubei/v1/";
+    // private string YTM_PARAMS       = "?alt=json";
+    // private string YTM_PARAMS_KEY   = "&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30";
 
-//     void Load() override {
-//         if (!IO::FileExists(AUTH_FILE)) {
-//             warn("youtube.json not found");
-//         }
+    string deviceCode;
+    string userCode;
+    string verificationUrl;
 
-//         ;
-//     }
-// }
+    YoutubeToken() {
+        AUTH_FILE = IO::FromStorageFolder("youtube.json");
+        type = TokenType::YouTube;
+
+        if (!Load()) {
+            Get();
+        }
+    }
+
+    ~YoutubeToken() {
+        if (true
+            and access.Length > 0
+            and clientSecret.Length > 0
+            and refresh.Length > 0
+        ) {
+            Save();
+        }
+    }
+
+    void GetAsync() override {
+        if (false
+            or clientSecret.Length == 0
+            or deviceCode.Length == 0
+        ) {
+            return;
+        }
+
+        trace("getting YouTube token");
+
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Post;
+        req.Url = OAUTH_TOKEN_URL + "?client_id=" + clientId + "&client_secret=" + clientSecret
+            + "&device_code=" + deviceCode + "&grant_type=" + TOKEN_GRANT_TYPE;
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+
+        const int respCode = req.ResponseCode();
+
+        if (false
+            or respCode < 200
+            or respCode >= 400
+        ) {
+            error("error getting YouTube token (" + respCode + "): " + req.String());
+            return;
+        }
+
+        Json::Value@ json;
+        try {
+            @json   = req.Json();
+            access  = "Bearer " + string(json["access_token"]);
+            refresh = json["refresh_token"];
+            trace("got YouTube token");
+            timestamp = Time::Stamp;
+            Save();
+        } catch {
+            error("error getting YouTube token: " + getExceptionInfo() + ": " + Json::Write(json));
+        }
+    }
+
+    void GetCodes() {
+        startnew(CoroutineFunc(GetCodesAsync));
+    }
+
+    void GetCodesAsync() {
+        if (false
+            or clientId.Length == 0
+            or clientSecret.Length == 0
+        ) {
+            return;
+        }
+
+        trace("getting YouTube codes");
+
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Post;
+        req.Url = OAUTH_CODE_URL + "?client_id=" + clientId + "&scope=" + OAUTH_SCOPE;
+        req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
+        req.Headers["User-Agent"] = OAUTH_USER_AGENT;
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+
+        const int respCode = req.ResponseCode();
+
+        if (false
+            or respCode < 200
+            or respCode >= 400
+        ) {
+            error("error getting YouTube codes (" + respCode + "): " + req.String());
+            return;
+        }
+
+        Json::Value@ json;
+        try {
+            @json           = req.Json();
+            deviceCode      = json["device_code"];
+            userCode        = json["user_code"];
+            verificationUrl = json["verification_url"];
+            trace("got YouTube codes");
+        } catch {
+            error("error getting YouTube codes: " + getExceptionInfo() + ": " + Json::Write(json));
+        }
+    }
+
+    bool Load() override {
+        trace("loading YouTube token");
+
+        if (!IO::FileExists(AUTH_FILE)) {
+            warn("youtube.json not found");
+            Init();
+            return false;
+        }
+
+        Json::Value@ json;
+        try {
+            @json        = Json::FromFile(AUTH_FILE);
+            access       = json["access"];
+            clientSecret = json["clientSecret"];
+            refresh      = json["refresh"];
+            timestamp    = json["timestamp"];
+            trace("loaded YouTube token");
+            return true;
+        } catch {
+            error("error loading YouTube token: " + getExceptionInfo() + ": " + Json::Write(json));
+            return false;
+        }
+    }
+
+    void RefreshAsync() override {
+        trace("refreshing YouTube token");
+
+        const int64 diff = Time::Stamp - timestamp;
+        if (diff < 5) {
+            sleep(5 - diff);
+        }
+
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Post;
+        req.Url = OAUTH_TOKEN_URL + "?client_secret=" + clientSecret + "&grant_type=refresh_token&refresh_token=" + refresh;
+        req.Headers["Content-Type"] = "application/x-www-form-urlencoded";
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+
+        const int respCode = req.ResponseCode();
+
+        if (false
+            or respCode < 200
+            or respCode >= 400
+        ) {
+            error("error refreshing YouTube token (" + respCode + "): " + req.String());
+            return;
+        }
+
+        Json::Value@ json;
+        try {
+            @json  = req.Json();
+            access = "Bearer " + string(json["access_token"]);
+            trace("refreshed YouTube token");
+            timestamp = Time::Stamp;
+            Save();
+        } catch {
+            error("error refreshing YouTube token: " + getExceptionInfo() + ": " + Json::Write(json));
+        }
+    }
+
+    Json::Value@ ToJson() override {
+        Json::Value@ json = Token::ToJson();
+        json["clientSecret"] = clientSecret;
+        return json;
+    }
+}

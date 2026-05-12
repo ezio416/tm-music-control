@@ -5,8 +5,8 @@ void RenderSetup() {
         }
 
         UI::SameLine();
-        if (UI::RadioButton("\\$F44" + Icons::Youtube + " Youtube", S_API == TokenType::Youtube)) {
-            S_API = TokenType::Youtube;
+        if (UI::RadioButton("\\$F44" + Icons::Youtube + " YouTube", S_API == TokenType::YouTube)) {
+            S_API = TokenType::YouTube;
         }
 
 UI::BeginTabBar("##tabbar-setup");
@@ -41,8 +41,8 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
 
                     break;
 
-                case TokenType::Youtube:
-                    ;
+                case TokenType::YouTube:
+                    ;  // TODO yt disclaimer
             }
 
             UI::EndTabItem();
@@ -107,7 +107,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
 
                     UI::SameLine();
                     if (UI::Button(Icons::Spotify + " Manage Apps")) {
-                        OpenBrowserURL("https://www.spotify.com/us/account/apps/");
+                        OpenBrowserURL("https://www.spotify.com/us/account/apps");
                     }
                     HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
@@ -120,9 +120,11 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
 
                     spotify.callbackUrl = UI::InputText("Localhost callback URL", spotify.callbackUrl);
 
-                    UI::BeginDisabled(true
-                        and spotify.clientId.Length != 32
-                        and spotify.clientSecret.Length != 32
+                    UI::Text("    14. Finish");
+
+                    UI::BeginDisabled(false
+                        or spotify.clientId.Length != 32
+                        or spotify.clientSecret.Length != 32
                     );
                     if (UI::Button(Icons::Unlock + " Finish Authorization")) {
                         spotify.basic = "Basic " + Text::EncodeBase64(spotify.clientId + ":" + spotify.clientSecret);
@@ -155,19 +157,134 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                     if (UI::Button(Icons::ChainBroken + " Unauthorize")) {
                         spotify.Init();
                     }
-                    HoverTooltip("You'll need to repeat steps 9-13!");
+                    HoverTooltip("You'll need to repeat steps 9-14!");
                     UI::EndDisabled();
 
                     UI::Text("Authorized: " + (spotify.authorized ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
 
                     break;
 
-                case TokenType::Youtube:
-                    // if (youtube is null) {
-                    //     @youtube = YoutubeToken();
-                    // }
+                case TokenType::YouTube:
+                    if (youtube is null) {
+                        @youtube = YoutubeToken();
+                    }
 
-                    // TODO yt auth
+                    UI::Text(
+                        "Some setup is required to authorize this plugin with your YouTube account."
+                        "\n\nRead all of these instructions BEFORE starting (good practice with any instructions)."
+                        "\n\\$F0FPurple text\\$G indicates things on the Google website, not here."
+                        "\n\nYou will need to create an app in the Google Developers Console, like so:"
+                        "\n    1. Click this button to open the Developers Console in your browser"
+                    );
+
+                    if (UI::Button(Icons::Google + " Developers Console")) {
+                        OpenBrowserURL("https://console.cloud.google.com/apis/dashboard");
+                    }
+                    HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
+
+                    UI::Text(
+                        "    2. \\$F0FLogin\\$G with your Google account (a YouTube Premium account is required)"
+                        "\n    3. Near the top, click \\$F0FEnable APIs and services\\$G"
+                        "\n    4. Search for \\$F0FYouTube\\$G"
+                        "\n    5. Select \\$F0FYouTube Data API v3\\$G"
+                        "\n    6. Click \\$F0FEnable\\$G"
+                        "\n    7. On the left, click \\$F0FCredentials\\$G"
+                        "\n    8. Near the top, click \\$F0FCreate credentials \\$Gand \\$F0FOAuth client ID\\$G"
+                        "\n    9. In any tab on the left (\\$F0FOverview\\$G, \\$F0FBranding\\$G etc), click \\$F0FGet started\\$G"
+                        "\n    10. Fill in the \\$F0FApp name\\$G (can be whatever you like)"
+                        "\n        10a. Select a \\$F0FUser support email\\$G, click \\$F0FNext\\$G"
+                        "\n        10b. Select \\$F0FExternal\\$G, click \\$F0FNext\\$G"
+                        "\n        10c. Fill in at least one \\$F0FEmail address\\$G, click \\$F0FNext\\$G"
+                        "\n        10d. Check \\$F0FI agree\\$G, click \\$F0FContinue\\$G, click \\$F0FCreate\\$G"
+                        "\n    11. On the left, click \\$F0FAudience\\$G"
+                        "\n    12. Near the bottom, click \\$F0FAdd users\\$G"
+                        "\n    13. Enter your email address in the \\$F0Fbox\\$G, click \\$F0FSave\\$G"
+                        "\n    14. On the left, click \\$F0FClients\\$G"
+                        "\n    15. Near the top, click \\$F0FCreate client\\$G"
+                        "\n    16. Select \\$F0FTVs and Limited Input devices\\$G"
+                        "\n        16a. \\$F0FName\\$G your client whatever you like"
+                        "\n        16b. Click \\$F0FCreate\\$G"
+                        "\n    17. Copy the \\$F0FClient ID\\$G and \\$F0FClient secret\\$G and paste them here"
+                        "\n        17a. You can share the ID, but don't share the secret with anyone!"
+                    );
+
+                    youtube.clientId     = UI::InputText("Client ID", youtube.clientId);
+                    youtube.clientSecret = UI::InputText("Client secret", youtube.clientSecret, UI::InputTextFlags::Password);
+
+                    UI::Text("    18. Click this button to get the device and user codes");
+
+                    UI::BeginDisabled(false
+                        or youtube.clientId.Length != 72
+                        or youtube.clientSecret.Length != 35
+                    );
+                    if (UI::Button(Icons::Download + " Get Codes")) {
+                        youtube.GetCodes();
+                    }
+                    UI::EndDisabled();
+
+                    UI::Text("    19. Click this button to copy the user code");
+
+                    UI::BeginDisabled(youtube.userCode.Length == 0);
+                    if (UI::Button(Icons::Code + " User Code")) {
+                        IO::SetClipboard(youtube.userCode);
+                    }
+                    UI::EndDisabled();
+                    HoverTooltip("copy to clipboard " + Icons::Clipboard);
+
+                    UI::Text(
+                        "    20. Click this button to open the Google device connection page"
+                        "\n        20a. Paste the user code into the \\$F0Fbox\\$G"
+                        "\n        20b. Click \\$F0FContinue\\$G"
+                        "\n        20c. \\$F0FChoose an account\\$G if required"
+                        "\n        20d. Click \\$F0FContinue\\$G twice"
+                        "\n        20e. Make sure you understand these permissions (you can easily revoke)"
+                    );
+
+                    UI::BeginDisabled(youtube.verificationUrl.Length == 0);
+                    if (UI::Button(Icons::Google + " Connect Device")) {
+                        OpenBrowserURL(youtube.verificationUrl);
+                    }
+                    UI::EndDisabled();
+                    HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
+
+                    UI::SameLine();
+                    if (UI::Button(Icons::Google + " Manage Apps")) {
+                        OpenBrowserURL("https://myaccount.google.com/connections");
+                    }
+                    HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
+
+                    UI::Text("    21. Finish");
+
+                    UI::BeginDisabled(false
+                        or youtube.clientId.Length != 72
+                        or youtube.clientSecret.Length != 35
+                        or youtube.deviceCode.Length == 0
+                    );
+                    if (UI::Button(Icons::Unlock + " Finish Authorization")) {
+                        youtube.Get();
+                    }
+                    UI::EndDisabled();
+
+                    UI::SameLine();
+                    UI::BeginDisabled(true
+                        and youtube.clientId.Length == 0
+                        and youtube.clientSecret.Length == 0
+                    );
+                    if (UI::Button(Icons::Times + " Clear Fields")) {
+                        youtube.clientId = "";
+                        youtube.clientSecret = "";
+                    }
+                    UI::EndDisabled();
+
+                    UI::SameLine();
+                    UI::BeginDisabled(!youtube.authorized);
+                    if (UI::Button(Icons::ChainBroken + " Unauthorize")) {
+                        youtube.Init();
+                    }
+                    HoverTooltip("You'll need to repeat steps 17-21!");
+                    UI::EndDisabled();
+
+                    UI::Text("Authorized: " + (youtube.authorized ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
             }
 
             UI::EndTabItem();
