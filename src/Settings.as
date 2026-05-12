@@ -1,5 +1,8 @@
-[Setting category="General" name="Enabled"]
+[Setting category="General" name="Show player"]
 bool S_Enabled = false;
+
+[Setting category="General" name="Show setup window"]
+bool S_Setup = true;
 
 [Setting category="General" name="Show/hide with game UI"]
 bool S_HideWithGame = true;
@@ -24,6 +27,9 @@ enum UpdateFreq {
 
 [Setting category="General" name="Update frequency" description="Only change this if you're getting rate-limit errors."]
 UpdateFreq S_UpdateFreq = UpdateFreq::Normal;
+
+[Setting category="General" name="API"]
+TokenType S_API = TokenType::Spotify;
 
 
 [Setting category="Player" name="Hide when inactive" description="When music is paused for a certain time"]
@@ -138,19 +144,6 @@ SettingsVolume S_Volume_Cond;
 
 [Setting category="Player" name="Show playlists menu" description="Because of stricter API limits on this endpoint, this is checked less frequently."]
 bool S_Playlists = false;
-
-
-[Setting category="Windows" name="Show disclaimer window"]
-bool S_Disclaimer = true;
-
-[Setting category="Windows" name="Show setup window"]
-bool S_Setup = false;
-
-[Setting category="Windows" name="Show playlists setup window"]
-bool S_PlaylistSetup = false;
-
-[Setting category="Windows" name="Show URI setup window"]
-bool S_URISetup = false;
 
 
 [Setting category="Premium" name="I know I have Premium" description="Only change if the plugin made a mistake!"]

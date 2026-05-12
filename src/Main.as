@@ -58,11 +58,10 @@ void Render() {
         return;
     }
 
-    RenderPlayer();
-    RenderDisclaimer();
-    RenderSetup();
-    RenderSetupPlaylists();
-    RenderURISetup();
+    if (S_Setup) {
+        RenderSetup();
+        // RenderPlayer();
+    }
 }
 
 void RenderMenu() {
