@@ -1,8 +1,5 @@
 Font      currentFont = S_Font;
 UI::Font@ font;
-UI::Font@ fontDroidSans;
-UI::Font@ fontDroidSansBold;
-UI::Font@ fontDroidSansMono;
 string[]  fontErrors;
 
 enum Font {
