@@ -235,11 +235,11 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                         "\n        19a. Paste the user code into the \\$F0Fbox\\$G"
                         "\n        19b. Click \\$F0FContinue\\$G"
                         "\n        19c. \\$F0FChoose an account\\$G if required"
-                        "\n        19d1. If the next page says \\$F0FGoogle hasn't verified this app\\$G, click "
+                        "\n        19d. If the next page says \\$F0FGoogle hasn't verified this app\\$G, click "
                         "\\$F0FAdvanced\\$G, click \\$F0FGo to <app name>\\$G"
-                        "\n        19d2. Click \\$F0FContinue\\$G twice"
-                        "\n        19d3. If there isn't a safety warning, click \\$F0FContinue\\$G again"
-                        "\n        19e. Make sure you understand these permissions (you can easily revoke)"
+                        "\n        19e. Click \\$F0FContinue\\$G"
+                        "\n            19e1. If there isn't a safety warning, click \\$F0FContinue\\$G again"
+                        "\n        19f. Make sure you understand these permissions (you can easily revoke)"
                     );
 
                     UI::BeginDisabled(youtube.verificationUrl.Length == 0);
