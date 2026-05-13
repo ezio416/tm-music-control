@@ -197,21 +197,20 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                         "\n        10c. Fill in at least one \\$F0FEmail address\\$G, click \\$F0FNext\\$G"
                         "\n        10d. Check \\$F0FI agree\\$G, click \\$F0FContinue\\$G, click \\$F0FCreate\\$G"
                         "\n    11. On the left, click \\$F0FAudience\\$G"
-                        "\n    12. Near the bottom, click \\$F0FAdd users\\$G"
-                        "\n    13. Enter your email address in the \\$F0Fbox\\$G, click \\$F0FSave\\$G"
-                        "\n    14. On the left, click \\$F0FClients\\$G"
-                        "\n    15. Near the top, click \\$F0FCreate client\\$G"
-                        "\n    16. Select \\$F0FTVs and Limited Input devices\\$G"
-                        "\n        16a. \\$F0FName\\$G your client whatever you like"
-                        "\n        16b. Click \\$F0FCreate\\$G"
-                        "\n    17. Copy the \\$F0FClient ID\\$G and \\$F0FClient secret\\$G and paste them here"
-                        "\n        17a. You can share the ID, but don't share the secret with anyone!"
+                        "\n    12. Near the top, click \\$F0FPublish app\\$G, click \\$F0FConfirm\\$G"
+                        "\n    13. On the left, click \\$F0FClients\\$G"
+                        "\n    14. Near the top, click \\$F0FCreate client\\$G"
+                        "\n    15. Select \\$F0FTVs and Limited Input devices\\$G"
+                        "\n        15a. \\$F0FName\\$G your client whatever you like"
+                        "\n        15b. Click \\$F0FCreate\\$G"
+                        "\n    16. Copy the \\$F0FClient ID\\$G and \\$F0FClient secret\\$G and paste them here"
+                        "\n        16a. You can share the ID, but don't share the secret with anyone!"
                     );
 
                     youtube.clientId     = UI::InputText("Client ID", youtube.clientId);
                     youtube.clientSecret = UI::InputText("Client secret", youtube.clientSecret, UI::InputTextFlags::Password);
 
-                    UI::Text("    18. Click this button to get the device and user codes");
+                    UI::Text("    17. Click this button to get the device and user codes");
 
                     UI::BeginDisabled(false
                         or youtube.clientId.Length != 72
@@ -222,7 +221,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                     }
                     UI::EndDisabled();
 
-                    UI::Text("    19. Click this button to copy the user code");
+                    UI::Text("    18. Click this button to copy the user code");
 
                     UI::BeginDisabled(youtube.userCode.Length == 0);
                     if (UI::Button(Icons::Code + " User Code")) {
@@ -232,12 +231,15 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                     HoverTooltip("copy to clipboard " + Icons::Clipboard);
 
                     UI::Text(
-                        "    20. Click this button to open the Google device connection page"
-                        "\n        20a. Paste the user code into the \\$F0Fbox\\$G"
-                        "\n        20b. Click \\$F0FContinue\\$G"
-                        "\n        20c. \\$F0FChoose an account\\$G if required"
-                        "\n        20d. Click \\$F0FContinue\\$G twice"
-                        "\n        20e. Make sure you understand these permissions (you can easily revoke)"
+                        "    19. Click this button to open the Google device connection page"
+                        "\n        19a. Paste the user code into the \\$F0Fbox\\$G"
+                        "\n        19b. Click \\$F0FContinue\\$G"
+                        "\n        19c. \\$F0FChoose an account\\$G if required"
+                        "\n        19d1. If the next page says \\$F0FGoogle hasn't verified this app\\$G, click "
+                        "\\$F0FAdvanced\\$G, click \\$F0FGo to <app name>\\$G"
+                        "\n        19d2. Click \\$F0FContinue\\$G twice"
+                        "\n        19d3. If there isn't a safety warning, click \\$F0FContinue\\$G again"
+                        "\n        19e. Make sure you understand these permissions (you can easily revoke)"
                     );
 
                     UI::BeginDisabled(youtube.verificationUrl.Length == 0);
@@ -253,7 +255,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                     }
                     HoverTooltip("open in browser " + Icons::ExternalLinkSquare);
 
-                    UI::Text("    21. Finish");
+                    UI::Text("    20. Finish");
 
                     UI::BeginDisabled(false
                         or youtube.clientId.Length != 72
@@ -281,7 +283,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                     if (UI::Button(Icons::ChainBroken + " Unauthorize")) {
                         youtube.Init();
                     }
-                    HoverTooltip("You'll need to repeat steps 17-21!");
+                    HoverTooltip("You'll need to repeat steps 16-20!");
                     UI::EndDisabled();
 
                     UI::Text("Authorized: " + (youtube.authorized ? "\\$0F0YES \\$G(you can close this window)" : "\\$F00NO"));
