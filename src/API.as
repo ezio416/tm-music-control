@@ -4,7 +4,7 @@ bool         forceDeviceTried = false;
 uint64       lastSeek         = 0;
 uint64       lastVolume       = 0;
 bool         loopRunning      = false;
-dictionary@  playlists        = dictionary();
+dictionary   playlists;
 bool         runLoop          = false;
 int          seekPosition     = 0;
 string       selectedPlaylist;
@@ -40,7 +40,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
         req.Url = url;
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -79,7 +79,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
         req.Url = apiUrl + "/me/tracks/contains?ids=" + state.songId;
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -117,7 +117,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
         req.Url = apiUrl + "/me/player/devices";
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -129,7 +129,7 @@ namespace API {
             case ResponseCode::Good:
                 break;
             case ResponseCode::Unauthorized:
-                startnew(Auth::Refresh);
+                token.Refresh();
                 return true;
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetDevices", req);
@@ -148,7 +148,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
         req.Url = apiUrl + "/me/player";
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -183,7 +183,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Get;
         req.Url = apiUrl + "/me/playlists?limit=50";
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -259,10 +259,7 @@ namespace API {
         uint checkPlaylists = 0;
 
         while (true) {
-            if (false
-                or !Auth::Authorized()
-                or !disclaimerAccepted
-            ) {
+            if (!token.authorized) {
                 break;
             }
 
@@ -294,8 +291,9 @@ namespace API {
             ) {
                 waitTime *= 2;
                 continue;
-            } else
+            } else {
                 waitTime = S_UpdateFreq;
+            }
 
             if (true
                 and S_AlbumArt_Cond.heart
@@ -337,7 +335,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
         req.Url = apiUrl + "/me/player/pause";
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -382,7 +380,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
         req.Url = url;
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
 
         if (selectedPlaylist.Length > 0) {
             if (playlists.Exists(selectedPlaylist)) {
@@ -454,7 +452,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
         req.Url = apiUrl + "/me/player/seek?position_ms=" + seekPosition;
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -501,7 +499,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
         req.Url = apiUrl + "/me/player/volume?volume_percent=" + volumeDesired;
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -542,7 +540,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Post;
         req.Url = apiUrl + "/me/player/next";
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -581,7 +579,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Post;
         req.Url = apiUrl + "/me/player/previous";
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -620,7 +618,7 @@ namespace API {
         Net::HttpRequest@ req = Net::HttpRequest();
         req.Method = Net::HttpMethod::Put;
         req.Url = apiUrl + "/me/player/shuffle?state=" + !state.shuffle;
-        req.Headers["Authorization"] = string(auth["access"]);
+        req.Headers["Authorization"] = token.access;
         req.Start();
         while (!req.Finished()) {
             yield();

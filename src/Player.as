@@ -2,10 +2,7 @@ bool changingVolume = false;
 bool seeking        = false;
 
 void RenderPlayer() {
-    if (false
-        or !disclaimerAccepted
-        or !S_Premium
-    ) {
+    if (!S_Premium) {
         return;
     }
 
@@ -323,7 +320,7 @@ void RenderPlayer() {
             }
         }
 
-        if (!Auth::Authorized()) {
+        if (!token.authorized) {
             UI::Text("NOT AUTHORIZED - PLEASE FINISH SETUP");
         }
 

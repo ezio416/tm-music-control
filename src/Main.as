@@ -5,15 +5,9 @@ const string  PLUGIN_TITLE   = PLUGIN_COLOR + PLUGIN_ICON + "\\$G " + PLUGIN.Nam
 const string  PLUGIN_VERSION = PLUGIN.Version;
 
 void Main() {
-    if (true
-        and !uriChanged
-        and !IO::FileExists(authFile)
-    ) {
-        uriChanged = true;  // user's first install >= v0.6.0, no need to do this setup
-    }
+    @spotify = SpotifyToken();
 
-    Auth::Load();
-    S_Setup = !Auth::Authorized();
+    S_Setup = !token.authorized;
 
     if (S_Font > 7) {  // enum before 0.7 had more options so the setting gets messed up
         S_Font = Font::DroidSans;
@@ -58,11 +52,11 @@ void Render() {
         return;
     }
 
+    if (S_Setup) {
+        RenderSetup();
+    }
+
     RenderPlayer();
-    RenderDisclaimer();
-    RenderSetup();
-    RenderSetupPlaylists();
-    RenderURISetup();
 }
 
 void RenderMenu() {
