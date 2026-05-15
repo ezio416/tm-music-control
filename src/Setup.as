@@ -6,7 +6,7 @@ void RenderSetup() {
         return;
     }
 
-    if (UI::Begin(title + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin(PLUGIN_TITLE + " Setup", S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
         UI::Text(
             "Welcome to MusicControl!\nSome setup is required to authorize this plugin with your Spotify account."
             "\n\nRead all of these instructions BEFORE starting (good practice with any instructions)."
@@ -131,9 +131,9 @@ void RenderSetupPlaylists() {
 
     UI::SetNextWindowSize(375, 200);
 
-    if (UI::Begin(title + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin(PLUGIN_TITLE + " Playlists Setup", S_PlaylistSetup, UI::WindowFlags::AlwaysAutoResize)) {
         UI::TextWrapped(
-            "If you authorized this plugin in a version prior to 0.4.0 (current is " + version + "), a new permission is required to view "
+            "If you authorized this plugin in a version prior to 0.4.0 (current is " + PLUGIN_VERSION + "), a new permission is required to view "
             "private playlists, otherwise you can only view your public ones. This permission is also needed to check if a song is in your "
             "library. You will need to partially go through setup again to grant this permission. Don't worry, you don't have to do everything "
             "over again! Just do steps \\$F801\\$G and \\$F809-13\\$G again and the new permission should be good to go. The feature is currently limited to 50 playlists."
@@ -162,7 +162,7 @@ void RenderURISetup() {
 
     UI::SetNextWindowSize(550, 350);
 
-    if (UI::Begin(title + " URI Setup (v0.6.0+)", S_URISetup, UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin(PLUGIN_TITLE + " URI Setup (v0.6.0+)", S_URISetup, UI::WindowFlags::AlwaysAutoResize)) {
         UI::TextWrapped(
             "Spotify is making a change to how authorization works. It's a small change, but we must deal with it nonetheless. "
             "When you went through setup, you copy-pasted something called a \"Redirect URI.\" The one originally provided with "

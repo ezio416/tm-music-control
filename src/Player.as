@@ -59,47 +59,47 @@ void RenderPlayer() {
         UI::PushFont(font, S_FontSize);
 
         UI::BeginGroup();
-            if (S_Song) {
-                const string song = state.song.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.song.Length));
-                maxTextWidth = GetMaxTextWidth(maxTextWidth, song);
-                UI::Text(song);
-            }
+        if (S_Song) {
+            const string song = state.song.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.song.Length));
+            maxTextWidth = GetMaxTextWidth(maxTextWidth, song);
+            UI::Text(song);
+        }
 
-            if (S_Artists) {
-                const string artists = state.artists.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.artists.Length));
-                maxTextWidth = GetMaxTextWidth(maxTextWidth, artists);
-                UI::Text(artists);
-            }
+        if (S_Artists) {
+            const string artists = state.artists.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.artists.Length));
+            maxTextWidth = GetMaxTextWidth(maxTextWidth, artists);
+            UI::Text(artists);
+        }
 
-            if (S_AlbumName) {
-                const string album = state.album.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.album.Length));
-                maxTextWidth = GetMaxTextWidth(maxTextWidth, album);
-                UI::Text(album);
-            }
+        if (S_AlbumName) {
+            const string album = state.album.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.album.Length));
+            maxTextWidth = GetMaxTextWidth(maxTextWidth, album);
+            UI::Text(album);
+        }
 
-            if (S_AlbumRelease) {
-                string albumRelease = state.albumRelease.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.albumRelease.Length));
-                if (true
-                    and S_AlbumReleaseTruncate
-                    and albumRelease.EndsWith("-01-01")
-                ) {
-                    albumRelease = albumRelease.SubStr(0, 4);  // only show year
-                }
-                maxTextWidth = GetMaxTextWidth(maxTextWidth, albumRelease);
-                UI::Text(albumRelease);
-            }
-
+        if (S_AlbumRelease) {
+            string albumRelease = state.albumRelease.SubStr(0, (S_MaxTextLength > -1 ? S_MaxTextLength : state.albumRelease.Length));
             if (true
-                and S_AlbumArt
-                and S_AlbumArt_Cond.heart
+                and S_AlbumReleaseTruncate
+                and albumRelease.EndsWith("-01-01")
             ) {
-                const string icon = state.songLiked ? Icons::Heart : Icons::HeartO;
-                UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
-                UI::Text("\\$000" + icon);
-                UI::SetCursorPos(pre);
-                UI::Text("\\$0F0" + icon);
-                HoverTooltip((state.songLiked ? "" : "not ") + "in library");
+                albumRelease = albumRelease.SubStr(0, 4);  // only show year
             }
+            maxTextWidth = GetMaxTextWidth(maxTextWidth, albumRelease);
+            UI::Text(albumRelease);
+        }
+
+        if (true
+            and S_AlbumArt
+            and S_AlbumArt_Cond.heart
+        ) {
+            const string icon = state.songLiked ? Icons::Heart : Icons::HeartO;
+            UI::SetCursorPos(pre + vec2(scale, scale * 1.5f));
+            UI::Text("\\$000" + icon);
+            UI::SetCursorPos(pre);
+            UI::Text("\\$0F0" + icon);
+            HoverTooltip((state.songLiked ? "" : "not ") + "in library");
+        }
         UI::EndGroup();
 
         const float albumArtAndTextWidth = (S_AlbumArt ? S_AlbumArt_Cond.width + sameLineWidth : 0.0f) + maxTextWidth;
@@ -177,34 +177,49 @@ void RenderPlayer() {
 
         if (S_Progress) {
             UI::BeginDisabled(Time::Now - lastSeek < 2000);
-                UI::SetNextItemWidth(widthToSet);
-                int seekPositionPercent = UI::SliderInt(
-                    "##songProgress",
-                    state.songProgressPercent,
-                    0,
-                    100,
-                    FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
-                    UI::SliderFlags::NoInput
-                );
+            UI::SetNextItemWidth(widthToSet);
+            int newSeekPosition = UI::SliderInt(
+                "##songProgress",
+                state.songProgressPredicted,
+                0,
+                state.songDuration,
+                FormatSeconds((seeking ? seekPosition : state.songProgressPredicted) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
+                UI::SliderFlags::NoInput
+            );
             UI::EndDisabled();
 
             if (true
                 and S_Progress_Cond.scroll
                 and UI::IsItemHovered()
+                and state.songDuration > 0
             ) {
+                int newSeekPositionPercent = int(100.0f * newSeekPosition / state.songDuration);
+                bool scroll = true;
+
                 switch (int(UI::GetMouseWheelDelta())) {
-                    case -1:
-                        seekPositionPercent -= (seekPositionPercent < int(S_Progress_Cond.step) ? seekPositionPercent : S_Progress_Cond.step);
+                    case -1:  // down
+                        newSeekPositionPercent -= Math::Min(newSeekPositionPercent, S_Progress_Cond.step);
                         break;
-                    case 1:
-                        seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_Cond.step) ? 100 - seekPositionPercent : S_Progress_Cond.step);
+
+                    case 1:  // up
+                        newSeekPositionPercent += Math::Min(100 - newSeekPositionPercent, S_Progress_Cond.step);
                         break;
+
+                    default:
+                        scroll = false;
+                }
+
+                if (scroll) {
+                    newSeekPosition = int(0.01f * newSeekPositionPercent * state.songDuration);
                 }
             }
 
-            if (seekPositionPercent != state.songProgressPercent) {
+            if (true
+                and Time::Now - lastSeek > 2000
+                and Math::Abs(newSeekPosition - state.songProgressPredicted) > 100
+            ) {
                 seeking = true;
-                seekPosition = int(state.songDuration * (float(seekPositionPercent) / 100.0f));
+                seekPosition = newSeekPosition;
             }
 
             if (true
@@ -240,29 +255,29 @@ void RenderPlayer() {
                 or !supportsVolume
                 or Time::Now - lastVolume < 2000
             );
-                UI::SetNextItemWidth(widthToSet);
-                int volume = UI::SliderInt(
-                    "##volume",
-                    currentVolume,
-                    0,
-                    100,
-                    volumeIcon + " " + volumeText + " %%",
-                    UI::SliderFlags::NoInput
-                );
+            UI::SetNextItemWidth(widthToSet);
+            int volume = UI::SliderInt(
+                "##volume",
+                currentVolume,
+                0,
+                100,
+                volumeIcon + " " + volumeText + " %%",
+                UI::SliderFlags::NoInput
+            );
 
-                if (true
-                    and S_Volume_Cond.scroll
-                    and UI::IsItemHovered()
-                ) {
-                    switch (int(UI::GetMouseWheelDelta())) {
-                        case -1:
-                            volume -= (volume < int(S_Volume_Cond.step) ? volume : S_Volume_Cond.step);
-                            break;
-                        case 1:
-                            volume += (volume > 100 - int(S_Volume_Cond.step) ? 100 - volume : S_Volume_Cond.step);
-                            break;
-                    }
+            if (true
+                and S_Volume_Cond.scroll
+                and UI::IsItemHovered()
+            ) {
+                switch (int(UI::GetMouseWheelDelta())) {
+                    case -1:
+                        volume -= (volume < int(S_Volume_Cond.step) ? volume : S_Volume_Cond.step);
+                        break;
+                    case 1:
+                        volume += (volume > 100 - int(S_Volume_Cond.step) ? 100 - volume : S_Volume_Cond.step);
+                        break;
                 }
+            }
             UI::EndDisabled();
 
             if (true

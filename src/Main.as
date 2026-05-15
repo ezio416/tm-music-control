@@ -1,5 +1,8 @@
-const string title   = "\\$2D6" + Icons::Music + "\\$G Music Control";
-const string version = Meta::ExecutingPlugin().Version;
+Meta::Plugin@ PLUGIN         = Meta::ExecutingPlugin();
+const string  PLUGIN_COLOR   = "\\$2D6";
+const string  PLUGIN_ICON    = Icons::Music;
+const string  PLUGIN_TITLE   = PLUGIN_COLOR + PLUGIN_ICON + "\\$G " + PLUGIN.Name;
+const string  PLUGIN_VERSION = PLUGIN.Version;
 
 void Main() {
     if (true
@@ -65,7 +68,7 @@ void Render() {
 void RenderMenu() {
     if (true
         and S_Premium
-        and UI::MenuItem(title, "", S_Enabled)
+        and UI::MenuItem(PLUGIN_TITLE, "", S_Enabled)
     ) {
         S_Enabled = !S_Enabled;
     }

@@ -1,8 +1,5 @@
 Font      currentFont = S_Font;
 UI::Font@ font;
-UI::Font@ fontDroidSans;
-UI::Font@ fontDroidSansBold;
-UI::Font@ fontDroidSansMono;
 string[]  fontErrors;
 
 enum Font {
@@ -36,7 +33,7 @@ void ChangeFont() {
                 const string msg = "error loading system font '" + S_SystemFont + "', reverting to DroidSans";
                 error(msg + ", error: " + getExceptionInfo());
                 UI::ShowNotification(
-                    title,
+                    PLUGIN_TITLE,
                     msg,
                     vec4(1.0f, 0.2f, 0.2f, 0.5f)
                 );

@@ -170,7 +170,8 @@ namespace API {
                 return false;
         }
 
-        state = activeDevice !is null ? State(req.Json()) : State();
+        state.Update(activeDevice !is null ? req.Json() : null);
+
         if (state.albumArtUrlSelected != loadedAlbumArtUrl) {
             startnew(LoadAlbumArt);
         }
