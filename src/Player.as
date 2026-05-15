@@ -191,16 +191,28 @@ void RenderPlayer() {
             if (true
                 and S_Progress_Cond.scroll
                 and UI::IsItemHovered()
+                and state.songDuration > 0
             ) {
+                int newSeekPositionPercent = int(100.0f * newSeekPosition / state.songDuration);
+                bool scroll = true;
+
                 switch (int(UI::GetMouseWheelDelta())) {
-                    case -1:
-                        // seekPositionPercent -= (seekPositionPercent < int(S_Progress_Cond.step) ? seekPositionPercent : S_Progress_Cond.step);
-                        // TODO
+                    case -1: {  // down
+                        newSeekPositionPercent -= Math::Min(newSeekPositionPercent, S_Progress_Cond.step);
                         break;
-                    case 1:
-                        // seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_Cond.step) ? 100 - seekPositionPercent : S_Progress_Cond.step);
-                        // TODO
+                    }
+
+                    case 1: {  // up
+                        newSeekPositionPercent += Math::Min(100 - newSeekPositionPercent, S_Progress_Cond.step);
                         break;
+                    }
+
+                    default:
+                        scroll = false;
+                }
+
+                if (scroll) {
+                    newSeekPosition = int(0.01f * newSeekPositionPercent * state.songDuration);
                 }
             }
 
