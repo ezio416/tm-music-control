@@ -85,11 +85,17 @@ void RenderDebug() {
             if (UI::Selectable("progress: " + state.songProgress, false)) {
                 IO::SetClipboard(tostring(state.songProgress));
             }
+            if (UI::Selectable("progress (predicted): " + state.songProgressPredicted, false)) {
+                IO::SetClipboard(tostring(state.songProgressPredicted));
+            }
             if (UI::Selectable("duration: " + state.songDuration, false)) {
                 IO::SetClipboard(tostring(state.songDuration));
             }
             if (UI::Selectable("progress%: " + state.songProgressPercent, false)) {
                 IO::SetClipboard(tostring(state.songProgressPercent));
+            }
+            if (UI::Selectable("progress% (predicted): " + state.songProgressPercentPredicted, false)) {
+                IO::SetClipboard(tostring(state.songProgressPercentPredicted));
             }
             if (UI::Selectable("repeat: " + tostring(state.repeat), false)) {
                 IO::SetClipboard(tostring(state.repeat));
