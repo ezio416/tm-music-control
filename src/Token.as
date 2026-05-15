@@ -28,11 +28,11 @@ abstract class Token {
         return access.Length > 0;
     }
 
-    void Get() final {
-        startnew(CoroutineFunc(GetAsync));
+    void GetToken() final {
+        startnew(CoroutineFunc(GetTokenAsync));
     }
 
-    void GetAsync() {
+    void GetTokenAsync() {
         throw("implemented elsewhere");
     }
 
@@ -40,7 +40,7 @@ abstract class Token {
         access = clientId = clientSecret = refresh = "";
     }
 
-    bool Load() {
+    bool LoadToken() {
         throw("implemented elsewhere");
         return false;  // for compiler
     }
@@ -87,9 +87,9 @@ class SpotifyToken : Token {
         AUTH_FILE = IO::FromStorageFolder("spotify.json");
         type = TokenType::Spotify;
 
-        if (!LoadOld()) {
-            if (!Load()) {
-                Get();
+        if (!LoadOldToken()) {
+            if (!LoadToken()) {
+                GetToken();
             }
         }
     }
@@ -108,7 +108,7 @@ class SpotifyToken : Token {
         IO::SetClipboard(REDIRECT_URI);
     }
 
-    void GetAsync() override {
+    void GetTokenAsync() override {
         if (false
             or basic.Length == 0
             or code.Length == 0
@@ -156,7 +156,7 @@ class SpotifyToken : Token {
         basic = code = "";
     }
 
-    bool Load() override {
+    bool LoadToken() override {
         trace("loading Spotify token");
 
         if (!IO::FileExists(AUTH_FILE)) {
@@ -180,7 +180,7 @@ class SpotifyToken : Token {
         }
     }
 
-    bool LoadOld() {
+    bool LoadOldToken() {
         if (!IO::FileExists(AUTH_FILE_OLD)) {
             return false;
         }
@@ -300,8 +300,8 @@ class YoutubeToken : Token {
         AUTH_FILE = IO::FromStorageFolder("youtube.json");
         type = TokenType::YouTube;
 
-        if (!Load()) {
-            Get();
+        if (!LoadToken()) {
+            GetToken();
         }
     }
 
@@ -315,7 +315,7 @@ class YoutubeToken : Token {
         }
     }
 
-    void GetAsync() override {
+    void GetTokenAsync() override {
         if (false
             or clientSecret.Length == 0
             or deviceCode.Length == 0
@@ -403,7 +403,7 @@ class YoutubeToken : Token {
         }
     }
 
-    bool Load() override {
+    bool LoadToken() override {
         trace("loading YouTube token");
 
         if (!IO::FileExists(AUTH_FILE)) {

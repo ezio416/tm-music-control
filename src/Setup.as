@@ -130,7 +130,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                         spotify.basic = "Basic " + Text::EncodeBase64(spotify.clientId + ":" + spotify.clientSecret);
                         try {
                             spotify.SetCode();
-                            spotify.Get();
+                            spotify.GetToken();
                         } catch {
                             Error("Error with callback URL - make sure you copy the entire thing!");
                             warn("bad callback URL: " + spotify.callbackUrl);
@@ -263,7 +263,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                         or youtube.deviceCode.Length == 0
                     );
                     if (UI::Button(Icons::Unlock + " Finish Authorization")) {
-                        youtube.Get();
+                        youtube.GetToken();
                     }
                     UI::EndDisabled();
 
