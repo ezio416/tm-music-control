@@ -287,10 +287,6 @@ class YoutubeToken : Token {
     private string USER_AGENT       = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0";
     private string OAUTH_USER_AGENT = USER_AGENT + " Cobalt/Version";
     private string TOKEN_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code";
-    // private string YTM_DOMAIN       = "https://music.youtube.com";
-    // private string YTM_BASE_API     = YTM_DOMAIN + "/youtubei/v1/";
-    // private string YTM_PARAMS       = "?alt=json";
-    // private string YTM_PARAMS_KEY   = "&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30";
 
     string deviceCode;
     string userCode;
