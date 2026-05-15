@@ -1,8 +1,7 @@
-Meta::Plugin@ PLUGIN         = Meta::ExecutingPlugin();
-const string  PLUGIN_COLOR   = "\\$2D6";
-const string  PLUGIN_ICON    = Icons::Music;
-const string  PLUGIN_TITLE   = PLUGIN_COLOR + PLUGIN_ICON + "\\$G " + PLUGIN.Name;
-const string  PLUGIN_VERSION = PLUGIN.Version;
+Meta::Plugin@ PLUGIN       = Meta::ExecutingPlugin();
+const string  PLUGIN_COLOR = "\\$2D6";
+const string  PLUGIN_ICON  = Icons::Music;
+const string  PLUGIN_TITLE = PLUGIN_COLOR + PLUGIN_ICON + "\\$G " + PLUGIN.Name;
 
 void Main() {
     @spotify = SpotifyToken();

@@ -1,5 +1,5 @@
 void RenderSetup() {
-    if (UI::Begin(PLUGIN_TITLE + " Setup \\$777v" + PLUGIN_VERSION + "###window-setup-" + PLUGIN.Name, S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin(PLUGIN_TITLE + " Setup \\$777v" + PLUGIN.Version + "###window-setup-" + PLUGIN.Name, S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
         // if (UI::RadioButton("\\$4F4" + Icons::Spotify + " Spotify", S_API == TokenType::Spotify)) {
         //     S_API = TokenType::Spotify;
         // }
