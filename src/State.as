@@ -40,10 +40,44 @@ class State {
     string           song;
     int              songDuration;
     string           songId;
-    bool             songLiked = liked;
+    bool             songLiked;
     int              songProgress;
+    int              songProgressPredicted;
     int              songProgressPercent;
+    int              songProgressPercentPredicted;
     PlayingType      type;
+
+    State() {
+        Clear();
+        startnew(CoroutineFunc(PredictProgressAsync));
+    }
+
+    void Clear() {
+        album                        = "";
+        albumArtUrl64                = "";
+        albumArtUrl300               = "";
+        albumArtUrl640               = "";
+        albumArtUrlSelected          = "";
+        albumRelease                 = "";
+        albumReleasePrecision        = ReleasePrecision::day;
+        artists                      = "";
+        context                      = "";
+        deviceId                     = "";
+        lastUpdate                   = 0;
+        playing                      = false;
+        repeat                       = Repeat::off;
+        shuffle                      = false;
+        smartShuffle                 = false;
+        song                         = "";
+        songDuration                 = 0;
+        songId                       = "";
+        songLiked                    = liked;
+        songProgress                 = 0;
+        songProgressPredicted        = 0;
+        songProgressPercent          = 0;
+        songProgressPercentPredicted = 0;
+        type                         = PlayingType::track;
+    }
 
     void Update(Json::Value@ json = null) {
         lastUpdate = Time::Now;
@@ -121,5 +155,23 @@ class State {
         else if (_type == "episode") type = PlayingType::episode;
         else if (_type == "ad")      type = PlayingType::ad;
         else if (_type == "unknown") type = PlayingType::unknown;
+    }
+
+    void PredictProgressAsync() {
+        while (true) {
+            yield();
+
+            songProgressPredicted = songProgress;
+            songProgressPercentPredicted = songProgressPercent;
+
+            if (playing) {
+                songProgressPredicted = Math::Min(
+                    songDuration,
+                    songProgress + Time::Now - lastUpdate
+                );
+
+                songProgressPercentPredicted = int(float(songProgressPredicted) / float(songDuration) * 100.0f);
+            }
+        }
     }
 }

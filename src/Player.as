@@ -178,12 +178,12 @@ void RenderPlayer() {
         if (S_Progress) {
             UI::BeginDisabled(Time::Now - lastSeek < 2000);
                 UI::SetNextItemWidth(widthToSet);
-                int seekPositionPercent = UI::SliderInt(
+                int newSeekPosition = UI::SliderInt(
                     "##songProgress",
-                    state.songProgressPercent,
+                    state.songProgressPredicted,
                     0,
-                    100,
-                    FormatSeconds((seeking ? seekPosition : state.songProgress) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
+                    state.songDuration,
+                    FormatSeconds((seeking ? seekPosition : state.songProgressPredicted) / 1000) + " / " + FormatSeconds(state.songDuration / 1000),
                     UI::SliderFlags::NoInput
                 );
             UI::EndDisabled();
@@ -194,17 +194,22 @@ void RenderPlayer() {
             ) {
                 switch (int(UI::GetMouseWheelDelta())) {
                     case -1:
-                        seekPositionPercent -= (seekPositionPercent < int(S_Progress_Cond.step) ? seekPositionPercent : S_Progress_Cond.step);
+                        // seekPositionPercent -= (seekPositionPercent < int(S_Progress_Cond.step) ? seekPositionPercent : S_Progress_Cond.step);
+                        // TODO
                         break;
                     case 1:
-                        seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_Cond.step) ? 100 - seekPositionPercent : S_Progress_Cond.step);
+                        // seekPositionPercent += (seekPositionPercent > 100 - int(S_Progress_Cond.step) ? 100 - seekPositionPercent : S_Progress_Cond.step);
+                        // TODO
                         break;
                 }
             }
 
-            if (seekPositionPercent != state.songProgressPercent) {
+            if (true
+                and Time::Now - lastSeek > 2000
+                and Math::Abs(newSeekPosition - state.songProgressPredicted) > 100
+            ) {
                 seeking = true;
-                seekPosition = int(state.songDuration * (float(seekPositionPercent) / 100.0f));
+                seekPosition = newSeekPosition;
             }
 
             if (true
