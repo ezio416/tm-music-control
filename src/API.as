@@ -30,21 +30,14 @@ namespace API {
     void CycleRepeat() {
         trace("cycling repeat");
 
-        string url = apiUrl + "/me/player/repeat?state=";
+        string endpoint = "/me/player/repeat?state=";
         switch (state.repeat) {
-            case Repeat::off:     url += "context"; break;
-            case Repeat::context: url += "track";   break;
-            default:              url += "off";
+            case Repeat::off:     endpoint += "context"; break;
+            case Repeat::context: endpoint += "track";   break;
+            default:              endpoint += "off";
         }
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Put;
-        req.Url = url;
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PutAsync(endpoint);
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -69,6 +62,50 @@ namespace API {
         }
     }
 
+    Net::HttpRequest@ GetAsync(const string&in endpoint) {
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Get;
+        req.Url = apiUrl + endpoint;
+        req.Headers["Authorization"] = token.access;
+
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+
+        return req;
+    }
+
+    Net::HttpRequest@ PostAsync(const string&in endpoint, const string&in body = "") {
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Post;
+        req.Url = apiUrl + endpoint;
+        req.Headers["Authorization"] = token.access;
+        req.Body = body;
+
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+
+        return req;
+    }
+
+    Net::HttpRequest@ PutAsync(const string&in endpoint, const string&in body = "") {
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Put;
+        req.Url = apiUrl + endpoint;
+        req.Headers["Authorization"] = token.access;
+        req.Body = body;
+
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+
+        return req;
+    }
+
     bool GetCurrentSongIsLiked() {
         if (state.songId.Length == 0) {
             return true;
@@ -76,14 +113,8 @@ namespace API {
 
         // trace("checking if song \"" + state.song + "\" is in user's library");
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Get;
-        req.Url = apiUrl + "/me/tracks/contains?ids=" + state.songId;
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = GetAsync("/me/tracks/contains?ids=" + state.songId);
+
         const int respCode = req.ResponseCode();
         switch (respCode) {
             case ResponseCode::Good:
@@ -114,14 +145,7 @@ namespace API {
     }
 
     bool GetDevices() {
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Get;
-        req.Url = apiUrl + "/me/player/devices";
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = GetAsync("/me/player/devices");
 
         const int respCode = req.ResponseCode();
 
@@ -145,14 +169,7 @@ namespace API {
     }
 
     bool GetPlaybackState() {
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Get;
-        req.Url = apiUrl + "/me/player";
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = GetAsync("/me/player");
 
         const int respCode = req.ResponseCode();
 
@@ -180,14 +197,7 @@ namespace API {
     }
 
     bool GetPlaylists() {
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Get;
-        req.Url = apiUrl + "/me/playlists?limit=50";
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = GetAsync("/me/playlists?limit=50");
 
         const int respCode = req.ResponseCode();
 
@@ -305,14 +315,7 @@ namespace API {
 
         trace("pausing song");
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Put;
-        req.Url = apiUrl + "/me/player/pause";
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PutAsync("/me/player/pause");
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -344,32 +347,25 @@ namespace API {
 
         trace("playing song");
 
-        string url = apiUrl + "/me/player/play";
+        string endpoint = "/me/player/play";
         if (forceDevice) {
-            url += "?device_id=" + lastDeviceId;
+            endpoint += "?device_id=" + lastDeviceId;
             forceDevice = false;
         }
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Put;
-        req.Url = url;
-        req.Headers["Authorization"] = token.access;
-
+        string body;
         if (selectedPlaylist.Length > 0) {
             if (playlists.Exists(selectedPlaylist)) {
-                trace("switching playlist to \"" + string(playlists[selectedPlaylist]) + "\"");
+                trace("switching playlist to '" + string(playlists[selectedPlaylist]) + "'");
             } else {
-                warn("playlist \"" + selectedPlaylist + "\" not found");
+                warn("playlist '" + selectedPlaylist + "' not found");
             }
 
-            req.Body = "{\"context_uri\":\"" + selectedPlaylist + "\"}";
+            body = '{"context_uri":"' + selectedPlaylist + '"}';
             selectedPlaylist = "";
         }
 
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PutAsync(endpoint, body);
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -422,14 +418,7 @@ namespace API {
 
         trace(seekPosition == 0 ? "restarting song" : "seeking to " + FormatSeconds(seekPosition / 1000));
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Put;
-        req.Url = apiUrl + "/me/player/seek?position_ms=" + seekPosition;
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PutAsync("/me/player/seek?position_ms=" + seekPosition);
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -469,14 +458,7 @@ namespace API {
 
         trace("setting volume to " + volumeDesired + " %" + (S_Volume_Cond.egg && volumeDesired == 69 ? " (nice)" : ""));
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Put;
-        req.Url = apiUrl + "/me/player/volume?volume_percent=" + volumeDesired;
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PutAsync("/me/player/volume?volume_percent=" + volumeDesired);
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -510,14 +492,7 @@ namespace API {
 
         trace("next song");
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Post;
-        req.Url = apiUrl + "/me/player/next";
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PostAsync("/me/player/next");
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -549,14 +524,7 @@ namespace API {
 
         trace("previous song");
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Post;
-        req.Url = apiUrl + "/me/player/previous";
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PostAsync("/me/player/previous");
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
@@ -588,14 +556,7 @@ namespace API {
 
         trace("toggling shuffle");
 
-        Net::HttpRequest@ req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Put;
-        req.Url = apiUrl + "/me/player/shuffle?state=" + !state.shuffle;
-        req.Headers["Authorization"] = token.access;
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+        Net::HttpRequest@ req = PutAsync("/me/player/shuffle?state=" + !state.shuffle);
 
         const string resp = req.String();
         const int respCode = req.ResponseCode();
