@@ -197,15 +197,13 @@ void RenderPlayer() {
                 bool scroll = true;
 
                 switch (int(UI::GetMouseWheelDelta())) {
-                    case -1: {  // down
+                    case -1:  // down
                         newSeekPositionPercent -= Math::Min(newSeekPositionPercent, S_Progress_Cond.step);
                         break;
-                    }
 
-                    case 1: {  // up
+                    case 1:  // up
                         newSeekPositionPercent += Math::Min(100 - newSeekPositionPercent, S_Progress_Cond.step);
                         break;
-                    }
 
                     default:
                         scroll = false;
