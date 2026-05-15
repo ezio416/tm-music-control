@@ -170,6 +170,7 @@ class State {
                     songProgress + Time::Now - lastUpdate
                 );
 
+                songDuration = Math::Max(songDuration, 1);
                 songProgressPercentPredicted = int(float(songProgressPredicted) / float(songDuration) * 100.0f);
             }
         }
