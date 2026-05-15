@@ -32,6 +32,7 @@ class State {
     string           artists;
     string           context;
     string           deviceId;
+    uint64           lastUpdate;
     bool             playing;
     Repeat           repeat;
     bool             shuffle;
@@ -44,11 +45,17 @@ class State {
     int              songProgressPercent;
     PlayingType      type;
 
-    State() { }
-    State(Json::Value@ json) {
+    void Update(Json::Value@ json = null) {
+        lastUpdate = Time::Now;
+
+        if (json is null) {
+            return;
+        }
+
         try {
             context = string(json.Get("context")["uri"]);
         } catch {
+            context = "";
             return;
         }
 
@@ -59,6 +66,7 @@ class State {
         try {
             song = ReplaceBadQuotes(_item["name"]);
         } catch {
+            song = "";
             return;
         }
 
@@ -83,6 +91,7 @@ class State {
             case AlbumArtRes::x640: albumArtUrlSelected = albumArtUrl640; break;
         }
 
+        artists = "";
         Json::Value@ _artists = _item.Get("artists");
         for (uint i = 0; i < _artists.Length; i++) {
             if (i > 0) {
@@ -105,7 +114,7 @@ class State {
         smartShuffle = bool(json["smart_shuffle"]);
         songDuration = int(_item["duration_ms"]);
         songProgress = int(json["progress_ms"]);
-        songProgressPercent = int(float(songProgress) / float(songDuration) * 100);
+        songProgressPercent = int(float(songProgress) / float(songDuration) * 100.0f);
 
         const string _type = string(json["currently_playing_type"]);
         if      (_type == "track")   type = PlayingType::track;
