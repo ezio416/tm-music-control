@@ -4,7 +4,7 @@ bool         forceDeviceTried = false;
 uint64       lastSeek         = 0;
 uint64       lastVolume       = 0;
 bool         loopRunning      = false;
-dictionary@  playlists        = dictionary();
+dictionary   playlists;
 bool         runLoop          = false;
 int          seekPosition     = 0;
 string       selectedPlaylist;
