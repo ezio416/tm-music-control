@@ -1,15 +1,15 @@
 void RenderSetup() {
     if (UI::Begin(PLUGIN_TITLE + " Setup \\$777v" + PLUGIN_VERSION + "###window-setup-" + PLUGIN.Name, S_Setup, UI::WindowFlags::AlwaysAutoResize)) {
-        if (UI::RadioButton("\\$4F4" + Icons::Spotify + " Spotify", S_API == TokenType::Spotify)) {
-            S_API = TokenType::Spotify;
-        }
+        // if (UI::RadioButton("\\$4F4" + Icons::Spotify + " Spotify", S_API == TokenType::Spotify)) {
+        //     S_API = TokenType::Spotify;
+        // }
 
-        UI::SameLine();
-        if (UI::RadioButton("\\$F44" + Icons::Youtube + " YouTube", S_API == TokenType::YouTube)) {
-            S_API = TokenType::YouTube;
-        }
+        // UI::SameLine();
+        // if (UI::RadioButton("\\$F44" + Icons::Youtube + " YouTube", S_API == TokenType::YouTube)) {
+        //     S_API = TokenType::YouTube;
+        // }
 
-UI::BeginTabBar("##tabbar-setup");
+        UI::BeginTabBar("##tabbar-setup");
 
         if (UI::BeginTabItem("Disclaimer")) {
             switch (S_API) {

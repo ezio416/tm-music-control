@@ -28,7 +28,7 @@ enum UpdateFreq {
 [Setting category="General" name="Update frequency" description="Only change this if you're getting rate-limit errors."]
 UpdateFreq S_UpdateFreq = UpdateFreq::Normal;
 
-[Setting category="General" name="API"]
+[Setting category="General" name="API" hidden]
 TokenType S_API = TokenType::Spotify;
 
 
