@@ -13,7 +13,7 @@ void RenderDisclaimer() {
         disclaimerOpened = Time::Stamp;
     }
 
-    if (UI::Begin(title + " Disclaimer", UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin(PLUGIN_TITLE + " Disclaimer", UI::WindowFlags::AlwaysAutoResize)) {
         UI::Text("\\$F50DISCLAIMER:\n");
         UI::NewLine();
         UI::TextWrapped("""
