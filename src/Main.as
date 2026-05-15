@@ -3,6 +3,17 @@ const string  PLUGIN_COLOR = "\\$2D6";
 const string  PLUGIN_ICON  = Icons::Music;
 const string  PLUGIN_TITLE = PLUGIN_COLOR + PLUGIN_ICON + "\\$G " + PLUGIN.Name;
 
+bool       forceDevice      = false;
+bool       forceDeviceTried = false;
+uint64     lastSeek         = 0;
+uint64     lastVolume       = 0;
+bool       loopRunning      = false;
+dictionary playlists;
+bool       runLoop          = false;
+int        seekPosition     = 0;
+string     selectedPlaylist;
+int        volumeDesired    = 0;
+
 void Main() {
     @spotify = SpotifyToken();
 
@@ -14,7 +25,7 @@ void Main() {
     ChangeFont();
 
     while (true) {
-        startnew(API::Loop);
+        startnew(LoopAsync);
         sleep(1000);
     }
 }
@@ -65,4 +76,83 @@ void RenderMenu() {
     ) {
         S_Enabled = !S_Enabled;
     }
+}
+
+void LoopAsync() {
+    if (loopRunning) {
+        return;
+    }
+
+    loopRunning = true;
+
+    int waitTime = S_UpdateFreq;
+
+    uint checkLiked     = 0;
+    uint checkPlaylists = 0;
+
+    while (true) {
+        if (!token.authorized) {
+            break;
+        }
+
+        if (waitTime > S_UpdateFreq) {
+            Warn("Waiting " + waitTime + " ms to try contacting API again");
+        }
+        sleep(waitTime);
+
+        if (waitTime > S_UpdateFreq * 4) {
+            waitTime = S_UpdateFreq * 4;
+        }
+
+        if (!runLoop) {
+            state = State();
+            break;
+        }
+
+        if (!S_AlbumArt_Cond.heart) {
+            checkLiked = 0;
+        }
+
+        if (!S_Playlists) {
+            checkPlaylists = 0;
+        }
+
+        if (false
+            or !token.GetDevicesAsync()
+            or !token.GetPlaybackStateAsync()
+        ) {
+            waitTime *= 2;
+            continue;
+        } else {
+            waitTime = S_UpdateFreq;
+        }
+
+        if (true
+            and S_AlbumArt_Cond.heart
+            and checkLiked++ % 5 == 0
+        ) {
+            if (!token.GetCurrentSongIsLikedAsync()) {
+                waitTime *= 2;
+            } else {
+                waitTime = S_UpdateFreq;
+            }
+
+            checkLiked = 1;
+        }
+
+        if (true
+            and S_Playlists
+            and checkPlaylists++ % 20 == 0
+        ) {
+            if (!token.GetPlaylistsAsync()) {
+                waitTime *= 2;
+            } else {
+                waitTime = S_UpdateFreq;
+            }
+
+            checkPlaylists = 1;
+        }
+    }
+
+    loopRunning = false;
 }

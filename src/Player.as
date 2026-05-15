@@ -109,7 +109,7 @@ void RenderPlayer() {
                 and state.smartShuffle
             );
             if (UI::Button((state.shuffle ? (state.smartShuffle ? "\\$F80" : "\\$0F0") : "") + Icons::Random, buttonSize)) {
-                startnew(API::ToggleShuffle);
+                token.ToggleShuffle();
             }
             UI::EndDisabled();
             if (S_Buttons_Cond.tooltips) {
@@ -120,10 +120,10 @@ void RenderPlayer() {
             const bool skipPrevious = state.songProgress < 3000;
             if (UI::Button(skipPrevious ? Icons::FastBackward : Icons::StepBackward, buttonSize)) {
                 if (skipPrevious) {
-                    startnew(API::SkipPrevious);
+                    token.SkipPrevious();
                 } else {
                     seekPosition = 0;
-                    startnew(API::Seek);
+                    token.Seek();
                 }
             }
             if (S_Buttons_Cond.tooltips) {
@@ -133,14 +133,14 @@ void RenderPlayer() {
             UI::SameLine();
             if (state.playing) {
                 if (UI::Button(Icons::Pause, buttonSize)) {
-                    startnew(API::Pause);
+                    token.Pause();
                 }
                 if (S_Buttons_Cond.tooltips) {
                     HoverTooltip("pause");
                 }
             } else {
                 if (UI::Button(Icons::Play, buttonSize)) {
-                    startnew(API::Play);
+                    token.Play();
                 }
                 if (S_Buttons_Cond.tooltips) {
                     HoverTooltip("resume");
@@ -149,7 +149,7 @@ void RenderPlayer() {
 
             UI::SameLine();
             if (UI::Button(Icons::StepForward, buttonSize)) {
-                startnew(API::SkipNext);
+                token.SkipNext();
             }
             if (S_Buttons_Cond.tooltips) {
                 HoverTooltip("next");
@@ -163,7 +163,7 @@ void RenderPlayer() {
                 default:              repeatIcon = Icons::Refresh;
             }
             if (UI::Button(repeatIcon, buttonSize)) {
-                startnew(API::CycleRepeat);
+                token.CycleRepeat();
             }
             if (S_Buttons_Cond.tooltips) {
                 HoverTooltip("repeat: " + tostring(state.repeat));
@@ -223,7 +223,7 @@ void RenderPlayer() {
                 and seeking
                 and !UI::IsMouseDown()
             ) {
-                startnew(API::Seek);
+                token.Seek();
                 seeking = false;
             }
         }
@@ -289,7 +289,7 @@ void RenderPlayer() {
                 and changingVolume
                 and !UI::IsMouseDown()
             ) {
-                startnew(API::SetVolume);
+                token.SetVolume();
                 changingVolume = false;
             }
         }
@@ -312,7 +312,7 @@ void RenderPlayer() {
                             : UI::SelectableFlags::None
                     )) {
                         selectedPlaylist = context;
-                        startnew(API::Play);
+                        token.Play();
                     }
                 }
 
