@@ -219,33 +219,6 @@ namespace API {
         return true;
     }
 
-    // void GetQueue() {
-    //     ;
-    // }
-
-    // void GetRecentTracks() {
-    //     Net::HttpRequest@ req = Net::HttpRequest();
-    //     req.Method = Net::HttpMethod::Get;
-    //     req.Url = apiUrl + "/me/player/recently-played";
-    //     req.Headers["Authorization"] = string(auth["access"]);
-    //     req.Start();
-    //     while (!req.Finished())
-    //         yield();
-
-    //     string resp = req.String();
-    //     int respCode = req.ResponseCode();
-
-    //     if (respCode < 200 || respCode >= 400) {
-    //         NotifyWarn("API error - please check Openplanet log");
-    //         error("error getting recently played tracks");
-    //         warn("response: " + respCode + " " + resp.Replace("\n", ""));
-    //         return;
-    //     }
-
-    //     Json::Value json = Json::Parse(resp);
-    //     Json::ToFile(IO::FromStorageFolder("test.json"), json);
-    // }
-
     void Loop() {
         if (loopRunning) {
             return;
@@ -646,34 +619,6 @@ namespace API {
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
-
-    // void TransferPlaybackCoro() {
-    //     if (
-    //         activeDevice is null ||
-    //         activeDevice.id == selectedDeviceId
-    //     ) return;
-    //     while (Time::Stamp - lastTransfer < 10) yield();  // wait between transfers
-    //     print("transferring...");
-
-    //     auto req = Net::HttpRequest();
-    //     req.Method = Net::HttpMethod::Put;
-    //     req.Url = apiUrl + "/me/player?play=true";
-    //     req.Headers["Authorization"] = string(auth["access"]);
-    //     req.Headers["Content-Type"] = "application/json";
-    //     req.Body = "{\"device_ids\":[\"" + selectedDeviceId + "\"]}";
-    //     req.Start();
-    //     while (!req.Finished()) yield();
-
-    //     int respCode = req.ResponseCode();
-    //     string resp = req.String();
-    //     if (respCode < 200 || respCode >= 400) {
-    //         NotifyWarn("API error - please check Openplanet log");
-    //         error("error transferring playback");
-    //         warn("response: " + respCode + " " + resp.Replace("\n", ""));
-    //     }
-
-    //     lastTransfer = Time::Stamp;
-    // }
 
     void Premium() {
         Error("Sorry, you need a Premium account");
