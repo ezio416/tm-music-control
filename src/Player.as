@@ -117,7 +117,7 @@ void RenderPlayer() {
             }
 
             UI::SameLine();
-            const bool skipPrevious = state.songProgress < 3000;
+            const bool skipPrevious = state.songProgressPredicted < 3000;
             if (UI::Button(skipPrevious ? Icons::FastBackward : Icons::StepBackward, buttonSize)) {
                 if (skipPrevious) {
                     token.SkipPrevious();
