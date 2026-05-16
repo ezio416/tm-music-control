@@ -2,7 +2,10 @@ bool changingVolume = false;
 bool seeking        = false;
 
 void RenderPlayer() {
-    if (!S_Premium) {
+    if (false
+        or !S_Premium
+        or state.song.Length == 0
+    ) {
         return;
     }
 
