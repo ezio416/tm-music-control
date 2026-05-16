@@ -86,7 +86,7 @@ void LoadAlbumArt() {
 }
 
 string ReplaceBadQuotes(const string&in input) {
-    return input.Replace("‘", "'").Replace("’", "'").Replace("“", "\"").Replace("”", "\"");
+    return input.Replace("‘", "'").Replace("’", "'").Replace('“', '"').Replace('”', '"');
 }
 
 string ReplaceBadQuotes(Json::Value@ input) {
