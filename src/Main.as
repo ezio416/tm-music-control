@@ -105,7 +105,7 @@ void LoopAsync() {
         }
 
         if (!runLoop) {
-            state = State();
+            state.Clear();
             break;
         }
 
