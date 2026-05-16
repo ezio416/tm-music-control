@@ -132,7 +132,7 @@ If you still want to proceed into the setup, open the 'Authorization' tab at the
                             spotify.SetCode();
                             spotify.GetToken();
                         } catch {
-                            Error("Error with callback URL - make sure you copy the entire thing!");
+                            error("Error with callback URL - make sure you copy the entire thing!");
                             warn("bad callback URL: " + spotify.callbackUrl);
                             spotify.code = "";
                         }

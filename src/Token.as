@@ -268,7 +268,7 @@ class SpotifyToken : Token {
                 RateLimited("CycleRepeat", req);
                 break;
             default:
-                Error("Couldn't cycle repeat type");
+                error("Couldn't cycle repeat type");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -308,7 +308,7 @@ class SpotifyToken : Token {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetCurrentSongIsLiked", req);
             default:
-                Error("Couldn't check if song is liked");
+                error("Couldn't check if song is liked");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -320,7 +320,7 @@ class SpotifyToken : Token {
             liked = state.songLiked;
             return true;
         } catch {
-            Error("Couldn't check if song is liked");
+            error("Couldn't check if song is liked");
             warn("got: " + Json::Write(json));
         }
 
@@ -341,7 +341,7 @@ class SpotifyToken : Token {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetDevices", req);
             default:
-                Error("Couldn't get device list");
+                error("Couldn't get device list");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -365,7 +365,7 @@ class SpotifyToken : Token {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetPlaybackState", req);
             default:
-                Error("Couldn't get playback state");
+                error("Couldn't get playback state");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -392,7 +392,7 @@ class SpotifyToken : Token {
             case ResponseCode::TooManyRequests:
                 return RateLimited("GetPlaylists", req);
             default:
-                Error("Couldn't get playlists");
+                error("Couldn't get playlists");
                 warn("response: " + respCode + " " + req.String().Replace("\n", ""));
                 return false;
         }
@@ -461,7 +461,7 @@ class SpotifyToken : Token {
     }
 
     void InvalidSubscription() override {
-        Error("Sorry, you need a Premium account");
+        error("Sorry, you need a Premium account");
         warn("free account detected, disabling plugin...");
         S_Premium = false;
     }
@@ -566,7 +566,7 @@ class SpotifyToken : Token {
                 RateLimited("Pause", req);
                 break;
             default:
-                Error("Couldn't pause playback");
+                error("Couldn't pause playback");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -614,7 +614,7 @@ class SpotifyToken : Token {
                 break;
             case ResponseCode::NotFound:
                 if (forceDeviceTried) {
-                    Error("Couldn't find a device");
+                    error("Couldn't find a device");
                     forceDevice = false;
                     forceDeviceTried = false;
                     return;
@@ -629,7 +629,7 @@ class SpotifyToken : Token {
                 RateLimited("Play", req);
                 break;
             default:
-                Error("Couldn't resume playback");
+                error("Couldn't resume playback");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
 
@@ -671,7 +671,7 @@ class SpotifyToken : Token {
         const string msg = func + "(): rate limited" + (headers.Exists("retry-after") ? ", try again after "
             + string(headers["retry-after"]) + "s" : "");
 
-        Error(msg);
+        error(msg);
 
         return true;
     }
@@ -749,7 +749,7 @@ class SpotifyToken : Token {
                 RateLimited("Seek", req);
                 break;
             default:
-                Error("Couldn't seek in song");
+                error("Couldn't seek in song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
 
@@ -793,7 +793,7 @@ class SpotifyToken : Token {
                 RateLimited("SetVolume", req);
                 break;
             default:
-                Error("Couldn't set volume");
+                error("Couldn't set volume");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
 
@@ -827,7 +827,7 @@ class SpotifyToken : Token {
                 RateLimited("SkipNext", req);
                 break;
             default:
-                Error("Couldn't skip to next song");
+                error("Couldn't skip to next song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -859,7 +859,7 @@ class SpotifyToken : Token {
                 RateLimited("SkipPrevious", req);
                 break;
             default:
-                Error("Couldn't skip to previous song");
+                error("Couldn't skip to previous song");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }
@@ -891,7 +891,7 @@ class SpotifyToken : Token {
                 RateLimited("ToggleShuffle", req);
                 break;
             default:
-                Error("couldn't toggle shuffle");
+                error("couldn't toggle shuffle");
                 warn("response: " + respCode + " " + resp.Replace("\n", ""));
         }
     }

@@ -3,16 +3,6 @@ bool         albumArtLoading   = false;
 string       loadedAlbumArtUrl = "";
 UI::Texture@ tex;
 
-void Error(const string&in msg, const bool log = true) {
-    if (log) {
-        error(msg);
-    }
-
-    if (S_Errors) {
-        UI::ShowNotification("MusicControl", msg, UI::HSV(0.02f, 0.8f, 0.9f));
-    }
-}
-
 string FormatSeconds(const int seconds) {
     return Zpad(seconds / 60) + ":" + Zpad(seconds % 60);
 }
@@ -48,7 +38,7 @@ void LoadAlbumArt() {
 
     if (state.albumArtUrlSelected.Length == 0) {
         albumArtLoading = false;
-        Warn("Blank album art: " + state.album);
+        warn("Blank album art: " + state.album);
         return;
     }
 
@@ -108,16 +98,6 @@ string ReplaceBadQuotes(Json::Value@ input) {
     }
 
     return ReplaceBadQuotes(string(input));
-}
-
-void Warn(const string&in msg, const bool log = true) {
-    if (log) {
-        warn(msg);
-    }
-
-    if (S_Warnings) {
-        UI::ShowNotification("MusicControl", msg, UI::HSV(0.1f, 0.8f, 0.9f));
-    }
 }
 
 string Zpad(const uint num, const uint digits = 2) {

@@ -96,7 +96,7 @@ void LoopAsync() {
         }
 
         if (waitTime > S_UpdateFreq) {
-            Warn("Waiting " + waitTime + " ms to try contacting API again");
+            warn("Waiting " + waitTime + " ms to try contacting API again");
         }
         sleep(waitTime);
 

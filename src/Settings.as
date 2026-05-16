@@ -10,12 +10,6 @@ bool S_HideWithGame = true;
 [Setting category="General" name="Show/hide with Openplanet UI"]
 bool S_HideWithOP = false;
 
-[Setting category="General" name="Show on-screen warning messages" description="If disabled, you can still check the Openplanet log."]
-bool S_Warnings = false;
-
-[Setting category="General" name="Show on-screen error messages" description="If disabled, you can still check the Openplanet log."]
-bool S_Errors = true;
-
 enum UpdateFreq {
     Slowest = 5000,
     Slower  = 3000,
