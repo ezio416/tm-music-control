@@ -39,6 +39,10 @@ void OnSettingsChanged() {
 }
 
 void Render() {
+    if (S_Setup) {
+        RenderSetup();
+    }
+
     if (false
         or !S_Enabled
         or font is null
@@ -60,10 +64,6 @@ void Render() {
         )
     ) {
         return;
-    }
-
-    if (S_Setup) {
-        RenderSetup();
     }
 
     RenderPlayer();
