@@ -101,12 +101,5 @@ string ReplaceBadQuotes(Json::Value@ input) {
 }
 
 string Zpad(const uint num, const uint digits = 2) {
-    string zeroes = "";
-    const string result = tostring(num);
-
-    for (uint i = 0; i < digits - uint(result.Length); i++) {
-        zeroes += "0";
-    }
-
-    return zeroes + result;
+    return Text::Format("%0" + digits + "d", num);
 }
