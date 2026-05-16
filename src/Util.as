@@ -30,10 +30,9 @@ void LoadAlbumArt() {
 
     albumArtLoading = true;
 
-    trace(
-        state.album != "" ?
-        "loading album art for \"" + state.album + "\"" :
-        "clearing album art"
+    trace(state.album.Length > 0
+        ? 'loading album art for "' + state.album + '"'
+        : "clearing album art"
     );
 
     if (state.albumArtUrlSelected.Length == 0) {
