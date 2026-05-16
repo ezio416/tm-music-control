@@ -42,7 +42,7 @@ void RenderPlayer() {
         const vec2 pre = UI::GetCursorPos();
 
         if (S_AlbumArt) {
-            if (@tex !is null) {
+            if (tex !is null) {
                 UI::ImageWithBg(tex, vec2(S_AlbumArt_Cond.width), tint_col: vec4(vec3(1.0f), S_Opacity));
             } else {
                 UI::Dummy(vec2(S_AlbumArt_Cond.width));
